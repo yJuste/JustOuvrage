@@ -1,23 +1,15 @@
 # JustOuvrage
 
 JustOuvrage
-│
-├── Features
-│   ├── Flashcards
-│   │   ├── Views
-│   │   ├── ViewModels
-│   │   ├── Models
-│   │   ├── Support
-│   │
-│   ├── Settings
-│   │   ├── Views
-│   │   ├── ViewModels
-│
-├── Core
-│   ├── AppState
-│   ├── Theme
-│
-├── DesignSystem
-│   ├── Colors
-│   ├── Typography
-│   ├── Assets.xcassets
+    DesignSystem
+        Colors
+        Typography
+        Assets.xcassets
+        Localizable.xcstrings
+    Core
+        AppState
+        Theme
+    Features
+        Models
+        Support
+        Views
