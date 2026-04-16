@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+/// A view that shows all the settings.
 struct SettingsView: View {
 	var body: some View {
 		Text("Settings")

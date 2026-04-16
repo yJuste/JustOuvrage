@@ -8,7 +8,7 @@
 import SwiftUI
 import SafariServices
 
-/// A Built-in Safari browser.
+/// A built-in Safari browser.
 struct SFSafariViewWrapper: UIViewControllerRepresentable {
 	
 	let url: URL
@@ -16,5 +16,6 @@ struct SFSafariViewWrapper: UIViewControllerRepresentable {
 	func makeUIViewController(context: UIViewControllerRepresentableContext<Self>) -> SFSafariViewController {
 		SFSafariViewController(url: url)
 	}
+
 	func updateUIViewController(_ uiViewController: SFSafariViewController, context: UIViewControllerRepresentableContext<SFSafariViewWrapper>) {}
 }

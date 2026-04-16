@@ -1,18 +1,6 @@
 # JustOuvrage
 
-JustOuvrage<br>
-    DesignSystem<br>
-        Colors<br>
-        Typography<br>
-        Assets.xcassets<br>
-        Localizable.xcstrings<br>
-    Core<br>
-        AppState<br>
-        Theme<br>
-    Features<br>
-        Models<br>
-        Support<br>
-        Views<br>
+Creates an app that can switch between multiple websites linked to a word.
 
 # EOF
 

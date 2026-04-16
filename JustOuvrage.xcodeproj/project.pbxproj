@@ -23,14 +23,14 @@
 			path = Core;
 			sourceTree = "<group>";
 		};
-		0A16CC8E2F8F45BF0015C13A /* DesignSystem */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = DesignSystem;
-			sourceTree = "<group>";
-		};
 		0A16CC9C2F8F47220015C13A /* Features */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = Features;
+			sourceTree = "<group>";
+		};
+		0AA05C232F90CDBA00E3CCBE /* System */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = System;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -49,7 +49,7 @@
 		0A16CBE22F8F3DA40015C13A = {
 			isa = PBXGroup;
 			children = (
-				0A16CC8E2F8F45BF0015C13A /* DesignSystem */,
+				0AA05C232F90CDBA00E3CCBE /* System */,
 				0A16CC8D2F8F45B70015C13A /* Core */,
 				0A16CC9C2F8F47220015C13A /* Features */,
 				0A16CC882F8F447E0015C13A /* README.md */,
@@ -75,8 +75,8 @@
 			);
 			fileSystemSynchronizedGroups = (
 				0A16CC8D2F8F45B70015C13A /* Core */,
-				0A16CC8E2F8F45BF0015C13A /* DesignSystem */,
 				0A16CC9C2F8F47220015C13A /* Features */,
+				0AA05C232F90CDBA00E3CCBE /* System */,
 			);
 			name = JustOuvrage;
 			packageProductDependencies = (
