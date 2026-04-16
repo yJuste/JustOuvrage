@@ -7,7 +7,7 @@
 
 /// An interface to categorize the languages.
 /// [ISO 639-1] + \_ + [ISO 3166]
-enum Language: String, Codable {
+enum Language: String, Codable, CaseIterable {
 
 	case en_US
 	case en_GB

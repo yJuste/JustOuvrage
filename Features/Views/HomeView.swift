@@ -10,10 +10,21 @@ import SwiftUI
 /// A view where all the cards are displayed.
 struct HomeView: View {
 	
-	let filteredCards: [Card]
+	let cards: [Card]
 	
-	@Binding var showExpand: Bool
-	@Binding var search: String
+	@State private var showExpand: Bool = false
+	@State private var search: String = ""
+	
+	var filteredCards: [Card] {
+		if search.isEmpty {
+			return cards
+		} else {
+			return cards.filter {
+				$0.name.localizedCaseInsensitiveContains(search)
+				|| $0.definition.localizedCaseInsensitiveContains(search)
+			}
+		}
+	}
 	
 	var body: some View {
 		List(filteredCards) { card in
@@ -25,7 +36,7 @@ struct HomeView: View {
 								.font(.headline)
 							
 							Spacer()
-
+							
 							Text(card.definition)
 								.font(.subheadline)
 								.foregroundStyle(.secondary)
@@ -39,19 +50,40 @@ struct HomeView: View {
 					}
 				}
 				if showExpand {
-						Text("No way it works")
+					Text("No way it works")
 				}
 			}
 			.listRowInsets(EdgeInsets(top: 11, leading: 15, bottom: 11, trailing: 15))
 		}
 		.listStyle(.plain)
-		.searchable(text: $search, placement: .sidebar, prompt: "Search words...")
+		.toolbar {
+			ToolbarItem(placement: .bottomBar) {
+				Button {
+					print("plus")
+				} label: {
+					Image(systemName: "flag.pattern.checkered.2.crossed")
+				}
+			}
+			
+			ToolbarSpacer(.fixed, placement: .bottomBar)
+			DefaultToolbarItem(kind: .search, placement: .bottomBar)
+			ToolbarSpacer(.fixed, placement: .bottomBar)
+			
+			ToolbarItem(placement: .bottomBar) {
+				Button {
+					//
+				} label: {
+					Image(systemName: "circle.badge.plus")
+				}
+			}
+		}
+		.searchable(text: $search, prompt: "Search words...")
 	}
 }
 
 #Preview {
 	
-	let languages: [Language] = [.en_US, .en_GB, .fr_FR, .es_ES]
+	let languages: [Language] = Language.allCases
 
 	let cards: [Card] = (1...20).map { i in
 		Card(name: "Words \(i)", definition: "Definition \(i)", language: languages[i % languages.count])
@@ -66,7 +98,7 @@ struct HomeView: View {
 		
 		var body: some View {
 			NavigationStack {
-				HomeView(filteredCards: cards, showExpand: $showExpand, search: $search)
+				HomeView(cards: cards)
 			}
 		}
 	}

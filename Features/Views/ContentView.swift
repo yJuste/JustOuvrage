@@ -12,14 +12,11 @@ import SwiftData
 struct ContentView: View {
 	
 	@Environment(\.modelContext) private var context
-
-	@State private var search: String = ""
 	@State private var showSafariExtension: Bool = false
-	@State private var showExpand: Bool = false
 	
 #if DEBUG
 	var cards: [Card] {
-		let languages: [Language] = [.en_US, .en_GB, .fr_FR, .es_ES]
+		let languages: [Language] = Language.allCases
 		
 		return (1...20).map { i in
 			Card(name: "Words \(i)", definition: "Definition \(i)", language: languages[i % languages.count])
@@ -29,22 +26,11 @@ struct ContentView: View {
 	@Query(sort: \Card.creationDate, order: .reverse) var cards: [Card]
 #endif
 	
-	var filteredCards: [Card] {
-		if search.isEmpty {
-			return cards
-		} else {
-			return cards.filter {
-				$0.name.localizedCaseInsensitiveContains(search)
-				|| $0.definition.localizedCaseInsensitiveContains(search)
-			}
-		}
-	}
-	
 	var body: some View {
-		NavigationView {
+		NavigationStack {
 			List {
 				NavigationLink {
-					HomeView(filteredCards: filteredCards, showExpand: $showExpand, search: $search)
+					HomeView(cards: cards)
 				} label: {
 					Label("Every Cards", systemImage: "menucard.fill")
 				}

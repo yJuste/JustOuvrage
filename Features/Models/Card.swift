@@ -10,9 +10,8 @@ import Foundation
 
 /// A Model for a Card.
 /// External Dependencies: Language
-@Model class Card: Identifiable {
+@Model class Card {
 
-	var id = UUID()
 	var name: String
 	var definition: String
 	var pronunciation: String = ""
