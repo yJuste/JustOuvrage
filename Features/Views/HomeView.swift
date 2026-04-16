@@ -1,5 +1,5 @@
 //
-//  Home.swift
+//  HomeView.swift
 //  JustOuvrage
 //
 //  Created by Jules Longin on 4/16/26.
@@ -8,7 +8,7 @@
 import SwiftUI
 
 /// A view where all the cards are displayed.
-struct Home: View {
+struct HomeView: View {
 	
 	let filteredCards: [Card]
 	
@@ -51,17 +51,10 @@ struct Home: View {
 
 #Preview {
 	
-	let languages: [Language] = [
-		.en_US,
-		.en_GB,
-		.fr_FR,
-		.es_ES]
-	
+	let languages: [Language] = [.en_US, .en_GB, .fr_FR, .es_ES]
+
 	let cards: [Card] = (1...20).map { i in
-		Card(
-			name: "Words \(i)",
-			definition: "Definition \(i)",
-			language: languages[i % languages.count])
+		Card(name: "Words \(i)", definition: "Definition \(i)", language: languages[i % languages.count])
 	}
 	
 	struct HomePreview: View {
@@ -73,10 +66,7 @@ struct Home: View {
 		
 		var body: some View {
 			NavigationStack {
-				Home(
-					filteredCards: cards,
-					showExpand: $showExpand,
-					search: $search)
+				HomeView(filteredCards: cards, showExpand: $showExpand, search: $search)
 			}
 		}
 	}

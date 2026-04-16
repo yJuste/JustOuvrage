@@ -12,30 +12,22 @@ import SwiftData
 struct ContentView: View {
 	
 	@Environment(\.modelContext) private var context
-	
-#if DEBUG
-	var cards: [Card] {
-		let languages: [Language] = [
-			.en_US,
-			.en_GB,
-			.fr_FR,
-			.es_ES]
-		
-		return (1...20).map { i in
-			Card(
-				name: "Words \(i)",
-				definition: "Definition \(i)",
-				language: languages[i % languages.count])
-		}
-	}
-#else
-	@Query(sort: \Card.creationDate, order: .reverse)
-	var cards: [Card]
-#endif
-	
+
 	@State private var search: String = ""
 	@State private var showSafariExtension: Bool = false
 	@State private var showExpand: Bool = false
+	
+#if DEBUG
+	var cards: [Card] {
+		let languages: [Language] = [.en_US, .en_GB, .fr_FR, .es_ES]
+		
+		return (1...20).map { i in
+			Card(name: "Words \(i)", definition: "Definition \(i)", language: languages[i % languages.count])
+		}
+	}
+#else
+	@Query(sort: \Card.creationDate, order: .reverse) var cards: [Card]
+#endif
 	
 	var filteredCards: [Card] {
 		if search.isEmpty {
@@ -52,7 +44,7 @@ struct ContentView: View {
 		NavigationView {
 			List {
 				NavigationLink {
-					Home(filteredCards: filteredCards, showExpand: $showExpand, search: $search)
+					HomeView(filteredCards: filteredCards, showExpand: $showExpand, search: $search)
 				} label: {
 					Label("Every Cards", systemImage: "menucard.fill")
 				}
@@ -63,7 +55,7 @@ struct ContentView: View {
 				}
 				Section {
 					NavigationLink {
-						SafariExtensionView(showSafariExtension: $showSafariExtension)
+						SettingsView()
 					} label: {
 						Label("Settings", systemImage: "gearshape.fill")
 					}
