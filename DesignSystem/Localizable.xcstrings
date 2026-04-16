@@ -1,0 +1,32 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "Every Cards" : {
+
+    },
+    "JustOuvrage" : {
+
+    },
+    "No way it works" : {
+
+    },
+    "Open Design+Code in Safari" : {
+
+    },
+    "Safari Extension" : {
+
+    },
+    "Search words..." : {
+      "comment" : "Look for a word",
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Chercher des mots…"
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.2"
+}
