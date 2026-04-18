@@ -16,8 +16,8 @@ struct HomeView: View {
 	@State private var showMenu: Bool = false
 	@State private var search: String = ""
 	@State private var sortLanguage = [
-		SortDescriptor(\Card.language.rawValue),
-		SortDescriptor(\Card.definition),
+		SortDescriptor(\Card.frontLanguageCode.rawValue),
+		SortDescriptor(\Card.backEntry),
 	]
 
 	var filteredCards: [Card] {
@@ -25,9 +25,8 @@ struct HomeView: View {
 			return cards
 		} else {
 			return cards.filter {
-				$0.name.localizedCaseInsensitiveContains(search)
-				|| $0.definition.localizedCaseInsensitiveContains(search)
-				|| $0.context.localizedCaseInsensitiveContains(search)
+				$0.frontEntry.localizedCaseInsensitiveContains(search)
+				|| $0.backEntry.localizedCaseInsensitiveContains(search)
 			}
 		}
 	}
@@ -39,15 +38,15 @@ struct HomeView: View {
 					showExpand.toggle()
 				} label: {
 					VStack(alignment: .leading, spacing: 5) {
-						Text(card.name)
+						Text(card.frontEntry)
 							.font(.subheadline)
-						Text(card.definition)
+						Text(card.backEntry)
 							.font(.subheadline)
 							.foregroundStyle(.gray)
 					}
 				}
 				if showExpand {
-					Text(card.context)
+					Text(card.backEntry)
 						.font(.subheadline)
 				}
 			}
@@ -61,7 +60,7 @@ struct HomeView: View {
 					Button {
 						print("Last 50")
 					} label: {
-						Label("Last 50", systemImage: "50")
+						Label("Last 50", systemImage: "plus")
 					}
 				} label: {
 					Image(systemName: "flag.pattern.checkered.2.crossed")
@@ -118,10 +117,8 @@ struct HomeView: View {
 
 #Preview {
 	
-	let languages: [Language] = Language.allCases
-
 	let cards: [Card] = (1...5).map { i in
-		Card(name: "Words \(i)", definition: "Definition \(i)", language: languages[i % languages.count])
+			Card(frontEntry: "Front \(i)", backEntry: "Back \(i)", frontLanguageCode: .en_US, backLanguageCode: .en_US)
 	}
 	
 	struct HomePreview: View {
@@ -140,3 +137,4 @@ struct HomeView: View {
 	
 	return HomePreview(cards: cards)
 }
+

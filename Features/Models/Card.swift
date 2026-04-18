@@ -9,21 +9,27 @@ import SwiftData
 import Foundation
 
 /// A Model for a Card.
-/// External Dependencies: Language
-@Model final class Card {
-
-	var name: String
-	var definition: String
-	var language: Language
-	var pronunciation: String = ""
-	var context: String = ""
-
-	private(set) var leitnerScore: Int = 1
-	private(set) var creationDate: Date = Date()
-
-	init(name: String, definition: String, language: Language = .en_US) {
-		self.name = name
-		self.definition = definition
-		self.language = language
+/// External Dependencies: LanguageCode
+@Model
+final class Card {
+	
+	var frontEntry: String
+	var backEntry: String
+	var frontLanguageCode: LanguageCode
+	var backLanguageCode: LanguageCode
+	
+	var deck: Deck?
+	
+	private(set) var leitnerScore: Int
+	private(set) var createdAt: Date
+	
+	init(frontEntry: String, backEntry: String, frontLanguageCode: LanguageCode, backLanguageCode: LanguageCode) {
+		self.frontEntry = frontEntry
+		self.backEntry = backEntry
+		self.frontLanguageCode = frontLanguageCode
+		self.backLanguageCode = backLanguageCode
+		self.deck = nil
+		self.leitnerScore = 1
+		self.createdAt = .now
 	}
 }

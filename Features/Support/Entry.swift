@@ -8,34 +8,41 @@
 import SwiftUI
 
 /// A view that represents a custom TextField
-struct Entry: View {
+struct SplendidField: View {
 	
 	let title: String
 	@Binding var text: String
-	@FocusState var isTyping: Bool
+	@FocusState private var isTyping: Bool
+	let shape = RoundedRectangle(cornerRadius: 14)
 	
 	var body: some View {
 		ZStack(alignment: .leading) {
-			TextField("", text: $text).padding(.leading)
-				.frame(height: 55).focused($isTyping)
+			TextField("", text: $text)
+				.padding(.horizontal, 14)
+				.frame(height: 55)
+				.focused($isTyping)
 				.background(
-					isTyping
-					? Color.accentColor
-					: Color.primary, in: RoundedRectangle(cornerRadius: 14).stroke(lineWidth: 2)
+					isTyping ? Color.accentColor : Color.primary, in: shape.stroke(lineWidth: 2)
 				)
-			Text(title).padding(.horizontal, 5)
-				.background(Color(.systemBackground).opacity(isTyping || !text.isEmpty ? 1 : 0))
+			Text(title)
+				.padding(.horizontal, 5)
+				.padding(.vertical, -3)
+				.background(
+					shape.fill(Color(.systemBackground).opacity(isTyping || !text.isEmpty ? 1 : 0))
+				)
 				.foregroundStyle(isTyping ? Color.accentColor : Color.primary)
-				.padding(.leading).offset(y: isTyping || !text.isEmpty ? -27 : 0)
-				.onTapGesture {
-					isTyping.toggle()
-				}
+				.padding(.leading)
+				.offset(y: isTyping || !text.isEmpty ? -27 : 0)
 		}
-		.animation(.linear(duration: 0.2), value: isTyping)
+		.animation(.easeOut(duration: 0.15), value: isTyping)
+		.onTapGesture {
+			isTyping.toggle()
+		}
 	}
 }
 
 #Preview {
+	
 	@Previewable @State var name: String = ""
-	Entry(title: "Name", text: $name)
+	SplendidField(title: "Name", text: $name)
 }

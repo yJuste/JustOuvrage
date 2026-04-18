@@ -7,8 +7,9 @@
 
 import Foundation
 
+/// A built-in recorder.
 struct Recording: Identifiable, Equatable {
-
+	
 	let id = UUID()
 	let url: URL
 	let date: Date

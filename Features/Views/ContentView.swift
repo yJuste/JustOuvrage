@@ -16,14 +16,12 @@ struct ContentView: View {
 	
 #if DEBUG
 	var cards: [Card] {
-		let languages: [Language] = Language.allCases
-		
 		return (1...20).map { i in
-			Card(name: "Words \(i)", definition: "Definition \(i)", language: languages[i % languages.count])
+			Card(frontEntry: "Front \(i)", backEntry: "Back \(i)", frontLanguageCode: .en_US, backLanguageCode: .en_US)
 		}
 	}
 #else
-	@Query(sort: \Card.creationDate, order: .reverse) var cards: [Card]
+	//@Query(sort: \Card.creationDate, order: .reverse) var cards: [Card]
 #endif
 	
 	var body: some View {
