@@ -5,3 +5,6 @@ DARK_BLUE:
 	Light_Blue: 46 74 125
 
 LIGHT_BLUE:
+
+DARK_GREEN:
+	Dark_Green:

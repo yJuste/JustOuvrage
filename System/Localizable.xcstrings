@@ -1,13 +1,43 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "" : {
+
+    },
+    "Date" : {
+
+    },
+    "English" : {
+
+    },
     "Every Cards" : {
+
+    },
+    "Family Name" : {
+
+    },
+    "Favorites" : {
+
+    },
+    "French" : {
+
+    },
+    "Given Name" : {
+
+    },
+    "Hello" : {
 
     },
     "JustOuvrage" : {
 
     },
-    "No way it works" : {
+    "Languages" : {
+
+    },
+    "Last 50" : {
+
+    },
+    "Name" : {
 
     },
     "Open Design+Code in Safari" : {
@@ -16,16 +46,8 @@
     "Safari Extension" : {
 
     },
-    "Search words..." : {
-      "comment" : "Look for a word",
-      "localizations" : {
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Chercher des mots…"
-          }
-        }
-      }
+    "Search" : {
+
     },
     "Settings" : {
 

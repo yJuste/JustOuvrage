@@ -10,17 +10,16 @@ import Foundation
 
 /// A Model for a Card.
 /// External Dependencies: Language
-@Model class Card {
+@Model final class Card {
 
 	var name: String
 	var definition: String
-	var pronunciation: String = ""
-	var context: String = "This card is super cool."
 	var language: Language
-	var leitnerScore: Int = 1
+	var pronunciation: String = ""
+	var context: String = ""
 
+	private(set) var leitnerScore: Int = 1
 	private(set) var creationDate: Date = Date()
-	private(set) var cardNumber: Int = 1
 
 	init(name: String, definition: String, language: Language = .en_US) {
 		self.name = name
