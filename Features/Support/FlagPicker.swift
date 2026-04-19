@@ -39,3 +39,16 @@ struct FlagPicker: View {
 		.frame(maxWidth: .infinity, maxHeight: .infinity)
 	}
 }
+
+#Preview {
+	
+	struct PreviewWrapper: View {
+		
+		@State private var language: Language = .es_ES
+		
+		var body: some View {
+			FlagPicker(selected: $language)
+		}
+	}
+	return PreviewWrapper()
+}

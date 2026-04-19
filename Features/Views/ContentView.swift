@@ -25,7 +25,7 @@ struct ContentView: View {
 				NavigationLink {
 					HomeView()
 				} label: {
-					Label("Every Cards", systemImage: "menucard.fill")
+					Label("Every Card", systemImage: "menucard.fill")
 				}
 				NavigationLink {
 					SafariExtensionView(showSafariExtension: $showSafariExtension)

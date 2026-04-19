@@ -19,7 +19,13 @@
     "English" : {
 
     },
-    "Every Cards" : {
+    "Entries cannot be empty." : {
+
+    },
+    "Error" : {
+
+    },
+    "Every Card" : {
 
     },
     "Favorites" : {
@@ -40,6 +46,9 @@
     "Name" : {
 
     },
+    "OK" : {
+
+    },
     "Open Design+Code in Safari" : {
 
     },
@@ -50,6 +59,15 @@
 
     },
     "Settings" : {
+
+    },
+    "Switch to ES" : {
+
+    },
+    "Switch to FR" : {
+
+    },
+    "Test UserDefaults" : {
 
     }
   },

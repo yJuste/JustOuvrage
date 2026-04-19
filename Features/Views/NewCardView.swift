@@ -16,8 +16,10 @@ struct NewCardView: View {
 	@State private var backEntry: String = ""
 	@State private var frontLanguage: Language = .en_US
 	@State private var backLanguage: Language = .en_US
+	
 	@State private var showFront: Bool = false
 	@State private var showBack: Bool = false
+	@State private var showAlert: Bool = false
 	
 	@Environment(\.modelContext) var context
 	@Environment(\.dismiss) var dismiss
@@ -70,8 +72,11 @@ struct NewCardView: View {
 				}
 				ToolbarItem(placement: .topBarTrailing) {
 					Button {
-						let card = Card(frontEntry: frontEntry, backEntry: backEntry, frontLanguage: frontLanguage, backLanguage: backLanguage)
-						context.insert(card)
+						if frontEntry.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+							|| backEntry.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+							showAlert.toggle()
+						}
+						context.insert(Card(frontEntry: frontEntry, backEntry: backEntry, frontLanguage: frontLanguage, backLanguage: backLanguage))
 						dismiss()
 					} label: {
 						Label("Done", systemImage: "checkmark")
@@ -79,6 +84,11 @@ struct NewCardView: View {
 					.buttonStyle(.borderedProminent)
 				}
 			}
+		}
+		.alert("Error", isPresented: $showAlert) {
+			Button("OK", role: .cancel) { }
+		} message: {
+			Text("Entries cannot be empty.")
 		}
 	}
 }

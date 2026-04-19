@@ -8,7 +8,7 @@
 import SwiftUI
 import SwiftData
 
-/// Main of the App JustOuvrage
+/// Main of the App JustOuvrage.
 @main
 struct JustOuvrageApp: App {
 	var body: some Scene {
