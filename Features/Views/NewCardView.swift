@@ -12,17 +12,19 @@ import SwiftData
 /// External Dependencies: Card, FlagPicker, SplendidField
 struct NewCardView: View {
 	
+	@State private var preferences = Preferences.unique
+	
+	@Environment(\.modelContext) var context
+	@Environment(\.dismiss) var dismiss
+	
 	@State private var frontEntry: String = ""
 	@State private var backEntry: String = ""
-	@State private var frontLanguage: Language = .en_US
-	@State private var backLanguage: Language = .en_US
+	@State private var frontLanguage: Language = Preferences.unique.frontLanguage
+	@State private var backLanguage: Language = Preferences.unique.backLanguage
 	
 	@State private var showFront: Bool = false
 	@State private var showBack: Bool = false
 	@State private var showAlert: Bool = false
-	
-	@Environment(\.modelContext) var context
-	@Environment(\.dismiss) var dismiss
 	
 	var body: some View {
 		NavigationStack {
@@ -75,7 +77,10 @@ struct NewCardView: View {
 						if frontEntry.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
 							|| backEntry.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
 							showAlert.toggle()
+							return
 						}
+						preferences.frontLanguage = frontLanguage
+						preferences.backLanguage = backLanguage
 						context.insert(Card(frontEntry: frontEntry, backEntry: backEntry, frontLanguage: frontLanguage, backLanguage: backLanguage))
 						dismiss()
 					} label: {
@@ -85,10 +90,10 @@ struct NewCardView: View {
 				}
 			}
 		}
-		.alert("Error", isPresented: $showAlert) {
-			Button("OK", role: .cancel) { }
+		.alert("Missing Information", isPresented: $showAlert) {
+			Button("Got it", role: .cancel) { }
 		} message: {
-			Text("Entries cannot be empty.")
+			Text("Please fill in both sides before saving.")
 		}
 	}
 }

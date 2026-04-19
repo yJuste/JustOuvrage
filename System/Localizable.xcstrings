@@ -19,12 +19,6 @@
     "English" : {
 
     },
-    "Entries cannot be empty." : {
-
-    },
-    "Error" : {
-
-    },
     "Every Card" : {
 
     },
@@ -32,6 +26,9 @@
 
     },
     "French" : {
+
+    },
+    "Got it" : {
 
     },
     "JustOuvrage" : {
@@ -43,13 +40,16 @@
     "Last 50" : {
 
     },
+    "Missing Information" : {
+
+    },
     "Name" : {
 
     },
-    "OK" : {
+    "Open Design+Code in Safari" : {
 
     },
-    "Open Design+Code in Safari" : {
+    "Please fill in both sides before saving." : {
 
     },
     "Safari Extension" : {
@@ -59,15 +59,6 @@
 
     },
     "Settings" : {
-
-    },
-    "Switch to ES" : {
-
-    },
-    "Switch to FR" : {
-
-    },
-    "Test UserDefaults" : {
 
     }
   },

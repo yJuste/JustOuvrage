@@ -11,8 +11,8 @@ import SwiftUI
 /// External Dependencies: Language
 struct FlagPicker: View {
 	
-	@Binding var selected: Language
 	@Environment(\.dismiss) private var dismiss
+	@Binding var selected: Language
 	
 	var body: some View {
 		ScrollView {
