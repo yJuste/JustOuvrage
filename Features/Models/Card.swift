@@ -9,25 +9,25 @@ import SwiftData
 import Foundation
 
 /// A Model for a Card.
-/// External Dependencies: LanguageCode
+/// External Dependencies: Language
 @Model
 final class Card {
 	
 	var frontEntry: String
 	var backEntry: String
-	var frontLanguageCode: LanguageCode
-	var backLanguageCode: LanguageCode
+	var frontLanguage: Language
+	var backLanguage: Language
 	
 	var deck: Deck?
 	
 	private(set) var leitnerScore: Int
 	private(set) var createdAt: Date
 	
-	init(frontEntry: String, backEntry: String, frontLanguageCode: LanguageCode, backLanguageCode: LanguageCode) {
+	init(frontEntry: String, backEntry: String, frontLanguage: Language, backLanguage: Language) {
 		self.frontEntry = frontEntry
 		self.backEntry = backEntry
-		self.frontLanguageCode = frontLanguageCode
-		self.backLanguageCode = backLanguageCode
+		self.frontLanguage = frontLanguage
+		self.backLanguage = backLanguage
 		self.deck = nil
 		self.leitnerScore = 1
 		self.createdAt = .now

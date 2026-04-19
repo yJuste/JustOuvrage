@@ -8,27 +8,22 @@
 import SwiftUI
 import SwiftData
 
-/// The main View where everything comes in.
+/// The main View where everything comes through.
+/// External Dependencies: Card, HomeView, SafariExtensionView, SettingsView
 struct ContentView: View {
 	
 	@Environment(\.modelContext) private var context
-	@State private var showSafariExtension: Bool = false
+	@Query(sort: \Card.createdAt, order: .reverse) var cards: [Card]
 	
 #if DEBUG
-	var cards: [Card] {
-		return (1...20).map { i in
-			Card(frontEntry: "Front \(i)", backEntry: "Back \(i)", frontLanguageCode: .en_US, backLanguageCode: .en_US)
-		}
-	}
-#else
-	//@Query(sort: \Card.creationDate, order: .reverse) var cards: [Card]
+	@State private var showSafariExtension: Bool = false
 #endif
 	
 	var body: some View {
 		NavigationStack {
 			List {
 				NavigationLink {
-					HomeView(cards: cards)
+					HomeView()
 				} label: {
 					Label("Every Cards", systemImage: "menucard.fill")
 				}

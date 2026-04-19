@@ -1,5 +1,5 @@
 //
-//  Entry.swift
+//  SplendidField.swift
 //  JustOuvrage
 //
 //  Created by Jules Longin on 4/18/26.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-/// A view that represents a custom TextField
+/// A nice looking custom TextField.
 struct SplendidField: View {
 	
 	let title: String

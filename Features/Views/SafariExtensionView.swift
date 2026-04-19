@@ -10,9 +10,9 @@ import SwiftUI
 /// A view that can browse in Safari.
 /// External Dependencies: SFSafariViewWrapper.
 struct SafariExtensionView: View {
-
+	
 	@Binding var showSafariExtension: Bool
-
+	
 	var body: some View {
 		Text("Open Design+Code in Safari")
 			.padding()
@@ -29,7 +29,7 @@ struct SafariExtensionView: View {
 }
 
 #Preview {
-
+	
 	struct SafariExtensionPreview: View {
 		@State var showSafariExtension: Bool = false
 		var body: some View {

@@ -6,36 +6,28 @@
 //
 
 import SwiftUI
+import SwiftData
 
 /// A view where all the cards are displayed.
+/// External Dependencies: Card, NewCardView
 struct HomeView: View {
-
-	let cards: [Card]
-
-	@State private var showExpand: Bool = false
-	@State private var showMenu: Bool = false
+	
+	@Query(sort: \Card.createdAt, order: .reverse) private var cards: [Card]
 	@State private var search: String = ""
-	@State private var sortLanguage = [
-		SortDescriptor(\Card.frontLanguageCode.rawValue),
-		SortDescriptor(\Card.backEntry),
-	]
-
-	var filteredCards: [Card] {
-		if search.isEmpty {
-			return cards
-		} else {
-			return cards.filter {
-				$0.frontEntry.localizedCaseInsensitiveContains(search)
-				|| $0.backEntry.localizedCaseInsensitiveContains(search)
-			}
-		}
-	}
-
+	@State private var showCreationCardSheet: Bool = false
+	
 	var body: some View {
-		List(filteredCards) { card in
+		List(cards) { card in
 			VStack(alignment: .leading) {
 				Button {
-					showExpand.toggle()
+#if DEBUG
+					print("FrontEntry: \(card.frontEntry)")
+					print("BackEntry: \(card.backEntry)")
+					print("FrontLanguage: \(card.frontLanguage)")
+					print("BackLanguage: \(card.backLanguage)")
+					print("LeitnerScore: \(card.leitnerScore)")
+					print("Date created: \(card.createdAt)")
+#endif
 				} label: {
 					VStack(alignment: .leading, spacing: 5) {
 						Text(card.frontEntry)
@@ -44,10 +36,6 @@ struct HomeView: View {
 							.font(.subheadline)
 							.foregroundStyle(.gray)
 					}
-				}
-				if showExpand {
-					Text(card.backEntry)
-						.font(.subheadline)
 				}
 			}
 			.listRowInsets(EdgeInsets(top: 11, leading: 15, bottom: 11, trailing: 15))
@@ -72,9 +60,9 @@ struct HomeView: View {
 			ToolbarItem(placement: .bottomBar) {
 				Menu {
 					Button {
-						print("Settings")
+						showCreationCardSheet.toggle()
 					} label: {
-						Label("Settings", systemImage: "gear")
+						Label("Add A New Card", systemImage: "plus")
 					}
 					Section {
 						Button {
@@ -112,29 +100,31 @@ struct HomeView: View {
 				}
 			}
 		}
+		.sheet(isPresented: $showCreationCardSheet) {
+			NewCardView()
+		}
 	}
 }
 
 #Preview {
-	
-	let cards: [Card] = (1...5).map { i in
-			Card(frontEntry: "Front \(i)", backEntry: "Back \(i)", frontLanguageCode: .en_US, backLanguageCode: .en_US)
+	do {
+		let container = try ModelContainer(for: Card.self, configurations: ModelConfiguration(isStoredInMemoryOnly: true))
+		let context = container.mainContext
+		context.insert(Card(
+			frontEntry: "dig in",
+			backEntry: "mangez!",
+			frontLanguage: .en_US,
+			backLanguage: .fr_FR
+		))
+		context.insert(Card(
+			frontEntry: "hello",
+			backEntry: "bonjour",
+			frontLanguage: .en_US,
+			backLanguage: .fr_FR
+		))
+		return HomeView()
+			.modelContainer(container)
+	}  catch {
+		return Text("Failed to create preview: \(error.localizedDescription)")
 	}
-	
-	struct HomePreview: View {
-
-		@State var search: String = ""
-		@State var showExpand: Bool = false
-		
-		let cards: [Card]
-		
-		var body: some View {
-			NavigationStack {
-				HomeView(cards: cards)
-			}
-		}
-	}
-	
-	return HomePreview(cards: cards)
 }
-
