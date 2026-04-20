@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Observation
 
 //	--- ESSENTIAL --------------------------------------------------------------
 
@@ -21,8 +22,7 @@ enum PreferencesKey: String {
 
 /// A singleton interface that stores user preferences.
 /// External Dependencies: PreferencesKey
-@Observable
-final class Preferences {
+@Observable final class Preferences {
 	
 	static let unique = Preferences()
 	

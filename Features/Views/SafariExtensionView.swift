@@ -11,7 +11,7 @@ import SwiftUI
 /// External Dependencies: SFSafariViewWrapper.
 struct SafariExtensionView: View {
 	
-	@Binding var showSafariExtension: Bool
+	@State private var showSafariExtension: Bool = false
 	
 	var body: some View {
 		Text("Open Design+Code in Safari")
@@ -33,7 +33,7 @@ struct SafariExtensionView: View {
 	struct SafariExtensionPreview: View {
 		@State var showSafariExtension: Bool = false
 		var body: some View {
-			SafariExtensionView(showSafariExtension: $showSafariExtension)
+			SafariExtensionView()
 		}
 	}
 	return SafariExtensionPreview()

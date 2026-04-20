@@ -12,14 +12,46 @@ import SwiftData
 /// External Dependencies: Card, HomeView, SafariExtensionView, SettingsView
 struct ContentView: View {
 	
-	@Environment(\.modelContext) private var context
-	@Query(sort: \Card.createdAt, order: .reverse) var cards: [Card]
-	
-#if DEBUG
-	@State private var showSafariExtension: Bool = false
-#endif
+	@State private var search: String = ""
 	
 	var body: some View {
+		if #available(iOS 26, *) {
+			NativeTabView()
+		} else {
+			NativeTabView()
+		}
+	}
+}
+
+/// An extension that creates the native tab view nowadays. (iOS 26.4.1)
+extension ContentView {
+	
+	@ViewBuilder func NativeTabView() -> some View {
+		
+		TabView {
+			
+			Tab("Time trial", systemImage: "flag.pattern.checkered.2.crossed") {
+				EmptyView()
+			}
+			Tab("Record session", systemImage: "rectangle.dashed.badge.record") {
+				EmptyView()
+			}
+			Tab("Library", systemImage: "rectangle.stack.fill") {
+				NavigationStack {
+					HomeView()
+				}
+			}
+			Tab(role: .search) {
+				SearchView(search: $search)
+			}
+		}
+	}
+}
+
+/// An extension that creates a basic Interface.
+extension ContentView {
+	
+	@ViewBuilder func BasicTabView() -> some View {
 		NavigationStack {
 			List {
 				NavigationLink {
@@ -28,7 +60,7 @@ struct ContentView: View {
 					Label("Every Card", systemImage: "menucard.fill")
 				}
 				NavigationLink {
-					SafariExtensionView(showSafariExtension: $showSafariExtension)
+					SafariExtensionView()
 				} label: {
 					Label("Safari Extension", systemImage: "safari.fill")
 				}
@@ -46,7 +78,5 @@ struct ContentView: View {
 }
 
 #Preview {
-	let container = try! ModelContainer(for: Card.self)
     ContentView()
-		.modelContainer(container)
 }

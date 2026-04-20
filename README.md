@@ -6,6 +6,8 @@ Credits for:
 
 SuCodee - Entry
 
+For creating your own Modifier. Use @resultBuilder with API DSL.
+
 # EOF
 
 Created by Jules Longin in April 16th 2026<br>

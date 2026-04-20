@@ -10,8 +10,7 @@ import Foundation
 
 /// A Model for a Card.
 /// External Dependencies: Language
-@Model
-final class Card {
+@Model final class Card {
 	
 	var frontEntry: String
 	var backEntry: String

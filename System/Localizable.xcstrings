@@ -40,6 +40,9 @@
     "Last 50" : {
 
     },
+    "Library" : {
+
+    },
     "Missing Information" : {
 
     },
@@ -52,13 +55,28 @@
     "Please fill in both sides before saving." : {
 
     },
+    "Recents" : {
+
+    },
+    "Record session" : {
+
+    },
     "Safari Extension" : {
 
     },
     "Search" : {
 
     },
+    "Select" : {
+
+    },
     "Settings" : {
+
+    },
+    "Supprimer (%lld)" : {
+
+    },
+    "Time trial" : {
 
     }
   },
