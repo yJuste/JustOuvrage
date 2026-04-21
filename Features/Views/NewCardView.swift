@@ -16,6 +16,7 @@ struct NewCardView: View {
 	
 	@Environment(\.modelContext) var context
 	@Environment(\.dismiss) var dismiss
+	@Environment(\.self) private var env
 	
 	@Query(sort: \Card.createdAt, order: .reverse) private var cards: [Card]
 	
@@ -31,84 +32,104 @@ struct NewCardView: View {
 	
 	var body: some View {
 		NavigationStack {
-			VStack(spacing: 50) {
-				HStack(spacing: 40) {
-					Button {
-						showFront.toggle()
-					} label: {
-						Image(frontLanguage.flagAsset)
-							.resizable()
-							.scaledToFill()
-							.frame(width: 60, height: 60)
-							.clipShape(Circle())
+			ScrollViewReader { proxy in
+				ScrollView {
+					Spacer(minLength: 75)
+					VStack(spacing: 50) {
+						HStack(spacing: 40) {
+							Button {
+								showFront.toggle()
+							} label: {
+								Image(frontLanguage.flagAsset)
+									.resizable()
+									.scaledToFill()
+									.frame(width: 60, height: 60)
+									.clipShape(Circle())
+							}
+							.popover(isPresented: $showFront) {
+								FlagPicker(selected: $frontLanguage)
+									.padding(25)
+									.presentationCompactAdaptation(.none)
+							}
+							Image(systemName: "arrow.left.arrow.right")
+							Button {
+								showBack.toggle()
+							} label: {
+								Image(backLanguage.flagAsset)
+									.resizable()
+									.scaledToFill()
+									.frame(width: 60, height: 60)
+									.clipShape(Circle())
+							}
+							.popover(isPresented: $showBack) {
+								FlagPicker(selected: $backLanguage)
+									.padding(20)
+									.presentationCompactAdaptation(.none)
+							}
+						}
+						VStack(spacing: 50) {
+							SplendidField(title: "Front Entry", text: $frontEntry)
+								.id(FocusField.front)
+								.focused($focusField, equals: .front)
+							SplendidField(title: "Back Entry", text: $backEntry)
+								.id(FocusField.back)
+								.focused($focusField, equals: .back)
+						}
 					}
-					.popover(isPresented: $showFront) {
-						FlagPicker(selected: $frontLanguage)
-							.padding(25)
-							.presentationCompactAdaptation(.none)
+					.padding(40)
+					.toolbar {
+						ToolbarItem(placement: .topBarLeading) {
+							Button {
+								frontEntry = ""
+								backEntry = ""
+								focusField = nil
+								dismiss()
+							} label: {
+								Text("Cancel")
+							}
+						}
+						ToolbarItem(placement: .principal) {
+							Text("\(cards.first?.frontEntry ?? "Front Entry") : \(cards.first?.backEntry ?? "Back Entry")")
+						}
+						ToolbarItem(placement: .topBarTrailing) {
+							Button {
+								addCard()
+							} label: {
+								Label("Done", systemImage: "checkmark")
+							}
+							.buttonStyle(.borderedProminent)
+						}
 					}
-					Image(systemName: "arrow.left.arrow.right")
-					Button {
-						showBack.toggle()
-					} label: {
-						Image(backLanguage.flagAsset)
-							.resizable()
-							.scaledToFill()
-							.frame(width: 60, height: 60)
-							.clipShape(Circle())
-					}
-					.popover(isPresented: $showBack) {
-						FlagPicker(selected: $backLanguage)
-							.padding(20)
-							.presentationCompactAdaptation(.none)
+					.onSubmit {
+						if focusField == .front {
+							focusField = .back
+						} else {
+							addCard()
+						}
 					}
 				}
-				VStack(spacing: 50) {
-					SplendidField(title: "Front Entry", text: $frontEntry)
-						.focused($focusField, equals: .front)
-					SplendidField(title: "Back Entry", text: $backEntry)
-						.focused($focusField, equals: .back)
+				.scrollDismissesKeyboard(.interactively)
+				.scrollIndicators(.hidden)
+				.onChange(of: focusField) {
+					guard let field = focusField else { return }
+					
+					Task { @MainActor in
+						try? await Task.sleep(for: .milliseconds(250))
+						
+						withAnimation {
+							proxy.scrollTo(field, anchor: .top)
+						}
+					}
 				}
 			}
-			.padding(40)
-			.toolbar {
-				ToolbarItem(placement: .topBarLeading) {
-					Button {
-						frontEntry = ""
-						backEntry = ""
-						focusField = nil
-						dismiss()
-					} label: {
-						Text("Cancel")
-					}
-				}
-				ToolbarItem(placement: .principal) {
-					Text("\(cards.first?.frontEntry ?? "Front Entry") : \(cards.first?.backEntry ?? "Back Entry")")
-				}
-				ToolbarItem(placement: .topBarTrailing) {
-					Button {
-						addCard()
-					} label: {
-						Label("Done", systemImage: "checkmark")
-					}
-					.buttonStyle(.borderedProminent)
-				}
+			.alert("Missing Information", isPresented: $showAlert) {
+				Button("Got it", role: .cancel) { }
+			} message: {
+				Text("Please fill in both sides before saving.")
 			}
-			.onSubmit {
-				if focusField == .front {
-					focusField = .back
-				} else {
-					addCard()
-				}
+			.onTapGesture {
+				focusField = nil
 			}
-		}
-		.alert("Missing Information", isPresented: $showAlert) {
-			Button("Got it", role: .cancel) { }
-		} message: {
-			Text("Please fill in both sides before saving.")
-		}
-		.onTapGesture {
-			focusField = nil
 		}
 	}
 	
