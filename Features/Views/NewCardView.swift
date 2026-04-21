@@ -16,7 +16,6 @@ struct NewCardView: View {
 	
 	@Environment(\.modelContext) var context
 	@Environment(\.dismiss) var dismiss
-	@Environment(\.self) private var env
 	
 	@Query(sort: \Card.createdAt, order: .reverse) private var cards: [Card]
 	
@@ -100,6 +99,7 @@ struct NewCardView: View {
 								Label("Done", systemImage: "checkmark")
 							}
 							.buttonStyle(.borderedProminent)
+							.disabled(frontEntry.isEmpty || backEntry.isEmpty)
 						}
 					}
 					.onSubmit {

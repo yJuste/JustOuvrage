@@ -34,7 +34,7 @@ extension ContentView {
 				NewCardView()
 			}
 			Tab("Trial", systemImage: "flag.pattern.checkered.2.crossed") {
-				EmptyView()
+				NewDeckView()
 			}
 			Tab("Record", systemImage: "rectangle.dashed.badge.record") {
 				EmptyView()

@@ -25,6 +25,7 @@ struct HomeView: View {
 		editMode.isEditing
 	}
 	@State private var isTogglingEditMode = false
+	@State private var showDisplay: Bool = false
 	
 	var body: some View {
 		
@@ -48,7 +49,7 @@ struct HomeView: View {
 					.tag(card)
 				}
 			}
-			.navigationTitle("Recents")
+			.navigationTitle("Library")
 			.listStyle(.plain)
 			.toolbar { toolbar }
 			.sheet(isPresented: $showNewCardSheet) {
@@ -118,6 +119,75 @@ extension HomeView {
 				}
 			}
 		}
+		ToolbarSpacer(.fixed, placement: .topBarTrailing)
+		ToolbarItem(placement: .topBarTrailing) {
+			Menu {
+				Menu {
+					Picker("Kind", selection: $showDisplay) {
+						Label("Words", systemImage: "list.bullet") // Word
+							.tag(false)
+						Label("Decks", systemImage: "square.grid.2x2.fill") // Deck
+							.tag(true)
+					}
+				} label: {
+					Label("Kind", systemImage: "square.fill.text.grid.1x2")
+				}
+				Section {
+					Button {
+						// Hide definition
+					} label: {
+						Label("Hide", systemImage: "eye")
+						Text("Visible") // Hidden with eye.slash
+							.font(.caption)
+					}
+				}
+				Section {
+					Button {
+						// sort Date
+					} label: {
+						Label("Date", systemImage: "checkmark")
+						Text("Newest to Oldest") // Oldest to Newest
+							.font(.caption)
+					}
+					Button {
+						// sort Name
+					} label: {
+						Image(systemName: "checkmark")
+							.hidden(false)
+						Text("Name")
+						Text("Ascending") // Descending
+							.font(.caption)
+					}
+				}
+				Menu {
+					Button {
+						//
+					} label: {
+						Image(systemName: "checkmark")
+							.hidden(false)
+						Text("English")
+					}
+					Button {
+						//
+					} label: {
+						Image(systemName: "checkmark")
+							.hidden(true)
+						Text("French")
+					}
+					Button {
+						//
+					} label: {
+						Image(systemName: "checkmark")
+							.hidden(false)
+						Text("Spanish")
+					}
+				} label: {
+					Label("Languages", systemImage: "bubble.left.and.bubble.right.fill")
+				}
+			} label: {
+				Label("Options", systemImage: "ellipsis")
+			}
+		}
 	}
 }
 
@@ -137,7 +207,7 @@ extension HomeView {
 					Label("Last 50", systemImage: "plus")
 				}
 			} label: {
-				Image(systemName: "flag.pattern.checkered.2.crossed")
+				Label("Time Trial", systemImage: "flag.pattern.checkered.2.crossed")
 			}
 		}
 		ToolbarSpacer(.fixed, placement: .bottomBar)
@@ -182,7 +252,7 @@ extension HomeView {
 					}
 				}
 			} label: {
-				Image(systemName: "circle.badge.plus")
+				Label("More", systemImage: "circle.badge.plus")
 			}
 		}
 		
