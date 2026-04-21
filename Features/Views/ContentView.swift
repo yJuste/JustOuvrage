@@ -30,16 +30,17 @@ extension ContentView {
 		
 		TabView {
 			
-			Tab("Time trial", systemImage: "flag.pattern.checkered.2.crossed") {
+			Tab("New", systemImage: "plus.rectangle.portrait") {
+				NewCardView()
+			}
+			Tab("Trial", systemImage: "flag.pattern.checkered.2.crossed") {
 				EmptyView()
 			}
-			Tab("Record session", systemImage: "rectangle.dashed.badge.record") {
+			Tab("Record", systemImage: "rectangle.dashed.badge.record") {
 				EmptyView()
 			}
 			Tab("Library", systemImage: "rectangle.stack.fill") {
-				NavigationStack {
-					HomeView()
-				}
+				HomeView(search: $search)
 			}
 			Tab(role: .search) {
 				SearchView(search: $search)
@@ -55,7 +56,7 @@ extension ContentView {
 		NavigationStack {
 			List {
 				NavigationLink {
-					HomeView()
+					HomeView(search: $search)
 				} label: {
 					Label("Every Card", systemImage: "menucard.fill")
 				}

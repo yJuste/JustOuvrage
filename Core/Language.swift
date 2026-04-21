@@ -5,7 +5,7 @@
 //  Created by Jules Longin on 4/18/26.
 //
 
-/// An interface to categorize the language codes.
+/// An interface to categorize the ``language codes``.
 /// [ISO 639-1] + \_ + [ISO 3166]
 /// An interface to link a language code with its associated flag.
 /// An interface to link a language code with a language.

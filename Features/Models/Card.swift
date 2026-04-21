@@ -16,6 +16,7 @@ import Foundation
 	var backEntry: String
 	var frontLanguage: Language
 	var backLanguage: Language
+	var lastViewedAt: Date?
 	
 	var deck: Deck?
 	
@@ -27,6 +28,7 @@ import Foundation
 		self.backEntry = backEntry
 		self.frontLanguage = frontLanguage
 		self.backLanguage = backLanguage
+		self.lastViewedAt = nil
 		self.deck = nil
 		self.leitnerScore = 1
 		self.createdAt = .now

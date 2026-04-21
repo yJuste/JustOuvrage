@@ -7,16 +7,18 @@
 
 import SwiftUI
 import SwiftData
+import os // MARK: debug
 
 /// A view where all the cards are displayed.
 /// External Dependencies: Card, NewCardView
 struct HomeView: View {
 	
 	@Environment(\.modelContext) private var context
+	@Environment(\.dismiss) var dismiss
 	@State private var editMode: EditMode = .inactive
 	
 	@Query(sort: \Card.createdAt, order: .reverse) private var cards: [Card]
-	@State private var search: String = ""
+	@Binding var search: String
 	@State private var showNewCardSheet: Bool = false
 	@State private var multiSelection: Set<Card> = []
 	var isSelecting: Bool {
@@ -26,49 +28,45 @@ struct HomeView: View {
 	
 	var body: some View {
 		
-		List(selection: $multiSelection) {
-			ForEach(cards) { card in
-				VStack(alignment: .leading) {
-					Button {
-#if DEBUG
-						print("FrontEntry: \(card.frontEntry)")
-						print("BackEntry: \(card.backEntry)")
-						print("FrontLanguage: \(card.frontLanguage)")
-						print("BackLanguage: \(card.backLanguage)")
-						print("LeitnerScore: \(card.leitnerScore)")
-						print("Date created: \(card.createdAt)")
-#endif
-					} label: {
-						VStack(alignment: .leading, spacing: 5) {
-							Text(card.frontEntry)
-								.font(.subheadline)
-							Text(card.backEntry)
-								.font(.subheadline)
-								.foregroundStyle(.gray)
+		NavigationStack {
+			List(selection: $multiSelection) {
+				ForEach(cards) { card in
+					VStack(alignment: .leading) {
+						Button {
+							Debug.print(level: .info, card: card)
+						} label: {
+							VStack(alignment: .leading, spacing: 5) {
+								Text(card.frontEntry)
+									.font(.subheadline)
+								Text(card.backEntry)
+									.font(.subheadline)
+									.foregroundStyle(.gray)
+							}
 						}
 					}
+					.listRowInsets(EdgeInsets(top: 11, leading: 15, bottom: 11, trailing: 15))
+					.tag(card)
 				}
-				.listRowInsets(EdgeInsets(top: 11, leading: 15, bottom: 11, trailing: 15))
-				.tag(card)
 			}
-		}
-		.navigationTitle("Recents")
-		.listStyle(.plain)
-		//.searchable(text: $search, prompt: "Search")
-		.toolbar { toolbar }
-		.sheet(isPresented: $showNewCardSheet) {
-			NewCardView()
-		}
-		.onChange(of: multiSelection) { oldValue, newValue in
-			if newValue.isEmpty {
-				print("Rien de selectionne.")
-			} else {
-				print("Selectionné oldValue: \(oldValue)")
-				print("Selectionné newValue: \(newValue)")
+			.navigationTitle("Recents")
+			.listStyle(.plain)
+			.toolbar { toolbar }
+			.sheet(isPresented: $showNewCardSheet) {
+				NewCardView()
 			}
+#if DEBUG
+			.onChange(of: multiSelection) { oldValue, newValue in
+				if newValue.isEmpty {
+					print("Rien de selectionne.")
+				} else {
+					print("Selectionné oldValue: \(oldValue)")
+					print("Selectionné newValue: \(newValue)")
+				}
+			}
+#endif
+			.animation(.easeInOut(duration: 0.2), value: editMode)
+			.environment(\.editMode, $editMode)
 		}
-		.animation(.easeInOut(duration: 0.2), value: editMode)
-		.environment(\.editMode, $editMode)
 	}
 	
 	private func deleteSelection() {
@@ -103,8 +101,9 @@ extension HomeView {
 			if !multiSelection.isEmpty {
 				Button(role: .destructive) {
 					deleteSelection()
+					toggleEditMode()
 				} label: {
-					Text("Supprimer (\(multiSelection.count))")
+					Text("Delete (\(multiSelection.count))")
 				}
 			}
 		}
@@ -123,30 +122,13 @@ extension HomeView {
 }
 
 /// An extension that creates a nice light Interface.
+/// If used alone, add .searchable()
 extension HomeView {
 	
 	@ToolbarContentBuilder var lightToolbar: some ToolbarContent {
 		
-		ToolbarItem(placement: .topBarLeading) {
-			if !multiSelection.isEmpty {
-				Button(role: .destructive) {
-					deleteSelection()
-				} label: {
-					Text("Supprimer (\(multiSelection.count))")
-				}
-			}
-		}
-		ToolbarItem(placement: .topBarTrailing) {
-			Button {
-				toggleEditMode()
-			} label: {
-				if editMode.isEditing == true {
-					Text("Cancel")
-				} else {
-					Text("Select")
-				}
-			}
-		}
+		toolbar;
+		
 		ToolbarItem(placement: .bottomBar) {
 			Menu {
 				Button {
@@ -242,7 +224,7 @@ extension HomeView {
 			frontLanguage: .en_US,
 			backLanguage: .fr_FR
 		))
-		return HomeView()
+		return HomeView(search: .constant(""))
 			.modelContainer(container)
 	}  catch {
 		return Text("Failed to create preview: \(error.localizedDescription)")

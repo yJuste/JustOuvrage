@@ -17,11 +17,14 @@ struct NewCardView: View {
 	@Environment(\.modelContext) var context
 	@Environment(\.dismiss) var dismiss
 	
+	@Query(sort: \Card.createdAt, order: .reverse) private var cards: [Card]
+	
 	@State private var frontEntry: String = ""
 	@State private var backEntry: String = ""
 	@State private var frontLanguage: Language = Preferences.unique.frontLanguage
 	@State private var backLanguage: Language = Preferences.unique.backLanguage
 	
+	@FocusState private var focusField: FocusField?
 	@State private var showFront: Bool = false
 	@State private var showBack: Bool = false
 	@State private var showAlert: Bool = false
@@ -62,31 +65,40 @@ struct NewCardView: View {
 				}
 				VStack(spacing: 50) {
 					SplendidField(title: "Front Entry", text: $frontEntry)
+						.focused($focusField, equals: .front)
 					SplendidField(title: "Back Entry", text: $backEntry)
+						.focused($focusField, equals: .back)
 				}
 			}
 			.padding(40)
 			.toolbar {
 				ToolbarItem(placement: .topBarLeading) {
-					Button("Cancel") {
+					Button {
+						frontEntry = ""
+						backEntry = ""
+						focusField = nil
 						dismiss()
+					} label: {
+						Text("Cancel")
 					}
+				}
+				ToolbarItem(placement: .principal) {
+					Text("\(cards.first?.frontEntry ?? "Front Entry") : \(cards.first?.backEntry ?? "Back Entry")")
 				}
 				ToolbarItem(placement: .topBarTrailing) {
 					Button {
-						if frontEntry.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
-							|| backEntry.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-							showAlert.toggle()
-							return
-						}
-						preferences.frontLanguage = frontLanguage
-						preferences.backLanguage = backLanguage
-						context.insert(Card(frontEntry: frontEntry, backEntry: backEntry, frontLanguage: frontLanguage, backLanguage: backLanguage))
-						dismiss()
+						addCard()
 					} label: {
 						Label("Done", systemImage: "checkmark")
 					}
 					.buttonStyle(.borderedProminent)
+				}
+			}
+			.onSubmit {
+				if focusField == .front {
+					focusField = .back
+				} else {
+					addCard()
 				}
 			}
 		}
@@ -95,6 +107,36 @@ struct NewCardView: View {
 		} message: {
 			Text("Please fill in both sides before saving.")
 		}
+		.onTapGesture {
+			focusField = nil
+		}
+	}
+	
+	func addCard() {
+		
+		let newFrontEntry = frontEntry.trimmingCharacters(in: .whitespacesAndNewlines)
+		let newBackEntry = backEntry.trimmingCharacters(in: .whitespacesAndNewlines)
+		if newFrontEntry.isEmpty || newBackEntry.isEmpty {
+			return showAlert.toggle()
+		}
+		context.insert(Card(frontEntry: newFrontEntry, backEntry: newBackEntry, frontLanguage: frontLanguage, backLanguage: backLanguage))
+		
+		preferences.frontLanguage = frontLanguage
+		preferences.backLanguage = backLanguage
+		frontEntry = ""
+		backEntry = ""
+		focusField = .front
+		dismiss()
+	}
+}
+
+/// An interface to use to toggle a focusState.
+extension NewCardView {
+	
+	enum FocusField: Hashable {
+		
+		case front
+		case back
 	}
 }
 

@@ -4,13 +4,35 @@
     "" : {
 
     },
+    "%@ : %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ : %2$@"
+          }
+        }
+      }
+    },
     "Add A New Card" : {
 
     },
     "Cancel" : {
 
     },
+    "Clear" : {
+
+    },
+    "Clear All" : {
+
+    },
+    "Clear recent searches?" : {
+
+    },
     "Date" : {
+
+    },
+    "Delete (%lld)" : {
 
     },
     "Done" : {
@@ -49,16 +71,22 @@
     "Name" : {
 
     },
+    "New" : {
+
+    },
     "Open Design+Code in Safari" : {
 
     },
     "Please fill in both sides before saving." : {
 
     },
+    "Recently Searched" : {
+
+    },
     "Recents" : {
 
     },
-    "Record session" : {
+    "Record" : {
 
     },
     "Safari Extension" : {
@@ -73,10 +101,10 @@
     "Settings" : {
 
     },
-    "Supprimer (%lld)" : {
+    "This will clear all recent searches." : {
 
     },
-    "Time trial" : {
+    "Trial" : {
 
     }
   },

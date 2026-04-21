@@ -10,7 +10,7 @@ import Observation
 
 //	--- ESSENTIAL --------------------------------------------------------------
 
-/// An interface that lists all preference values.
+/// An interface that lists all ``persisted selections``.
 enum PreferencesKey: String {
 	
 	/// for NewCardView
@@ -20,7 +20,7 @@ enum PreferencesKey: String {
 
 //	----------------------------------------------------------------------------
 
-/// A singleton interface that stores user preferences.
+/// A singleton that manages persisted user selections.
 /// External Dependencies: PreferencesKey
 @Observable final class Preferences {
 	
