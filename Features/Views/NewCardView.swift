@@ -29,12 +29,13 @@ struct NewCardView: View {
 	@State private var showFront: Bool = false
 	@State private var showBack: Bool = false
 	@State private var showAlert: Bool = false
+	@State private var showAddedBanner = false
 	
 	var body: some View {
 		NavigationStack {
 			ScrollViewReader { proxy in
 				ScrollView {
-					Spacer(minLength: 75)
+					Spacer(minLength: 100)
 					VStack(spacing: 50) {
 						HStack(spacing: 40) {
 							Button {
@@ -76,7 +77,7 @@ struct NewCardView: View {
 								.focused($focusField, equals: .back)
 						}
 					}
-					.padding(40)
+					.padding(30)
 					.toolbar {
 						ToolbarItem(placement: .topBarLeading) {
 							Button {
@@ -90,6 +91,7 @@ struct NewCardView: View {
 						}
 						ToolbarItem(placement: .principal) {
 							Text("\(cards.first?.frontEntry ?? "Front Entry") : \(cards.first?.backEntry ?? "Back Entry")")
+								.font(.caption)
 						}
 						ToolbarItem(placement: .topBarTrailing) {
 							Button {
@@ -130,6 +132,37 @@ struct NewCardView: View {
 			.onTapGesture {
 				focusField = nil
 			}
+			.overlay(alignment: .top) {
+				if showAddedBanner {
+					HStack(spacing: 6) {
+						Text("Ajouté")
+						Image(systemName: "checkmark.circle.fill")
+					}
+					.font(.subheadline.weight(.medium))
+					.padding(.horizontal, 14)
+					.padding(.vertical, 10)
+					.background(.thinMaterial)
+					.clipShape(Capsule())
+					.padding(.top, 0)
+					.transition(.move(edge: .top).combined(with: .opacity))
+				}
+			}
+		}
+	}
+	
+	func showAdded() {
+		withAnimation(.snappy) {
+			showAddedBanner = true
+		}
+		
+		Task {
+			try? await Task.sleep(for: .seconds(2))
+			
+			await MainActor.run {
+				withAnimation(.snappy) {
+					showAddedBanner = false
+				}
+			}
 		}
 	}
 	
@@ -147,6 +180,7 @@ struct NewCardView: View {
 		frontEntry = ""
 		backEntry = ""
 		focusField = .front
+		showAdded()
 		dismiss()
 	}
 }
