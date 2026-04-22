@@ -12,11 +12,13 @@ import SwiftData
 /// External Dependencies: Card, HomeView, SafariExtensionView, SettingsView
 struct ContentView: View {
 	
-	@State private var search: String = ""
-	
 	var body: some View {
+		
 		if #available(iOS 26, *) {
 			NativeTabView()
+				.tabViewBottomAccessory {
+					EmptyView()
+				}
 		} else {
 			NativeTabView()
 		}
@@ -29,7 +31,6 @@ extension ContentView {
 	@ViewBuilder func NativeTabView() -> some View {
 		
 		TabView {
-			
 			Tab("New", systemImage: "plus.rectangle.portrait") {
 				NewCardView()
 			}
@@ -37,15 +38,16 @@ extension ContentView {
 				NewDeckView()
 			}
 			Tab("Record", systemImage: "rectangle.dashed.badge.record") {
-				EmptyView()
+				Two()
 			}
 			Tab("Library", systemImage: "rectangle.stack.fill") {
-				HomeView(search: $search)
+				HomeView()
 			}
 			Tab(role: .search) {
-				SearchView(search: $search)
+				SearchView()
 			}
 		}
+		.tabBarMinimizeBehavior(.onScrollDown)
 	}
 }
 
@@ -56,7 +58,7 @@ extension ContentView {
 		NavigationStack {
 			List {
 				NavigationLink {
-					HomeView(search: $search)
+					HomeView()
 				} label: {
 					Label("Every Card", systemImage: "menucard.fill")
 				}

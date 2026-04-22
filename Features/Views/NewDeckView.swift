@@ -17,7 +17,7 @@ struct NewDeckView: View {
 	@Environment(\.modelContext) var context
 	@Environment(\.dismiss) var dismiss
 	
-	@State private var showAlert: Bool = false
+	@State private var showCancelAlert: Bool = false
 	@State private var deckName: String = ""
 	
 	var body: some View {
@@ -62,7 +62,7 @@ struct NewDeckView: View {
 							.bold()
 							.multilineTextAlignment(.center)
 							.lineLimit(1)
-							.padding(10)
+							.padding(12)
 							.background(Capsule().fill(.thinMaterial))
 							.padding()
 					}
@@ -71,8 +71,9 @@ struct NewDeckView: View {
 						ToolbarItem(placement: .topBarLeading) {
 							Button {
 								if !deckName.isEmpty {
-									showAlert.toggle()
+									showCancelAlert.toggle()
 								}
+								dismiss()
 							} label: {
 								Text("Cancel")
 							}
@@ -94,7 +95,7 @@ struct NewDeckView: View {
 				.scrollDismissesKeyboard(.interactively)
 				.scrollIndicators(.hidden)
 			}
-			.alert("New Deck", isPresented: $showAlert) {
+			.alert("New Deck", isPresented: $showCancelAlert) {
 				Button("Discard Changes", role: .destructive) { }
 				Button("Keep Editing", role: .cancel) { }
 			} message: {

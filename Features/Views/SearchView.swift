@@ -13,7 +13,7 @@ import os // MARK: debug
 /// External Dependencies: Card, SearchFocusView, DisplayConfig
 struct SearchView: View {
 	
-	@Binding var search: String
+	@State private var search: String = ""
 	
 	@Query(sort: \Card.createdAt, order: .reverse) private var cards: [Card]
 	@Query(filter: #Predicate<Card> { $0.lastViewedAt != nil }, sort: \Card.lastViewedAt, order: .reverse) private var recents: [Card]
@@ -92,7 +92,7 @@ struct SearchPreview: View {
 	@State private var search = ""
 
 	var body: some View {
-		SearchView(search: $search)
+		SearchView()
 			.modelContainer(container)
 	}
 }

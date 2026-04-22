@@ -14,10 +14,13 @@
         }
       }
     },
-    "Add A New Card" : {
+    "Add" : {
 
     },
     "Ajouté" : {
+
+    },
+    "Are you sure you want to discard this new deck?" : {
 
     },
     "Ascending" : {
@@ -44,10 +47,13 @@
     "Date" : {
 
     },
-    "Decks" : {
+    "Deck Name" : {
 
     },
     "Delete (%lld)" : {
+
+    },
+    "Discard Changes" : {
 
     },
     "Done" : {
@@ -57,9 +63,6 @@
 
     },
     "Every Card" : {
-
-    },
-    "Favorites" : {
 
     },
     "French" : {
@@ -74,13 +77,13 @@
     "JustOuvrage" : {
 
     },
-    "Kind" : {
+    "Keep Editing" : {
 
     },
     "Languages" : {
 
     },
-    "Last 50" : {
+    "Left" : {
 
     },
     "Library" : {
@@ -89,13 +92,13 @@
     "Missing Information" : {
 
     },
-    "More" : {
-
-    },
     "Name" : {
 
     },
     "New" : {
+
+    },
+    "New Card" : {
 
     },
     "New Deck" : {
@@ -119,6 +122,9 @@
     "Record" : {
 
     },
+    "Right" : {
+
+    },
     "Safari Extension" : {
 
     },
@@ -140,16 +146,10 @@
     "This will clear all recent searches." : {
 
     },
-    "Time Trial" : {
-
-    },
     "Trial" : {
 
     },
     "Visible" : {
-
-    },
-    "Words" : {
 
     }
   },

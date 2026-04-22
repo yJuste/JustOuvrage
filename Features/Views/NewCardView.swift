@@ -27,8 +27,9 @@ struct NewCardView: View {
 	@FocusState private var focusField: FocusField?
 	@State private var showFront: Bool = false
 	@State private var showBack: Bool = false
-	@State private var showAlert: Bool = false
-	@State private var showAddedBanner = false
+	@State private var showAddedCard: Bool = false
+	@State private var showAddedBanner: Bool = false
+	@State private var showCancelAlert: Bool = false
 	
 	var body: some View {
 		NavigationStack {
@@ -80,10 +81,13 @@ struct NewCardView: View {
 					.toolbar {
 						ToolbarItem(placement: .topBarLeading) {
 							Button {
-								frontEntry = ""
-								backEntry = ""
-								focusField = nil
-								dismiss()
+								let newFrontEntry = frontEntry.trimmingCharacters(in: .whitespacesAndNewlines)
+								let newBackEntry = backEntry.trimmingCharacters(in: .whitespacesAndNewlines)
+								if newFrontEntry.isEmpty && newBackEntry.isEmpty {
+									dismiss()
+								} else {
+									showCancelAlert.toggle()
+								}
 							} label: {
 								Text("Cancel")
 							}
@@ -124,10 +128,21 @@ struct NewCardView: View {
 					}
 				}
 			}
-			.alert("Missing Information", isPresented: $showAlert) {
+			.alert("Missing Information", isPresented: $showAddedCard) {
 				Button("Got it", role: .cancel) { }
 			} message: {
 				Text("Please fill in both sides before saving.")
+			}
+			.alert("New Card", isPresented: $showCancelAlert) {
+				Button("Discard Changes", role: .destructive) {
+					frontEntry = ""
+					backEntry = ""
+					focusField = nil
+					dismiss()
+				}
+				Button("Keep Editing", role: .cancel) { }
+			} message: {
+				Text("Are you sure you want to discard this new deck?")
 			}
 			.onTapGesture {
 				focusField = nil
@@ -171,7 +186,7 @@ struct NewCardView: View {
 		let newFrontEntry = frontEntry.trimmingCharacters(in: .whitespacesAndNewlines)
 		let newBackEntry = backEntry.trimmingCharacters(in: .whitespacesAndNewlines)
 		if newFrontEntry.isEmpty || newBackEntry.isEmpty {
-			return showAlert.toggle()
+			return showAddedCard.toggle()
 		}
 		context.insert(Card(frontEntry: newFrontEntry, backEntry: newBackEntry, frontLanguage: frontLanguage, backLanguage: backLanguage))
 		

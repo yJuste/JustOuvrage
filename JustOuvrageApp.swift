@@ -15,6 +15,6 @@ struct JustOuvrageApp: App {
 		WindowGroup {
 			ContentView()
 		}
-		.modelContainer(for: Card.self)
+		.modelContainer(for: [Card.self, Deck.self])
 	}
 }
