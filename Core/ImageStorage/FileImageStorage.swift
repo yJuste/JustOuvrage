@@ -12,7 +12,8 @@ import SwiftUI
 @Observable
 final class FileImageStorage: ImageStorageService {
 	
-	let folder = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0].appendingPathComponent("Images")
+	private let folder = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0].appendingPathComponent("Images")
+	private let cache = NSCache<NSString, UIImage>()
 	
 	func save(image: UIImage) throws -> String {
 		
@@ -22,18 +23,27 @@ final class FileImageStorage: ImageStorageService {
 		try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
 		try data.write(to: folder.appendingPathComponent(file))
 		
+		cache.setObject(image, forKey: file as NSString)
+		
 		return file
 	}
 	
 	func load(image: String) throws -> UIImage {
 		
+		if let cached = cache.object(forKey: image as NSString) { return cached }
+		
 		let data = try Data(contentsOf: folder.appendingPathComponent(image))
 		guard let final = UIImage(data: data) else { throw Errors.ImageError }
+		
+		cache.setObject(final, forKey: image as NSString)
+		
 		return final
 	}
 	
 	func delete(image: String) throws {
 		
 		try FileManager.default.removeItem(at: folder.appendingPathComponent(image))
+		
+		cache.removeObject(forKey: image as NSString)
 	}
 }

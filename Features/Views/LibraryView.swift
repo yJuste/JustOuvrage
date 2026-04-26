@@ -31,7 +31,7 @@ struct LibraryView: View {
 						Label("Cards", systemImage: "text.pad.header")
 					}
 					NavigationLink {
-						//
+						DecksView()
 					} label: {
 						Label("Decks", systemImage: "rectangle.stack.fill")
 					}
