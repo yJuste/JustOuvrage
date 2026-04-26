@@ -16,9 +16,7 @@ struct ContentView: View {
 		
 		if #available(iOS 26, *) {
 			NativeTabView()
-				.tabViewBottomAccessory {
-					EmptyView()
-				}
+				//.tabViewBottomAccessory { EmptyView() }
 		} else {
 			NativeTabView()
 		}
@@ -35,48 +33,19 @@ extension ContentView {
 				NewCardView()
 			}
 			Tab("Trial", systemImage: "flag.pattern.checkered.2.crossed") {
-				NewDeckView()
+				EmptyView()
 			}
 			Tab("Record", systemImage: "rectangle.dashed.badge.record") {
-				Two()
+				EmptyView()
 			}
 			Tab("Library", systemImage: "rectangle.stack.fill") {
-				HomeView()
+				LibraryView()
 			}
 			Tab(role: .search) {
 				SearchView()
 			}
 		}
-		.tabBarMinimizeBehavior(.onScrollDown)
-	}
-}
-
-/// An extension that creates a basic Interface.
-extension ContentView {
-	
-	@ViewBuilder func BasicTabView() -> some View {
-		NavigationStack {
-			List {
-				NavigationLink {
-					HomeView()
-				} label: {
-					Label("Every Card", systemImage: "menucard.fill")
-				}
-				NavigationLink {
-					SafariExtensionView()
-				} label: {
-					Label("Safari Extension", systemImage: "safari.fill")
-				}
-				Section {
-					NavigationLink {
-						SettingsView()
-					} label: {
-						Label("Settings", systemImage: "gearshape.fill")
-					}
-				}
-			}
-			.navigationTitle("JustOuvrage")
-		}
+		//.tabBarMinimizeBehavior(.onScrollDown)
 	}
 }
 

@@ -118,10 +118,8 @@ struct NewCardView: View {
 				.scrollIndicators(.hidden)
 				.onChange(of: focusField) {
 					guard let field = focusField else { return }
-					
 					Task { @MainActor in
 						try? await Task.sleep(for: .milliseconds(250))
-						
 						withAnimation {
 							proxy.scrollTo(field, anchor: .top)
 						}
@@ -167,15 +165,13 @@ struct NewCardView: View {
 	
 	func showAdded() {
 		withAnimation(.snappy) {
-			showAddedBanner = true
+			showAddedBanner.toggle()
 		}
-		
 		Task {
-			try? await Task.sleep(for: .seconds(2))
-			
+			try? await Task.sleep(for: .seconds(1.5))
 			await MainActor.run {
 				withAnimation(.snappy) {
-					showAddedBanner = false
+					showAddedBanner.toggle()
 				}
 			}
 		}

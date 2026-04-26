@@ -20,6 +20,9 @@
     "Ajouté" : {
 
     },
+    "All" : {
+
+    },
     "Are you sure you want to discard this new deck?" : {
 
     },
@@ -27,6 +30,9 @@
 
     },
     "Cancel" : {
+
+    },
+    "Cards" : {
 
     },
     "Choose File" : {
@@ -41,13 +47,19 @@
     "Clear All" : {
 
     },
-    "Clear recent searches?" : {
+    "Clear Searches?" : {
+
+    },
+    "Clearing your searches will remove your search history from this device." : {
 
     },
     "Date" : {
 
     },
     "Deck Name" : {
+
+    },
+    "Decks" : {
 
     },
     "Delete (%lld)" : {
@@ -62,9 +74,6 @@
     "English" : {
 
     },
-    "Every Card" : {
-
-    },
     "French" : {
 
     },
@@ -74,16 +83,10 @@
     "Hide" : {
 
     },
-    "JustOuvrage" : {
-
-    },
     "Keep Editing" : {
 
     },
     "Languages" : {
-
-    },
-    "Left" : {
 
     },
     "Library" : {
@@ -107,6 +110,12 @@
     "Newest to Oldest" : {
 
     },
+    "Only Cards" : {
+
+    },
+    "Only Decks" : {
+
+    },
     "Open Design+Code in Safari" : {
 
     },
@@ -116,16 +125,13 @@
     "Please fill in both sides before saving." : {
 
     },
+    "Recently Opened" : {
+
+    },
     "Recently Searched" : {
 
     },
     "Record" : {
-
-    },
-    "Right" : {
-
-    },
-    "Safari Extension" : {
 
     },
     "Search" : {
@@ -141,9 +147,6 @@
 
     },
     "Take Photo" : {
-
-    },
-    "This will clear all recent searches." : {
 
     },
     "Trial" : {

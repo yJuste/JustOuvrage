@@ -12,24 +12,26 @@ import Foundation
 /// External Dependencies: Language
 @Model final class Card {
 	
+	var id: String
 	var frontEntry: String
 	var backEntry: String
 	var frontLanguage: Language
 	var backLanguage: Language
 	var lastViewedAt: Date?
 	
-	var deck: Deck?
+	@Relationship var decks: [Deck]
 	
 	private(set) var leitnerScore: Int
 	private(set) var createdAt: Date
 	
 	init(frontEntry: String, backEntry: String, frontLanguage: Language, backLanguage: Language) {
+		self.id = UUID().uuidString
 		self.frontEntry = frontEntry
 		self.backEntry = backEntry
 		self.frontLanguage = frontLanguage
 		self.backLanguage = backLanguage
 		self.lastViewedAt = nil
-		self.deck = nil
+		self.decks = []
 		self.leitnerScore = 1
 		self.createdAt = .now
 	}

@@ -7,6 +7,7 @@
 
 import os
 
+/// An Interface to debug.
 enum Debug {
 	
 	private static let logger = Logger(subsystem: "com.yJuste.JustOuvrage.app", category: "debug")

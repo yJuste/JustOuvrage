@@ -8,17 +8,13 @@
 import SwiftUI
 import Observation
 
-//	--- ESSENTIAL --------------------------------------------------------------
-
-/// An interface that lists all ``persisted selections``.
+/// An Interface that lists all ``persisted selections``.
 enum PreferencesKey: String {
 	
 	/// for NewCardView
 	case frontLanguage
 	case backLanguage
 }
-
-//	----------------------------------------------------------------------------
 
 /// A singleton that manages persisted user selections.
 /// External Dependencies: PreferencesKey

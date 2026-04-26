@@ -7,8 +7,7 @@
 
 import SwiftUI
 import SwiftData
-
-// Use FileManager, PhotoPicker
+import PhotosUI
 
 /// A view that creates a new Deck.
 /// External Dependencies:
@@ -17,8 +16,14 @@ struct NewDeckView: View {
 	@Environment(\.modelContext) var context
 	@Environment(\.dismiss) var dismiss
 	
+	@State private var storage = FileImageStorage()
+	@State private var selectedPhotoItem: PhotosPickerItem?
+	@State private var selectedImageData: Data?
 	@State private var showCancelAlert: Bool = false
 	@State private var deckName: String = ""
+	@State private var savedImageURL: String?
+	
+	@State private var showPhotoPicker: Bool = false
 	
 	var body: some View {
 		
@@ -29,15 +34,24 @@ struct NewDeckView: View {
 						ZStack {
 							RoundedRectangle(cornerRadius: 10, style: .continuous)
 								.fill(.ultraThinMaterial)
+								.overlay {
+									if let data = selectedImageData,
+									   let uiImage = UIImage(data: data) {
+										Image(uiImage: uiImage)
+											.resizable()
+											.scaledToFill()
+									}
+								}
 								.frame(width: 180, height: 180)
+								.clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
 							Menu {
 								Button {
-									// Open Camera
+									// Take Photo
 								} label: {
 									Label("Take Photo", systemImage: "camera")
 								}
 								Button {
-									// Open Library
+									showPhotoPicker.toggle()
 								} label: {
 									Label("Choose Photo", systemImage: "photo.on.rectangle")
 								}
@@ -70,10 +84,9 @@ struct NewDeckView: View {
 					.toolbar {
 						ToolbarItem(placement: .topBarLeading) {
 							Button {
-								if !deckName.isEmpty {
+								if !deckName.isEmpty || selectedImageData != nil {
 									showCancelAlert.toggle()
 								}
-								dismiss()
 							} label: {
 								Text("Cancel")
 							}
@@ -83,6 +96,15 @@ struct NewDeckView: View {
 						}
 						ToolbarItem(placement: .topBarTrailing) {
 							Button {
+								var image = "deck"
+								if let data = selectedImageData, let uiImage = UIImage(data: data) {
+									do {
+										image = try storage.save(image: uiImage)
+									} catch {
+										print(Errors.ImageError)
+									}
+								}
+								context.insert(Deck(name: deckName, image: image))
 								dismiss()
 							} label: {
 								Label("Done", systemImage: "checkmark")
@@ -95,8 +117,17 @@ struct NewDeckView: View {
 				.scrollDismissesKeyboard(.interactively)
 				.scrollIndicators(.hidden)
 			}
+			.photosPicker(isPresented: $showPhotoPicker, selection: $selectedPhotoItem, matching: .images)
+			.onChange(of: selectedPhotoItem) { _, newItem in
+				guard let newItem else { return }
+				Task {
+					if let data = try? await newItem.loadTransferable(type: Data.self) {
+						selectedImageData = data
+					}
+				}
+			}
 			.alert("New Deck", isPresented: $showCancelAlert) {
-				Button("Discard Changes", role: .destructive) { }
+				Button("Discard Changes", role: .destructive) { dismiss() }
 				Button("Keep Editing", role: .cancel) { }
 			} message: {
 				Text("Are you sure you want to discard this new deck?")

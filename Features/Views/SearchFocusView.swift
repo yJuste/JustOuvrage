@@ -10,7 +10,7 @@ import SwiftData
 import os // MARK: debug
 
 /// A view that shows the focus state of the SearchView.
-/// External Dependencies: Card, DisplayConfig
+/// External Dependencies: Card, Constants
 struct SearchFocusView: View {
 	
 	@Environment(\.isSearching) private var isSearching
@@ -28,17 +28,12 @@ struct SearchFocusView: View {
 		
 		if isSearching && search.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
 			Section {
-				ForEach(recents.prefix(DisplayConfig.maxRecents)) { card in
+				ForEach(recents.prefix(Constants.maxRecents)) { card in
 					Button {
 						Debug.print(level: .info, card: card)
 					} label: {
-						VStack(alignment: .leading, spacing: 5) {
-							Text(card.frontEntry)
-								.font(.subheadline)
-							Text(card.backEntry)
-								.font(.subheadline)
-								.foregroundStyle(.gray)
-						}
+						Text(card.frontEntry)
+							.font(.system(size: 15, weight: .regular, design: .default))
 					}
 					.swipeActions {
 						Button {
@@ -60,7 +55,7 @@ struct SearchFocusView: View {
 					.disabled(recents.isEmpty)
 				}
 			}
-			.alert("Clear recent searches?", isPresented: $showClearAllAlert) {
+			.alert("Clear Searches?", isPresented: $showClearAllAlert) {
 				Button("Clear All", role: .destructive) {
 					recents.forEach {
 						$0.lastViewedAt = nil
@@ -68,7 +63,7 @@ struct SearchFocusView: View {
 				}
 				Button("Cancel", role: .cancel) { }
 			} message: {
-				Text("This will clear all recent searches.")
+				Text("Clearing your searches will remove your search history from this device.")
 			}
 		}
 	}

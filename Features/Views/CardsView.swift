@@ -1,8 +1,8 @@
 //
-//  HomeView.swift
+//  CardsView.swift
 //  JustOuvrage
 //
-//  Created by Jules Longin on 4/16/26.
+//  Created by Jules Longin on 4/26/26.
 //
 
 import SwiftUI
@@ -11,26 +11,20 @@ import os // MARK: debug
 
 /// A view where all the cards are displayed.
 /// External Dependencies: Card, NewCardView
-struct HomeView: View {
+struct CardsView: View {
 	
 	@Environment(\.modelContext) private var context
 	@Environment(\.dismiss) var dismiss
-	@State private var editMode: EditMode = .inactive
 	
 	@Query(sort: \Card.createdAt, order: .reverse) private var cards: [Card]
-	@State private var search: String = ""
+	
 	@State private var multiSelection: Set<Card> = []
-	var isSelecting: Bool {
-		editMode.isEditing
-	}
+	
+	@State private var editMode: EditMode = .inactive
 	@State private var isTogglingEditMode = false
-	@State private var showDisplay: Bool = false
+	
 	@State private var showCard: Bool = false
 	@State private var showDeck: Bool = false
-	
-	@State private var lastOffset: CGFloat = 0
-	@State private var isAtTop: Bool = true
-	@State private var showToolbar: Bool = true
 	
 	var body: some View {
 		
@@ -54,24 +48,8 @@ struct HomeView: View {
 					.tag(card)
 				}
 			}
-			.animation(.easeInOut(duration: 0.15), value: isAtTop || showToolbar)
-			.toolbar { if isAtTop || showToolbar { toolbar } }
-			.onScrollGeometryChange(for: CGFloat.self) { geometry in
-				geometry.contentOffset.y
-			} action: { oldValue, newValue in
-				
-				let delta = newValue - lastOffset
-				
-				isAtTop = newValue < 5
-				if delta > 5 {
-					showToolbar = false
-				}
-				if delta < -5 {
-					showToolbar = true
-				}
-				lastOffset = newValue
-			}
-			.listStyle(.plain)
+			.toolbar { toolbar }
+			.animation(.easeInOut(duration: 0.15), value: multiSelection.isEmpty)
 			.animation(.easeInOut(duration: 0.15), value: editMode)
 			.environment(\.editMode, $editMode)
 			.sheet(isPresented: $showCard) {
@@ -84,12 +62,13 @@ struct HomeView: View {
 					.presentationDetents([.medium, .large])
 					.presentationDragIndicator(.visible)
 			}
+			.listStyle(.plain)
 		}
 	}
 }
 
-/// Methods  of HomeView.
-extension HomeView {
+/// Methods of CardsView..
+private extension CardsView {
 	
 	private func deleteSelection() {
 		
@@ -102,7 +81,7 @@ extension HomeView {
 	private func toggleEditMode() {
 		
 		guard !isTogglingEditMode else { return }
-		isTogglingEditMode = true
+		isTogglingEditMode.toggle()
 		if editMode == .active {
 			editMode = .inactive
 			multiSelection.removeAll()
@@ -110,15 +89,15 @@ extension HomeView {
 			editMode = .active
 		}
 		DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
-			isTogglingEditMode = false
+			isTogglingEditMode.toggle()
 		}
 	}
 }
 
 /// Toolbar.
-extension HomeView {
+private extension CardsView {
 	
-	@ToolbarContentBuilder var toolbar: some ToolbarContent {
+	@ToolbarContentBuilder private var toolbar: some ToolbarContent {
 		
 		ToolbarItem(placement: .topBarLeading) {
 			if !multiSelection.isEmpty {
@@ -141,6 +120,7 @@ extension HomeView {
 				}
 			}
 		}
+		ToolbarSpacer(.fixed, placement: .topBarTrailing)
 		ToolbarItem(placement: .topBarTrailing) {
 			Menu {
 				Menu {
@@ -213,107 +193,8 @@ extension HomeView {
 				Label("Options", systemImage: "ellipsis")
 			}
 		}
-		ToolbarSpacer(.fixed, placement: .topBarTrailing)
-		ToolbarItem(placement: .topBarTrailing) {
-			Button {
-				//
-			} label: {
-				Image(.profileMan)
-					.resizable()
-					.frame(width: 36, height: 36)
-					.clipShape(Circle())
-			}
-			.buttonStyle(.plain)
-		}
 	}
 }
-
-/// An extension that creates a nice light Interface.
-/// If used alone, add .searchable() .sheet()
-//extension HomeView {
-//	
-//	@ToolbarContentBuilder var lightToolbar: some ToolbarContent {
-//		
-//		toolbar;
-//		
-//		ToolbarItem(placement: .bottomBar) {
-//			Menu {
-//				Button {
-//					print("Last 50")
-//				} label: {
-//					Label("Last 50", systemImage: "plus")
-//				}
-//			} label: {
-//				Label("Time Trial", systemImage: "flag.pattern.checkered.2.crossed")
-//			}
-//		}
-//		ToolbarSpacer(.fixed, placement: .bottomBar)
-//		DefaultToolbarItem(kind: .search, placement: .bottomBar)
-//		ToolbarSpacer(.fixed, placement: .bottomBar)
-//		ToolbarItem(placement: .bottomBar) {
-//			Menu {
-//				Button {
-//					showNewCardSheet.toggle()
-//				} label: {
-//					Label("Add A New Card", systemImage: "plus")
-//				}
-//				Section {
-//					Button {
-//						print("Date")
-//					} label: {
-//						Label("Date", systemImage: "plus")
-//					}
-//					Button {
-//						print("Name")
-//					} label: {
-//						Label("Name", systemImage: "plus")
-//					}
-//					Button {
-//						print("Favorites")
-//					} label: {
-//						Label("Favorites", systemImage: "star")
-//					}
-//					Menu {
-//						Button {
-//							print("English")
-//						} label: {
-//							Label("English", systemImage: "flag")
-//						}
-//						Button {
-//							print("French")
-//						} label: {
-//							Label("French", systemImage: "flag")
-//						}
-//					} label: {
-//						Label("Languages", systemImage: "flag")
-//					}
-//				}
-//			} label: {
-//				Label("More", systemImage: "circle.badge.plus")
-//			}
-//		}
-//		
-//	}
-//}
-
-//	Delete a Card on a List.
-//	private func deleteCard(indexSet: IndexSet) {
-//		for i in indexSet {
-//			context.delete(cards[i])
-//		}
-//	}
-//
-//	Move a Card on a List.
-//	private func moveCard(indexSet: IndexSet, offset: Int) {
-//		cards.move(fromOffsets: indexSet, toOffset: offset)
-//	}
-//
-// Swipe L->R to show more
-//		.swipeActions(edge: .leading) {
-//			Button("Swipe Left") {
-//
-//			}
-//		}
 
 #Preview {
 	do {
@@ -331,7 +212,7 @@ extension HomeView {
 			frontLanguage: .en_US,
 			backLanguage: .fr_FR
 		))
-		return HomeView()
+		return CardsView()
 			.modelContainer(container)
 	}  catch {
 		return Text("Failed to create preview: \(error.localizedDescription)")

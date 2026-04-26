@@ -12,16 +12,34 @@ import Foundation
 /// External Dependencies: Card
 @Model final class Deck {
 	
+	var id: String
 	var name: String
-	//@Attribute(.externalStorage) var image: Data
-	var cards: [Card]
+	var depiction: String
+	// MARK: var creator: Creator
+	var image: String
+	var lastViewedAt: Date?
+	var lastOpenedAt: Date?
 	
-	var createdAt: Date
+	@Relationship(inverse: \Card.decks) var cards: [Card]
 	
-	init(name: String, image: Data) {
+	private(set) var createdAt: Date
+	private(set) var lockDelete: Bool
+	
+	init(name: String, image: String) {
+		self.id = UUID().uuidString
 		self.name = name
-		//self.image = image
+		self.depiction = ""
+		self.image = image
 		self.cards = []
 		self.createdAt = .now
+		self.lockDelete = false
+	}
+}
+
+/// Lock a Deck from removal.
+extension Deck {
+	
+	func lockRemoval() {
+		lockDelete = true
 	}
 }

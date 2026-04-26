@@ -7,8 +7,6 @@
 
 /// An interface to categorize the ``language codes``.
 /// [ISO 639-1] + \_ + [ISO 3166]
-/// An interface to link a language code with its associated flag.
-/// An interface to link a language code with a language.
 enum Language: String, Codable, CaseIterable {
 	
 	case en_GB
@@ -18,6 +16,8 @@ enum Language: String, Codable, CaseIterable {
 	case fr_FR
 }
 
+/// An extension that link a language code with its associated flag.
+/// An extension that link a language code with a language.
 extension Language {
 	
 	var language: String {
