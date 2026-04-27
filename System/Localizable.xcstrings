@@ -4,6 +4,9 @@
     "" : {
 
     },
+    "%@" : {
+
+    },
     "%@ : %@" : {
       "localizations" : {
         "en" : {
@@ -14,6 +17,9 @@
         }
       }
     },
+    "%lld" : {
+
+    },
     "Add" : {
 
     },
@@ -21,6 +27,15 @@
 
     },
     "All" : {
+
+    },
+    "Are you sure you want to delete the selection?" : {
+
+    },
+    "Are you sure you want to delete this card from your library?" : {
+
+    },
+    "Are you sure you want to delete this deck from your library?" : {
 
     },
     "Are you sure you want to discard this new deck?" : {
@@ -62,7 +77,13 @@
     "Decks" : {
 
     },
+    "Delete" : {
+
+    },
     "Delete (%lld)" : {
+
+    },
+    "Delete from Library" : {
 
     },
     "Discard Changes" : {
@@ -74,7 +95,13 @@
     "English" : {
 
     },
+    "Forvo" : {
+
+    },
     "French" : {
+
+    },
+    "Google" : {
 
     },
     "Got it" : {
@@ -87,6 +114,9 @@
 
     },
     "Languages" : {
+
+    },
+    "Leitner Score" : {
 
     },
     "Library" : {
@@ -134,10 +164,19 @@
     "Record" : {
 
     },
+    "Remove" : {
+
+    },
     "Search" : {
 
     },
     "Select" : {
+
+    },
+    "Selected Cards" : {
+
+    },
+    "Selected Decks" : {
 
     },
     "Settings" : {
@@ -153,6 +192,9 @@
 
     },
     "Visible" : {
+
+    },
+    "Word Reference" : {
 
     }
   },

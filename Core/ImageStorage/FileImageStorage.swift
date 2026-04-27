@@ -7,10 +7,10 @@
 
 import SwiftUI
 
-/// An Interface that handles local file image storage within the App Sandbox ( -> Documents/Image ).
+/// An Interface that handles ``local file image storage`` within the App Sandbox ( -> Documents/Image ).
+/// Handles ``file storage cache`` as well.
 /// External Dependencies: Constants, Errors
-@Observable
-final class FileImageStorage: ImageStorageService {
+@Observable final class FileImageStorage: ImageStorageService {
 	
 	private let folder = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0].appendingPathComponent("Images")
 	private let cache = NSCache<NSString, UIImage>()

@@ -15,14 +15,11 @@ struct SearchFocusView: View {
 	
 	@Environment(\.isSearching) private var isSearching
 	
-	@Query(
-		filter: #Predicate<Card> { $0.lastViewedAt != nil },
-		sort: \Card.lastViewedAt,
-		order: .reverse
-	) private var recents: [Card]
-	
 	@Binding var search: String
-	@State private var showClearAllAlert = false
+	
+	@Query(filter: #Predicate<Card> { $0.lastViewedAt != nil }, sort: \Card.lastViewedAt, order: .reverse) private var recents: [Card]
+	
+	@State private var showClearAllAlert: Bool = false
 	
 	var body: some View {
 		

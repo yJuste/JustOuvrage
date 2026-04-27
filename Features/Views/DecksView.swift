@@ -11,7 +11,7 @@ import SwiftData
 struct DecksView: View {
 	
 	@Environment(\.modelContext) private var context
-	@Environment(FileImageStorage.self) var storage
+	@Environment(FileImageStorage.self) private var storage
 	@Environment(\.dismiss) private var dismiss
 	@Namespace private var namespace
 	
@@ -21,16 +21,18 @@ struct DecksView: View {
 	@State private var multiSelection: Set<Deck> = []
 	
 	@State private var editMode: EditMode = .inactive
-	@State private var isTogglingEditMode = false
+	@State private var showEditMode: Bool = false
 	
-	@State private var showCard: Bool = false
-	@State private var showDeck: Bool = false
+	@State private var showNewCard: Bool = false
+	@State private var showNewDeck: Bool = false
+	@State private var showDeleteCard: Bool = false
+	@State private var showSelectedDecks: Bool = false
 	
 	var body: some View {
 		NavigationStack {
 			List(selection: $multiSelection) {
 				ForEach(decks) { deck in
-					LazyVStack(alignment: .leading) {
+					VStack(alignment: .leading) {
 						Button {
 							//
 						} label: {
@@ -58,6 +60,32 @@ struct DecksView: View {
 								.padding(.trailing, 10)
 							}
 						}
+						.contextMenu {
+							Button(role: .destructive) {
+								item = deck
+								showDeleteCard.toggle()
+							} label: {
+								Label("Delete from Library", systemImage: "trash")
+							}
+						} preview: {
+							VStack(alignment: .leading, spacing: 10) {
+								Image(image: deck.image, storage: storage)
+									.resizable()
+									.scaledToFill()
+									.frame(width: 280, height: 280)
+									.clipped()
+									.clipShape(RoundedRectangle(cornerRadius: 15))
+									.padding(.top, -5)
+								VStack(alignment: .leading, spacing: 2) {
+									Text(deck.name)
+										.font(.system(size: 20, weight: .bold, design: .default))
+									Text(deck.depiction)
+										.font(.system(size: 20, weight: .regular, design: .default))
+										.foregroundStyle(.secondary)
+								}
+							}
+							.frame(width: 320, height: 370)
+						}
 					}
 					.listRowInsets(EdgeInsets(top: 11, leading: 15, bottom: 11, trailing: 15))
 					.tag(deck)
@@ -67,15 +95,24 @@ struct DecksView: View {
 			.animation(.easeInOut(duration: 0.15), value: multiSelection.isEmpty)
 			.animation(.easeInOut(duration: 0.15), value: editMode)
 			.environment(\.editMode, $editMode)
-			.sheet(isPresented: $showCard) {
+			.sheet(isPresented: $showNewCard) {
 				NewCardView()
 					.presentationDetents([.height(520), .large])
 					.presentationDragIndicator(.visible)
 			}
-			.sheet(isPresented: $showDeck) {
+			.sheet(isPresented: $showNewDeck) {
 				NewDeckView()
 					.presentationDetents([.medium, .large])
 					.presentationDragIndicator(.visible)
+			}
+			.alert("Are you sure you want to delete this deck from your library?", isPresented: $showDeleteCard) {
+				Button("Remove", role: .destructive) { if let item { context.delete(item) } }
+				Button("Cancel", role: .cancel) { }
+			}
+			.alert("Selected Decks", isPresented: $showSelectedDecks) {
+				Button("Delete", role: .destructive) { deleteSelection(); toggleEditMode() }
+			} message: {
+				Text("Are you sure you want to delete the selection?")
 			}
 			.listStyle(.plain)
 		}
@@ -95,8 +132,8 @@ private extension DecksView {
 	
 	private func toggleEditMode() {
 		
-		guard !isTogglingEditMode else { return }
-		isTogglingEditMode.toggle()
+		guard !showEditMode else { return }
+		showEditMode.toggle()
 		if editMode == .active {
 			editMode = .inactive
 			multiSelection.removeAll()
@@ -104,7 +141,7 @@ private extension DecksView {
 			editMode = .active
 		}
 		DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
-			isTogglingEditMode.toggle()
+			showEditMode.toggle()
 		}
 	}
 }
@@ -117,8 +154,7 @@ private extension DecksView {
 		ToolbarItem(placement: .topBarLeading) {
 			if !multiSelection.isEmpty {
 				Button(role: .destructive) {
-					deleteSelection()
-					toggleEditMode()
+					showSelectedDecks.toggle()
 				} label: {
 					Text("Delete (\(multiSelection.count))")
 				}
@@ -140,12 +176,12 @@ private extension DecksView {
 			Menu {
 				Menu {
 					Button {
-						showCard.toggle()
+						showNewCard.toggle()
 					} label: {
 						Label("New Card", systemImage: "plus.square.fill.on.square.fill")
 					}
 					Button {
-						showDeck.toggle()
+						showNewDeck.toggle()
 					} label: {
 						Label("New Deck", systemImage: "rectangle.stack.badge.play")
 					}

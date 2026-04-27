@@ -7,7 +7,7 @@
 
 import UIKit
 
-/// A Protocol that contains save, load and delete functions for handling Image Storage.
+/// A Service that contains ``Save, Load and Delete`` functions for handling Image Storage.
 protocol ImageStorageService {
 	
 	func save(image: UIImage) throws -> String

@@ -8,7 +8,7 @@
 import SwiftData
 import Foundation
 
-/// A Model for a Card.
+/// A Model for a ``Card``.
 /// External Dependencies: Language
 @Model final class Card {
 	
@@ -17,11 +17,11 @@ import Foundation
 	var backEntry: String
 	var frontLanguage: Language
 	var backLanguage: Language
+	var leitnerScore: Int
 	var lastViewedAt: Date?
 	
 	@Relationship var decks: [Deck]
 	
-	private(set) var leitnerScore: Int
 	private(set) var createdAt: Date
 	
 	init(frontEntry: String, backEntry: String, frontLanguage: Language, backLanguage: Language) {

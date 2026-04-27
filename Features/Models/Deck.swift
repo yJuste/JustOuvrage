@@ -8,7 +8,7 @@
 import SwiftData
 import Foundation
 
-/// A model for a deck of cards.
+/// A model for a ``deck`` of cards.
 /// External Dependencies: Card
 @Model final class Deck {
 	

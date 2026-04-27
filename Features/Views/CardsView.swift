@@ -14,24 +14,28 @@ import os // MARK: debug
 struct CardsView: View {
 	
 	@Environment(\.modelContext) private var context
-	@Environment(\.dismiss) var dismiss
+	@Environment(\.dismiss) private var dismiss
 	
 	@Query(sort: \Card.createdAt, order: .reverse) private var cards: [Card]
 	
+	@State private var item: Card?
 	@State private var multiSelection: Set<Card> = []
 	
 	@State private var editMode: EditMode = .inactive
-	@State private var isTogglingEditMode = false
+	@State private var showEditMode: Bool = false
 	
-	@State private var showCard: Bool = false
-	@State private var showDeck: Bool = false
+	@State private var showNewCard: Bool = false
+	@State private var showNewDeck: Bool = false
+	@State private var showDeleteCard: Bool = false
+	@State private var showSelectedCards: Bool = false
+	@State private var showSafariExtension: Bool = false
 	
 	var body: some View {
 		
 		NavigationStack {
 			List(selection: $multiSelection) {
 				ForEach(cards) { card in
-					LazyVStack(alignment: .leading) {
+					VStack(alignment: .leading) {
 						Button {
 							Debug.print(level: .info, card: card)
 						} label: {
@@ -43,6 +47,14 @@ struct CardsView: View {
 									.foregroundStyle(.gray)
 							}
 						}
+						.contextMenu {
+							Button(role: .destructive) {
+								item = card
+								showDeleteCard.toggle()
+							} label: {
+								Label("Delete from Library", systemImage: "trash")
+							}
+						}
 					}
 					.listRowInsets(EdgeInsets(top: 11, leading: 15, bottom: 11, trailing: 15))
 					.tag(card)
@@ -52,22 +64,38 @@ struct CardsView: View {
 			.animation(.easeInOut(duration: 0.15), value: multiSelection.isEmpty)
 			.animation(.easeInOut(duration: 0.15), value: editMode)
 			.environment(\.editMode, $editMode)
-			.sheet(isPresented: $showCard) {
+			.sheet(isPresented: $showNewCard) {
 				NewCardView()
 					.presentationDetents([.height(520), .large])
 					.presentationDragIndicator(.visible)
 			}
-			.sheet(isPresented: $showDeck) {
+			.sheet(isPresented: $showNewDeck) {
 				NewDeckView()
 					.presentationDetents([.medium, .large])
 					.presentationDragIndicator(.visible)
+			}
+			.alert("Are you sure you want to delete this card from your library?", isPresented: $showDeleteCard) {
+				Button("Remove", role: .destructive) {
+					if let item {
+						context.delete(item)
+					}
+				}
+				Button("Cancel", role: .cancel) { }
+			}
+			.alert("Selected Cards", isPresented: $showSelectedCards) {
+				Button("Delete", role: .destructive) {
+					deleteSelection()
+					toggleEditMode()
+				}
+			} message: {
+				Text("Are you sure you want to delete the selection?")
 			}
 			.listStyle(.plain)
 		}
 	}
 }
 
-/// Methods of CardsView..
+/// Methods of CardsView.
 private extension CardsView {
 	
 	private func deleteSelection() {
@@ -80,8 +108,8 @@ private extension CardsView {
 	
 	private func toggleEditMode() {
 		
-		guard !isTogglingEditMode else { return }
-		isTogglingEditMode.toggle()
+		guard !showEditMode else { return }
+		showEditMode.toggle()
 		if editMode == .active {
 			editMode = .inactive
 			multiSelection.removeAll()
@@ -89,7 +117,7 @@ private extension CardsView {
 			editMode = .active
 		}
 		DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
-			isTogglingEditMode.toggle()
+			showEditMode.toggle()
 		}
 	}
 }
@@ -102,8 +130,7 @@ private extension CardsView {
 		ToolbarItem(placement: .topBarLeading) {
 			if !multiSelection.isEmpty {
 				Button(role: .destructive) {
-					deleteSelection()
-					toggleEditMode()
+					showSelectedCards.toggle()
 				} label: {
 					Text("Delete (\(multiSelection.count))")
 				}
@@ -125,12 +152,12 @@ private extension CardsView {
 			Menu {
 				Menu {
 					Button {
-						showCard.toggle()
+						showNewCard.toggle()
 					} label: {
 						Label("New Card", systemImage: "plus.square.fill.on.square.fill")
 					}
 					Button {
-						showDeck.toggle()
+						showNewDeck.toggle()
 					} label: {
 						Label("New Deck", systemImage: "rectangle.stack.badge.play")
 					}
@@ -201,14 +228,14 @@ private extension CardsView {
 		let container = try ModelContainer(for: Card.self, configurations: ModelConfiguration(isStoredInMemoryOnly: true))
 		let context = container.mainContext
 		context.insert(Card(
-			frontEntry: "dig in",
+			frontEntry: "dig in hiogjsodklhk",
 			backEntry: "mangez!",
 			frontLanguage: .en_US,
 			backLanguage: .fr_FR
 		))
 		context.insert(Card(
 			frontEntry: "hello",
-			backEntry: "bonjour",
+			backEntry: "bonjourj kjj kksdhkldh ",
 			frontLanguage: .en_US,
 			backLanguage: .fr_FR
 		))

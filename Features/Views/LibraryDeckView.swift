@@ -9,7 +9,7 @@ import SwiftUI
 
 struct LibraryDeckView: View {
 	
-	@Environment(FileImageStorage.self) var storage
+	@Environment(FileImageStorage.self) private var storage
 	@Environment(\.dismiss) private var dismiss
 	
 	let deck: Deck

@@ -8,7 +8,7 @@
 import SwiftUI
 
 /// Add an extension for the view Image.
-/// Image() can now take a storage -> ``Image( String, FileImageStorage )``
+/// Image() can now take a path and a storage -> ``Image( String, FileImageStorage )``
 /// External Dependencies: FileImageStorage, Constants
 extension Image {
 	

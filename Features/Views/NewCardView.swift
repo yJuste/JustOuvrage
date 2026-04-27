@@ -14,19 +14,20 @@ struct NewCardView: View {
 	
 	@State private var preferences = Preferences.unique
 	
-	@Environment(\.modelContext) var context
-	@Environment(\.dismiss) var dismiss
+	@Environment(\.modelContext) private var context
+	@Environment(\.dismiss) private var dismiss
 	
 	@Query(sort: \Card.createdAt, order: .reverse) private var cards: [Card]
+	
+	@FocusState private var focusField: FocusField?
 	
 	@State private var frontEntry: String = ""
 	@State private var backEntry: String = ""
 	@State private var frontLanguage: Language = Preferences.unique.frontLanguage
 	@State private var backLanguage: Language = Preferences.unique.backLanguage
 	
-	@FocusState private var focusField: FocusField?
-	@State private var showFront: Bool = false
-	@State private var showBack: Bool = false
+	@State private var showFrontLanguage: Bool = false
+	@State private var showBackLanguage: Bool = false
 	@State private var showAddedCard: Bool = false
 	@State private var showAddedBanner: Bool = false
 	@State private var showCancelAlert: Bool = false
@@ -39,7 +40,7 @@ struct NewCardView: View {
 					VStack(spacing: 50) {
 						HStack(spacing: 40) {
 							Button {
-								showFront.toggle()
+								showFrontLanguage.toggle()
 							} label: {
 								Image(frontLanguage.flagAsset)
 									.resizable()
@@ -47,14 +48,14 @@ struct NewCardView: View {
 									.frame(width: 60, height: 60)
 									.clipShape(Circle())
 							}
-							.popover(isPresented: $showFront) {
+							.popover(isPresented: $showFrontLanguage) {
 								FlagPicker(selected: $frontLanguage)
 									.padding(25)
 									.presentationCompactAdaptation(.none)
 							}
 							Image(systemName: "arrow.left.arrow.right")
 							Button {
-								showBack.toggle()
+								showBackLanguage.toggle()
 							} label: {
 								Image(backLanguage.flagAsset)
 									.resizable()
@@ -62,7 +63,7 @@ struct NewCardView: View {
 									.frame(width: 60, height: 60)
 									.clipShape(Circle())
 							}
-							.popover(isPresented: $showBack) {
+							.popover(isPresented: $showBackLanguage) {
 								FlagPicker(selected: $backLanguage)
 									.padding(20)
 									.presentationCompactAdaptation(.none)
@@ -78,41 +79,6 @@ struct NewCardView: View {
 						}
 					}
 					.padding(30)
-					.toolbar {
-						ToolbarItem(placement: .topBarLeading) {
-							Button {
-								let newFrontEntry = frontEntry.trimmingCharacters(in: .whitespacesAndNewlines)
-								let newBackEntry = backEntry.trimmingCharacters(in: .whitespacesAndNewlines)
-								if newFrontEntry.isEmpty && newBackEntry.isEmpty {
-									dismiss()
-								} else {
-									showCancelAlert.toggle()
-								}
-							} label: {
-								Text("Cancel")
-							}
-						}
-						ToolbarItem(placement: .principal) {
-							Text("\(cards.first?.frontEntry ?? "Front Entry") : \(cards.first?.backEntry ?? "Back Entry")")
-								.font(.caption)
-						}
-						ToolbarItem(placement: .topBarTrailing) {
-							Button {
-								addCard()
-							} label: {
-								Label("Done", systemImage: "checkmark")
-							}
-							.buttonStyle(.borderedProminent)
-							.disabled(frontEntry.isEmpty || backEntry.isEmpty)
-						}
-					}
-					.onSubmit {
-						if focusField == .front {
-							focusField = .back
-						} else {
-							addCard()
-						}
-					}
 				}
 				.scrollDismissesKeyboard(.interactively)
 				.scrollIndicators(.hidden)
@@ -126,21 +92,40 @@ struct NewCardView: View {
 					}
 				}
 			}
-			.alert("Missing Information", isPresented: $showAddedCard) {
-				Button("Got it", role: .cancel) { }
-			} message: {
-				Text("Please fill in both sides before saving.")
-			}
-			.alert("New Card", isPresented: $showCancelAlert) {
-				Button("Discard Changes", role: .destructive) {
-					frontEntry = ""
-					backEntry = ""
-					focusField = nil
-					dismiss()
+			.toolbar {
+				ToolbarItem(placement: .topBarLeading) {
+					Button {
+						let newFrontEntry = frontEntry.trimmingCharacters(in: .whitespacesAndNewlines)
+						let newBackEntry = backEntry.trimmingCharacters(in: .whitespacesAndNewlines)
+						if newFrontEntry.isEmpty && newBackEntry.isEmpty {
+							dismiss()
+						} else {
+							showCancelAlert.toggle()
+						}
+					} label: {
+						Text("Cancel")
+					}
 				}
-				Button("Keep Editing", role: .cancel) { }
-			} message: {
-				Text("Are you sure you want to discard this new deck?")
+				ToolbarItem(placement: .principal) {
+					Text("\(cards.first?.frontEntry ?? "Front Entry") : \(cards.first?.backEntry ?? "Back Entry")")
+						.font(.caption)
+				}
+				ToolbarItem(placement: .topBarTrailing) {
+					Button {
+						addCard()
+					} label: {
+						Label("Done", systemImage: "checkmark")
+					}
+					.buttonStyle(.borderedProminent)
+					.disabled(frontEntry.isEmpty || backEntry.isEmpty)
+				}
+			}
+			.onSubmit {
+				if focusField == .front {
+					focusField = .back
+				} else {
+					addCard()
+				}
 			}
 			.onTapGesture {
 				focusField = nil
@@ -159,6 +144,22 @@ struct NewCardView: View {
 					.padding(.top, 0)
 					.transition(.move(edge: .top).combined(with: .opacity))
 				}
+			}
+			.alert("Missing Information", isPresented: $showAddedCard) {
+				Button("Got it", role: .cancel) { }
+			} message: {
+				Text("Please fill in both sides before saving.")
+			}
+			.alert("New Card", isPresented: $showCancelAlert) {
+				Button("Discard Changes", role: .destructive) {
+					frontEntry = ""
+					backEntry = ""
+					focusField = nil
+					dismiss()
+				}
+				Button("Keep Editing", role: .cancel) { }
+			} message: {
+				Text("Are you sure you want to discard this new deck?")
 			}
 		}
 	}
@@ -185,7 +186,6 @@ struct NewCardView: View {
 			return showAddedCard.toggle()
 		}
 		context.insert(Card(frontEntry: newFrontEntry, backEntry: newBackEntry, frontLanguage: frontLanguage, backLanguage: backLanguage))
-		
 		preferences.frontLanguage = frontLanguage
 		preferences.backLanguage = backLanguage
 		frontEntry = ""

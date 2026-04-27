@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-/// Configure the looking of Picker().segmented.
+/// Add a new default configuration for the appearance of a ``Picker.segmented``.
 enum PickerView {
 	
 	static func configure() {

@@ -12,9 +12,7 @@ import SwiftData
 @main
 struct JustOuvrageApp: App {
 	
-	init() {
-		PickerView.configure()
-	}
+	init() { PickerView.configure() }
 	
 	var body: some Scene {
 		WindowGroup {

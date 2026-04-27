@@ -16,6 +16,6 @@ struct SFSafariViewWrapper: UIViewControllerRepresentable {
 	func makeUIViewController(context: UIViewControllerRepresentableContext<Self>) -> SFSafariViewController {
 		SFSafariViewController(url: url)
 	}
-
+	
 	func updateUIViewController(_ uiViewController: SFSafariViewController, context: UIViewControllerRepresentableContext<SFSafariViewWrapper>) { }
 }

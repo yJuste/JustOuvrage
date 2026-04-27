@@ -13,16 +13,15 @@ import PhotosUI
 /// External Dependencies:
 struct NewDeckView: View {
 	
-	@Environment(\.modelContext) var context
-	@Environment(\.dismiss) var dismiss
+	@Environment(FileImageStorage.self) private var storage
+	@Environment(\.modelContext) private var context
+	@Environment(\.dismiss) private var dismiss
 	
-	@State private var storage = FileImageStorage()
 	@State private var selectedPhotoItem: PhotosPickerItem?
 	@State private var selectedImageData: Data?
-	@State private var showCancelAlert: Bool = false
 	@State private var deckName: String = ""
-	@State private var savedImageURL: String?
 	
+	@State private var showCancelAlert: Bool = false
 	@State private var showPhotoPicker: Bool = false
 	
 	var body: some View {
@@ -81,43 +80,42 @@ struct NewDeckView: View {
 							.padding()
 					}
 					.frame(maxWidth: .infinity, alignment: .bottom)
-					.toolbar {
-						ToolbarItem(placement: .topBarLeading) {
-							Button {
-								if !deckName.isEmpty || selectedImageData != nil {
-									showCancelAlert.toggle()
-								}
-							} label: {
-								Text("Cancel")
-							}
-						}
-						ToolbarItem(placement: .principal) {
-							Text("New Deck")
-						}
-						ToolbarItem(placement: .topBarTrailing) {
-							Button {
-								var image = "deck"
-								if let data = selectedImageData, let uiImage = UIImage(data: data) {
-									do {
-										image = try storage.save(image: uiImage)
-									} catch {
-										print(Errors.ImageError)
-									}
-								}
-								context.insert(Deck(name: deckName, image: image))
-								dismiss()
-							} label: {
-								Label("Done", systemImage: "checkmark")
-							}
-							.buttonStyle(.borderedProminent)
-							.disabled(deckName.isEmpty)
-						}
-					}
 				}
 				.scrollDismissesKeyboard(.interactively)
 				.scrollIndicators(.hidden)
 			}
-			.photosPicker(isPresented: $showPhotoPicker, selection: $selectedPhotoItem, matching: .images)
+			.toolbar {
+				ToolbarItem(placement: .topBarLeading) {
+					Button {
+						if !deckName.isEmpty || selectedImageData != nil {
+							showCancelAlert.toggle()
+						}
+					} label: {
+						Text("Cancel")
+					}
+				}
+				ToolbarItem(placement: .principal) {
+					Text("New Deck")
+				}
+				ToolbarItem(placement: .topBarTrailing) {
+					Button {
+						var image = "deck"
+						if let data = selectedImageData, let uiImage = UIImage(data: data) {
+							do {
+								image = try storage.save(image: uiImage)
+							} catch {
+								print(Errors.ImageError)
+							}
+						}
+						context.insert(Deck(name: deckName, image: image))
+						dismiss()
+					} label: {
+						Label("Done", systemImage: "checkmark")
+					}
+					.buttonStyle(.borderedProminent)
+					.disabled(deckName.isEmpty)
+				}
+			}
 			.onChange(of: selectedPhotoItem) { _, newItem in
 				guard let newItem else { return }
 				Task {
@@ -126,6 +124,7 @@ struct NewDeckView: View {
 					}
 				}
 			}
+			.photosPicker(isPresented: $showPhotoPicker, selection: $selectedPhotoItem, matching: .images)
 			.alert("New Deck", isPresented: $showCancelAlert) {
 				Button("Discard Changes", role: .destructive) { dismiss() }
 				Button("Keep Editing", role: .cancel) { }
@@ -137,5 +136,9 @@ struct NewDeckView: View {
 }
 
 #Preview {
-	NewDeckView()
+	let container = try! ModelContainer(for: Deck.self, configurations: ModelConfiguration(isStoredInMemoryOnly: true))
+	
+	return NewDeckView()
+		.modelContainer(container)
+		.environment(FileImageStorage())
 }
