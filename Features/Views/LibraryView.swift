@@ -24,53 +24,59 @@ struct LibraryView: View {
 	var body: some View {
 		NavigationStack {
 			List {
-				NavigationLink {
-					CardsView()
-				} label: {
-					Label("Cards", systemImage: "text.pad.header")
-				}
-				NavigationLink {
-					DecksView()
-				} label: {
-					Label("Decks", systemImage: "rectangle.stack.fill")
-				}
-				Text("Recently Opened")
-					.font(.system(size: 23, weight: .semibold))
-					.foregroundStyle(.primary)
-					.listRowSeparator(.hidden)
-					.padding(.top, 5)
-					.padding(.bottom, -20)
-					.padding(.leading, 3)
-				LazyVGrid(columns: [GridItem(.adaptive(minimum: 140), spacing: 10)], spacing: 10) {
-					ForEach(decks) { deck in
-						Button {
-							item = deck
-						} label: {
-							VStack(alignment: .leading, spacing: 6) {
-								Image(image: deck.image, storage: storage)
-									.resizable()
-									.scaledToFill()
-									.frame(width: 162, height: 162)
-									.aspectRatio(1, contentMode: .fill)
-									.clipped()
-									.clipShape(RoundedRectangle(cornerRadius: 8))
-									.matchedTransitionSource(id: deck.id, in: namespace)
-								VStack(alignment: .leading) {
-									Text(deck.name)
-										.font(.system(size: 16, weight: .semibold, design: .default))
-									Text(deck.depiction)
-										.font(.system(size: 16, weight: .regular, design: .default))
-										.foregroundStyle(.secondary)
-								}
-								.padding(.bottom, 9)
-							}
-						}
-						.buttonStyle(.plain)
+				Section {
+					NavigationLink {
+						CardsView()
+					} label: {
+						Label("Cards", systemImage: "text.pad.header")
+					}
+					NavigationLink {
+						DecksView()
+					} label: {
+						Label("Decks", systemImage: "rectangle.stack.fill")
 					}
 				}
-				.listRowSeparator(.hidden)
-				.padding(.horizontal, 4)
-				.padding(.top, -3)
+				Section {
+					Text("Recently Opened")
+						.font(.system(size: 23, weight: .semibold))
+						.foregroundStyle(.primary)
+						.listRowSeparator(.hidden)
+						.padding(.top, 5)
+						.padding(.bottom, -20)
+						.padding(.leading, 3)
+				}
+				Section {
+					LazyVGrid(columns: [GridItem(.adaptive(minimum: 140), spacing: 10)], spacing: 10) {
+						ForEach(decks) { deck in
+							Button {
+								item = deck
+							} label: {
+								VStack(alignment: .leading, spacing: 6) {
+									Image(image: deck.image, storage: storage)
+										.resizable()
+										.scaledToFill()
+										.frame(width: 162, height: 162)
+										.aspectRatio(1, contentMode: .fill)
+										.clipped()
+										.clipShape(RoundedRectangle(cornerRadius: 8))
+										.matchedTransitionSource(id: deck.id, in: namespace)
+									VStack(alignment: .leading) {
+										Text(deck.name)
+											.font(.system(size: 16, weight: .semibold, design: .default))
+										Text(deck.depiction)
+											.font(.system(size: 16, weight: .regular, design: .default))
+											.foregroundStyle(.secondary)
+									}
+									.padding(.bottom, 9)
+								}
+							}
+							.buttonStyle(.plain)
+						}
+					}
+					.listRowSeparator(.hidden)
+					.padding(.horizontal, 4)
+					.padding(.top, -3)
+				}
 			}
 			.toolbar { toolbar }
 			.navigationTitle("Library")

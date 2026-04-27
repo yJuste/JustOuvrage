@@ -99,6 +99,10 @@ struct NewDeckView: View {
 				}
 				ToolbarItem(placement: .topBarTrailing) {
 					Button {
+						let newDeckName = deckName.trimmingCharacters(in: .whitespacesAndNewlines)
+						if newDeckName.isEmpty {
+							return showCancelAlert.toggle()
+						}
 						var image = "deck"
 						if let data = selectedImageData, let uiImage = UIImage(data: data) {
 							do {
@@ -107,7 +111,7 @@ struct NewDeckView: View {
 								print(Errors.ImageError)
 							}
 						}
-						context.insert(Deck(name: deckName, image: image))
+						context.insert(Deck(name: newDeckName, image: image))
 						dismiss()
 					} label: {
 						Label("Done", systemImage: "checkmark")

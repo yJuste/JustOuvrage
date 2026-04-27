@@ -10,7 +10,10 @@ import SwiftUI
 struct CardView: View {
 	
 	@Binding var card: Card
-	@State private var showSafariExtension: Bool = false
+	
+	@State private var showForvo: Bool = false
+	@State private var showWordReference: Bool = false
+	@State private var showGoogle: Bool = false
 	
 	var body: some View {
 		NavigationStack {
@@ -46,7 +49,7 @@ struct CardView: View {
 						.pickerStyle(.segmented)
 						HStack {
 							Button {
-								showSafariExtension.toggle()
+								showForvo.toggle()
 							} label: {
 								Text("Forvo")
 									.font(.system(size: 15, weight: .medium))
@@ -55,7 +58,7 @@ struct CardView: View {
 									.glassEffect(.regular.interactive())
 							}
 							Button {
-								showSafariExtension.toggle()
+								showWordReference.toggle()
 							} label: {
 								Text("Word Reference")
 									.font(.system(size: 15, weight: .medium))
@@ -64,7 +67,7 @@ struct CardView: View {
 									.glassEffect(.regular.interactive())
 							}
 							Button {
-								showSafariExtension.toggle()
+								showGoogle.toggle()
 							} label: {
 								Text("Google")
 									.font(.system(size: 15, weight: .medium))
@@ -78,8 +81,14 @@ struct CardView: View {
 					.padding()
 				}
 			}
-			.fullScreenCover(isPresented: $showSafariExtension) {
+			.fullScreenCover(isPresented: $showForvo) {
+				SFSafariViewWrapper(url: URL(string: "https://forvo.com/word/teen/#en_usa")!)
+			}
+			.fullScreenCover(isPresented: $showGoogle) {
 				SFSafariViewWrapper(url: URL(string: "https://www.google.com/search?q=drip+definition&hl=en&gl=us")!)
+			}
+			.fullScreenCover(isPresented: $showWordReference) {
+				SFSafariViewWrapper(url: URL(string: "https://www.wordreference.com/enfr/get%20off")!)
 			}
 		}
 	}
