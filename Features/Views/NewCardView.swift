@@ -12,8 +12,6 @@ import SwiftData
 /// External Dependencies: Card, FlagPicker, SplendidField
 struct NewCardView: View {
 	
-	@State private var preferences = Preferences.unique
-	
 	@Environment(\.modelContext) private var context
 	@Environment(\.dismiss) private var dismiss
 	
@@ -21,6 +19,7 @@ struct NewCardView: View {
 	
 	@FocusState private var focusField: FocusField?
 	
+	@State private var preferences: Preferences = Preferences.unique
 	@State private var frontEntry: String = ""
 	@State private var backEntry: String = ""
 	@State private var frontLanguage: Language = Preferences.unique.frontLanguage

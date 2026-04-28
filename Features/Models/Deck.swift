@@ -10,7 +10,7 @@ import Foundation
 
 /// A model for a ``deck`` of cards.
 /// External Dependencies: Card
-@Model final class Deck {
+@Model final class Deck: Identifiable {
 	
 	var id: String
 	var name: String

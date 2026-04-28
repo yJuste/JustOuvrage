@@ -13,9 +13,9 @@ import os // MARK: debug
 /// External Dependencies: Card, Constants
 struct SearchFocusView: View {
 	
-	@Environment(\.isSearching) private var isSearching
-	
 	@Binding var search: String
+	
+	@Environment(\.isSearching) private var isSearching
 	
 	@Query(filter: #Predicate<Card> { $0.lastViewedAt != nil }, sort: \Card.lastViewedAt, order: .reverse) private var recents: [Card]
 	

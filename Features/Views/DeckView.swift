@@ -1,0 +1,177 @@
+//
+//  DeckView.swift
+//  JustOuvrage
+//
+//  Created by Jules Longin on 4/28/26.
+//
+
+import SwiftUI
+import SwiftData
+
+struct DeckView: View {
+	
+	let deck: Deck
+	var namespace: Namespace.ID
+	
+	@Environment(FileImageStorage.self) private var storage
+	@Environment(\.dismiss) private var dismiss
+	
+	@State private var showToolbar: Bool = false
+	@State private var showSheet: Bool = false
+	
+	var body: some View {
+		NavigationStack {
+			ScrollViewReader { proxy in
+				ScrollView {
+					VStack {
+						Image(image: deck.image, storage: storage)
+							.resizable()
+							.scaledToFill()
+							.frame(width: 235, height: 235)
+							.aspectRatio(1, contentMode: .fit)
+							.clipShape(RoundedRectangle(cornerRadius: 8))
+							.shadow(color: .black.opacity(0.3), radius: 15)
+							.navigationTransition(.zoom(sourceID: deck.id, in: namespace))
+						VStack(alignment: .center, spacing: 6) {
+							Text(deck.name)
+								.font(.system(size: 25, weight: .bold))
+								.multilineTextAlignment(.center)
+							Text("Jules Longin")
+								.font(.title3)
+								.foregroundStyle(.secondary)
+						}
+						.padding(.top, 18)
+						.padding(.horizontal, 50)
+						VStack(alignment: .center) {
+							Text("2024⋅en_US ↔ fr_FR")
+								.font(.system(size: 12, weight: .semibold))
+								.foregroundStyle(.secondary)
+						}
+						.padding(.top, 1)
+						Spacer()
+						GlassEffectContainer {
+							HStack(alignment: .center) {
+								Button {
+									//
+								} label: {
+									Image(systemName: "shuffle")
+										.font(.system(size: 20, weight: .semibold))
+										.frame(width: 50, height: 50)
+										.glassEffect(.regular.tint(.secondary.opacity(0.2)).interactive())
+								}
+								Button {
+									//
+								} label: {
+									Label("Play", systemImage: "arrowtriangle.forward.fill")
+										.font(.system(size: 20, weight: .semibold))
+										.frame(width: 150, height: 50)
+										.glassEffect(.regular.tint(.accentColor).interactive())
+								}
+								Button {
+									//
+								} label: {
+									Image(systemName: "arrow.down")
+										.font(.system(size: 20, weight: .semibold))
+										.frame(width: 50, height: 50)
+										.glassEffect(.regular.tint(.secondary.opacity(0.2)).interactive())
+								}
+							}
+						}
+						.tint(.primary)
+						.padding(.top, 10)
+						VStack {
+							Text(deck.depiction)
+								.foregroundStyle(.secondary)
+								.lineLimit(2)
+								.multilineTextAlignment(.leading)
+								.onTapGesture {
+									showSheet.toggle()
+								}
+						}
+						.padding(.horizontal)
+						.padding(.top, 10)
+						if !deck.cards.isEmpty {
+							Divider()
+								.padding(.horizontal)
+						}
+						LazyVStack(alignment: .leading) {
+							ForEach(deck.cards) { card in
+								Button {
+									//
+								} label: {
+									VStack(alignment: .leading, spacing: 5) {
+										Text(card.frontEntry)
+											.font(.subheadline)
+										Text(card.backEntry)
+											.font(.subheadline)
+											.foregroundStyle(.gray)
+									}
+									.frame(maxWidth: .infinity, alignment: .leading)
+									.padding(.vertical, 3)
+									.padding(.horizontal, 15)
+								}
+								.buttonStyle(.plain)
+								Divider()
+									.padding(.horizontal)
+							}
+						}
+					}
+					.frame(maxWidth: .infinity)
+					.padding(.top, 17)
+				}
+			}
+			.toolbar { toolbar }
+			.sheet(isPresented: $showSheet) {
+				ScrollView {
+					Text(deck.depiction)
+						.padding(.vertical, 20)
+						.padding(.horizontal, 20)
+				}
+			}
+		}
+	}
+}
+
+private extension DeckView {
+	
+	@ToolbarContentBuilder private var toolbar: some ToolbarContent {
+		
+		ToolbarItem(placement: .topBarTrailing) {
+			Button {
+				//
+			} label: {
+				Image(systemName: "ellipsis")
+			}
+		}
+	}
+}
+
+#Preview {
+	
+	let deck = Deck(name: "Hello", image: "deck")
+	
+	let card1 = Card(
+		frontEntry: "Hello",
+		backEntry: "Bonjour",
+		frontLanguage: .en_GB,
+		backLanguage: .fr_CA
+	)
+	
+	let card2 = Card(
+		frontEntry: "Goodbye",
+		backEntry: "Au revoir",
+		frontLanguage: .en_GB,
+		backLanguage: .fr_CA
+	)
+	
+	deck.cards = [card1, card2]
+	card1.decks = [deck]
+	card2.decks = [deck]
+	
+	let config = ModelConfiguration(isStoredInMemoryOnly: true)
+	let container = try! ModelContainer(for: Deck.self, Card.self, configurations: config)
+	
+	return DeckView(deck: deck, namespace: Namespace().wrappedValue)
+		.environment(FileImageStorage())
+		.modelContainer(container)
+}

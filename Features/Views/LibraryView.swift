@@ -78,13 +78,13 @@ struct LibraryView: View {
 					.padding(.top, -3)
 				}
 			}
+			.navigationDestination(item: $item) { deck in
+				DeckView(deck: deck, namespace: namespace)
+			}
 			.toolbar { toolbar }
 			.navigationTitle("Library")
 			.toolbarTitleDisplayMode(.inlineLarge)
 			.listStyle(.plain)
-			.fullScreenCover(item: $item) { deck in
-				LibraryDeckView(deck: deck, namespace: namespace)
-			}
 			.sheet(isPresented: $showCard) {
 				NewCardView()
 					.presentationDetents([.height(520), .large])
