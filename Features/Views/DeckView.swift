@@ -16,8 +16,11 @@ struct DeckView: View {
 	@Environment(FileImageStorage.self) private var storage
 	@Environment(\.dismiss) private var dismiss
 	
+	@State private var selectedCard: Card?
+	@State private var showCard: Bool = false
+	
 	@State private var showToolbar: Bool = false
-	@State private var showSheet: Bool = false
+	@State private var showDepiction: Bool = false
 	@State private var showCardsToDeck: Bool = false
 	
 	var body: some View {
@@ -86,7 +89,7 @@ struct DeckView: View {
 								.lineLimit(2)
 								.multilineTextAlignment(.leading)
 								.onTapGesture {
-									showSheet.toggle()
+									showDepiction.toggle()
 								}
 						}
 						.padding(.horizontal)
@@ -97,7 +100,8 @@ struct DeckView: View {
 							ForEach(deck.cards.indices, id: \.self) { index in
 								let card = deck.cards[index]
 								Button {
-									//
+									selectedCard = card
+									showCard = true
 								} label: {
 									HStack(spacing: 10) {
 										Text("\(index + 1)")
@@ -115,6 +119,7 @@ struct DeckView: View {
 									}
 									.padding(.vertical, 3)
 									.padding(.horizontal, 15)
+									.contentShape(Rectangle())
 								}
 								.buttonStyle(.plain)
 								Divider()
@@ -141,7 +146,15 @@ struct DeckView: View {
 				.scrollIndicators(.hidden)
 			}
 			.toolbar { toolbar }
-			.sheet(isPresented: $showSheet) {
+			.sheet(isPresented: $showCard) {
+				if let _ = selectedCard {
+					CardView(card: Binding(get: { selectedCard! }, set: { selectedCard = $0 }))
+						.presentationDetents([.height(180)])
+						.presentationBackgroundInteraction(.enabled)
+						.presentationDragIndicator(.hidden)
+				}
+			}
+			.sheet(isPresented: $showDepiction) {
 				ScrollView {
 					Text(deck.depiction)
 						.padding(.vertical, 20)
