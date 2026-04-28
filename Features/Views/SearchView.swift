@@ -121,7 +121,7 @@ extension SearchView {
 		case card(Card)
 		case deck(Deck)
 		
-		var id: String {
+		var id: UUID {
 			switch self {
 			case .card(let card): return card.id
 			case .deck(let deck): return deck.id

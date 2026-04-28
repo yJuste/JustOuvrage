@@ -10,9 +10,9 @@ import Foundation
 
 /// A model for a ``deck`` of cards.
 /// External Dependencies: Card
-@Model final class Deck: Identifiable {
+@Model final class Deck {
 	
-	var id: String
+	var id: UUID
 	var name: String
 	var depiction: String
 	// MARK: var creator: Creator
@@ -26,7 +26,7 @@ import Foundation
 	private(set) var lockDelete: Bool
 	
 	init(name: String, image: String) {
-		self.id = UUID().uuidString
+		self.id = UUID()
 		self.name = name
 		self.depiction = ""
 		self.image = image

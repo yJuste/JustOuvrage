@@ -18,6 +18,7 @@ struct DeckView: View {
 	
 	@State private var showToolbar: Bool = false
 	@State private var showSheet: Bool = false
+	@State private var showAddCards = false
 	
 	var body: some View {
 		NavigationStack {
@@ -128,10 +129,14 @@ struct DeckView: View {
 						.padding(.horizontal, 20)
 				}
 			}
+			.sheet(isPresented: $showAddCards) {
+				CardsToDeck(deck: $deck)
+			}
 		}
 	}
 }
 
+/// Toolbar.
 private extension DeckView {
 	
 	@ToolbarContentBuilder private var toolbar: some ToolbarContent {
@@ -144,8 +149,12 @@ private extension DeckView {
 			}
 		}
 		ToolbarItem(placement: .topBarTrailing) {
-			Button {
-				//
+			Menu {
+				Button {
+					showAddCards.toggle()
+				} label: {
+					Label("Add cards", systemImage: "plus.square.fill.on.square.fill")
+				}
 			} label: {
 				Image(systemName: "ellipsis")
 			}

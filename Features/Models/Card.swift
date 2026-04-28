@@ -10,9 +10,9 @@ import Foundation
 
 /// A Model for a ``Card``.
 /// External Dependencies: Language
-@Model final class Card: Identifiable {
+@Model final class Card {
 	
-	var id: String
+	var id: UUID
 	var frontEntry: String
 	var backEntry: String
 	var frontLanguage: Language
@@ -25,7 +25,7 @@ import Foundation
 	private(set) var createdAt: Date
 	
 	init(frontEntry: String, backEntry: String, frontLanguage: Language, backLanguage: Language) {
-		self.id = UUID().uuidString
+		self.id = UUID()
 		self.frontEntry = frontEntry
 		self.backEntry = backEntry
 		self.frontLanguage = frontLanguage
