@@ -18,7 +18,7 @@ struct DeckView: View {
 	
 	@State private var showToolbar: Bool = false
 	@State private var showSheet: Bool = false
-	@State private var showAddCards = false
+	@State private var showCardsToDeck: Bool = false
 	
 	var body: some View {
 		NavigationStack {
@@ -37,14 +37,14 @@ struct DeckView: View {
 							Text(deck.name)
 								.font(.system(size: 25, weight: .bold))
 								.multilineTextAlignment(.center)
-							Text("Jules Longin")
+							Text(deck.author)
 								.font(.title3)
 								.foregroundStyle(.secondary)
 						}
 						.padding(.top, 18)
 						.padding(.horizontal, 50)
 						VStack(alignment: .center) {
-							Text("2024⋅en_US ↔ fr_FR")
+							Text("\(deck.createdAt.formatted(.dateTime.year())) ⋅ " + Set(deck.cards.flatMap {[$0.frontLanguage, $0.backLanguage]}).sorted { $0.rawValue < $1.rawValue }.map { $0.rawValue }.joined(separator: " ⋅ "))
 								.font(.system(size: 12, weight: .semibold))
 								.foregroundStyle(.secondary)
 						}
@@ -91,23 +91,28 @@ struct DeckView: View {
 						}
 						.padding(.horizontal)
 						.padding(.top, 10)
-						if !deck.cards.isEmpty {
-							Divider()
-								.padding(.horizontal)
-						}
+						Divider()
+							.padding(.horizontal)
 						LazyVStack(alignment: .leading) {
-							ForEach(deck.cards) { card in
+							ForEach(deck.cards.indices, id: \.self) { index in
+								let card = deck.cards[index]
 								Button {
 									//
 								} label: {
-									VStack(alignment: .leading, spacing: 5) {
-										Text(card.frontEntry)
-											.font(.subheadline)
-										Text(card.backEntry)
-											.font(.subheadline)
-											.foregroundStyle(.gray)
+									HStack(spacing: 10) {
+										Text("\(index + 1)")
+											.font(.callout)
+											.foregroundStyle(.secondary)
+											.frame(width: 30, alignment: .center)
+										VStack(alignment: .leading, spacing: 5) {
+											Text(card.frontEntry)
+												.font(.subheadline)
+											Text(card.backEntry)
+												.font(.subheadline)
+												.foregroundStyle(.gray)
+										}
+										.frame(maxWidth: .infinity, alignment: .leading)
 									}
-									.frame(maxWidth: .infinity, alignment: .leading)
 									.padding(.vertical, 3)
 									.padding(.horizontal, 15)
 								}
@@ -116,10 +121,24 @@ struct DeckView: View {
 									.padding(.horizontal)
 							}
 						}
+						VStack(alignment: .leading) {
+							Text(deck.createdAt, format: .dateTime.year().month().day())
+								.foregroundStyle(.secondary)
+							Text("\(deck.cards.count) cards")
+								.foregroundStyle(.secondary)
+							Text("\(deck.author)")
+								.foregroundStyle(.secondary)
+							Text(Set(deck.cards.flatMap {[$0.frontLanguage, $0.backLanguage]}).sorted { $0.language < $1.language }.map { $0.language }.joined(separator: " ⋅ "))
+								.font(.caption)
+								.foregroundStyle(.secondary)
+						}
+						.frame(maxWidth: .infinity, alignment: .leading)
+						.padding()
 					}
 					.frame(maxWidth: .infinity)
 					.padding(.top, 17)
 				}
+				.scrollIndicators(.hidden)
 			}
 			.toolbar { toolbar }
 			.sheet(isPresented: $showSheet) {
@@ -129,7 +148,7 @@ struct DeckView: View {
 						.padding(.horizontal, 20)
 				}
 			}
-			.sheet(isPresented: $showAddCards) {
+			.sheet(isPresented: $showCardsToDeck) {
 				CardsToDeck(deck: $deck)
 			}
 		}
@@ -151,7 +170,7 @@ private extension DeckView {
 		ToolbarItem(placement: .topBarTrailing) {
 			Menu {
 				Button {
-					showAddCards.toggle()
+					showCardsToDeck.toggle()
 				} label: {
 					Label("Add cards", systemImage: "plus.square.fill.on.square.fill")
 				}

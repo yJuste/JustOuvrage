@@ -20,8 +20,45 @@
     "%lld" : {
 
     },
-    "2024⋅en_US ↔ fr_FR" : {
-
+    "%lld cards" : {
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld card"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld cards"
+                }
+              }
+            }
+          }
+        },
+        "fr" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "needs_review",
+                  "value" : "%lld carte"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld cartes"
+                }
+              }
+            }
+          }
+        }
+      }
     },
     "Add" : {
 
@@ -123,9 +160,6 @@
 
     },
     "Hola" : {
-
-    },
-    "Jules Longin" : {
 
     },
     "Keep Editing" : {

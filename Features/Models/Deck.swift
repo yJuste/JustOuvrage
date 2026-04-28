@@ -15,7 +15,7 @@ import Foundation
 	var id: UUID
 	var name: String
 	var depiction: String
-	// MARK: var creator: Creator
+	var author: String
 	var image: String
 	var lastViewedAt: Date?
 	var lastOpenedAt: Date?
@@ -29,6 +29,7 @@ import Foundation
 		self.id = UUID()
 		self.name = name
 		self.depiction = ""
+		self.author = "[author]"
 		self.image = image
 		self.cards = []
 		self.createdAt = .now
