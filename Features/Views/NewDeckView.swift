@@ -74,7 +74,6 @@ struct NewDeckView: View {
 						TextField("Deck Name", text: $deckName)
 							.bold()
 							.multilineTextAlignment(.center)
-							.lineLimit(1)
 							.padding(12)
 							.background(Capsule().fill(.thinMaterial))
 							.padding()

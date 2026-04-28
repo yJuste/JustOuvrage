@@ -10,7 +10,7 @@ import SwiftData
 
 struct DeckView: View {
 	
-	let deck: Deck
+	@Binding var deck: Deck
 	var namespace: Namespace.ID
 	
 	@Environment(FileImageStorage.self) private var storage
@@ -136,6 +136,13 @@ private extension DeckView {
 	
 	@ToolbarContentBuilder private var toolbar: some ToolbarContent {
 		
+		ToolbarItem(placement: .topBarLeading) {
+			Button {
+				dismiss()
+			} label: {
+				Image(systemName: "chevron.backward")
+			}
+		}
 		ToolbarItem(placement: .topBarTrailing) {
 			Button {
 				//
@@ -147,31 +154,16 @@ private extension DeckView {
 }
 
 #Preview {
+	DeckViewWrapper()
+}
+
+struct DeckViewWrapper: View {
 	
-	let deck = Deck(name: "Hello", image: "deck")
+	@State private var deck = Deck(name: "Hello", image: "deck")
+	@Namespace private var namespace
 	
-	let card1 = Card(
-		frontEntry: "Hello",
-		backEntry: "Bonjour",
-		frontLanguage: .en_GB,
-		backLanguage: .fr_CA
-	)
-	
-	let card2 = Card(
-		frontEntry: "Goodbye",
-		backEntry: "Au revoir",
-		frontLanguage: .en_GB,
-		backLanguage: .fr_CA
-	)
-	
-	deck.cards = [card1, card2]
-	card1.decks = [deck]
-	card2.decks = [deck]
-	
-	let config = ModelConfiguration(isStoredInMemoryOnly: true)
-	let container = try! ModelContainer(for: Deck.self, Card.self, configurations: config)
-	
-	return DeckView(deck: deck, namespace: Namespace().wrappedValue)
-		.environment(FileImageStorage())
-		.modelContainer(container)
+	var body: some View {
+		DeckView(deck: $deck, namespace: namespace)
+			.environment(FileImageStorage())
+	}
 }

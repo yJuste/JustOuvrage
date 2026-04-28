@@ -19,9 +19,10 @@ struct CardsView: View {
 	@Query(sort: \Card.createdAt, order: .reverse) private var cards: [Card]
 	
 	@State private var item: Card?
-	@State private var selectedCard: Card?
-	@State private var isPresented: Bool = false
 	@State private var multiSelection: Set<Card> = []
+	
+	@State private var selectedCard: Card?
+	@State private var showCard: Bool = false
 	
 	@State private var editMode: EditMode = .inactive
 	@State private var showEditMode: Bool = false
@@ -41,7 +42,7 @@ struct CardsView: View {
 						Button {
 							Debug.print(level: .info, card: card)
 							selectedCard = card
-							isPresented = true
+							showCard = true
 						} label: {
 							VStack(alignment: .leading, spacing: 5) {
 								Text(card.frontEntry)
@@ -68,11 +69,12 @@ struct CardsView: View {
 			.animation(.easeInOut(duration: 0.15), value: multiSelection.isEmpty)
 			.animation(.easeInOut(duration: 0.15), value: editMode)
 			.environment(\.editMode, $editMode)
-			.sheet(isPresented: $isPresented) {
+			.sheet(isPresented: $showCard) {
 				if let _ = selectedCard {
 					CardView(card: Binding(get: { selectedCard! }, set: { selectedCard = $0 }))
 						.presentationDetents([.height(180)])
 						.presentationBackgroundInteraction(.enabled)
+						.presentationDragIndicator(.hidden)
 				}
 			}
 			.sheet(isPresented: $showNewCard) {

@@ -16,10 +16,11 @@ struct LibraryView: View {
 	
 	@Query(sort: \Deck.lastOpenedAt, order: .reverse) private var decks: [Deck]
 	
-	@State private var item: Deck?
-	
-	@State private var showCard: Bool = false
+	@State private var selectedDeck: Deck?
 	@State private var showDeck: Bool = false
+	
+	@State private var showNewCard: Bool = false
+	@State private var showNewDeck: Bool = false
 	
 	var body: some View {
 		NavigationStack {
@@ -27,11 +28,17 @@ struct LibraryView: View {
 				Section {
 					NavigationLink {
 						CardsView()
+							.onAppear {
+								showDeck = false
+							}
 					} label: {
 						Label("Cards", systemImage: "text.pad.header")
 					}
 					NavigationLink {
 						DecksView()
+							.onAppear() {
+								showDeck = false
+							}
 					} label: {
 						Label("Decks", systemImage: "rectangle.stack.fill")
 					}
@@ -49,7 +56,8 @@ struct LibraryView: View {
 					LazyVGrid(columns: [GridItem(.adaptive(minimum: 140), spacing: 10)], spacing: 10) {
 						ForEach(decks) { deck in
 							Button {
-								item = deck
+								selectedDeck = deck
+								showDeck = true
 							} label: {
 								VStack(alignment: .leading, spacing: 6) {
 									Image(image: deck.image, storage: storage)
@@ -63,9 +71,11 @@ struct LibraryView: View {
 									VStack(alignment: .leading) {
 										Text(deck.name)
 											.font(.system(size: 16, weight: .semibold, design: .default))
+											.lineLimit(1)
 										Text(deck.depiction)
 											.font(.system(size: 16, weight: .regular, design: .default))
 											.foregroundStyle(.secondary)
+											.lineLimit(1)
 									}
 									.padding(.bottom, 9)
 								}
@@ -78,19 +88,24 @@ struct LibraryView: View {
 					.padding(.top, -3)
 				}
 			}
-			.navigationDestination(item: $item) { deck in
-				DeckView(deck: deck, namespace: namespace)
+			.sheet(isPresented: $showDeck) {
+				if let _ = selectedDeck {
+					DeckView(deck: Binding(get: { selectedDeck! }, set: { selectedDeck = $0 }), namespace: namespace)
+						.presentationDetents([.height(320), .large])
+						.presentationBackgroundInteraction(.enabled)
+						.presentationDragIndicator(.hidden)
+				}
 			}
 			.toolbar { toolbar }
 			.navigationTitle("Library")
 			.toolbarTitleDisplayMode(.inlineLarge)
 			.listStyle(.plain)
-			.sheet(isPresented: $showCard) {
+			.sheet(isPresented: $showNewCard) {
 				NewCardView()
 					.presentationDetents([.height(520), .large])
 					.presentationDragIndicator(.visible)
 			}
-			.sheet(isPresented: $showDeck) {
+			.sheet(isPresented: $showNewDeck) {
 				NewDeckView()
 					.presentationDetents([.medium, .large])
 					.presentationDragIndicator(.visible)
@@ -107,12 +122,12 @@ private extension LibraryView {
 			Menu {
 				Menu {
 					Button {
-						showCard.toggle()
+						showNewCard.toggle()
 					} label: {
 						Label("New Card", systemImage: "plus.square.fill.on.square.fill")
 					}
 					Button {
-						showDeck.toggle()
+						showNewDeck.toggle()
 					} label: {
 						Label("New Deck", systemImage: "rectangle.stack.badge.play")
 					}

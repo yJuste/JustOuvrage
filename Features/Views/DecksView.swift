@@ -20,12 +20,15 @@ struct DecksView: View {
 	@State private var item: Deck?
 	@State private var multiSelection: Set<Deck> = []
 	
+	@State private var selectedDeck: Deck?
+	@State private var showDeck: Bool = false
+	
 	@State private var editMode: EditMode = .inactive
 	@State private var showEditMode: Bool = false
 	
 	@State private var showNewCard: Bool = false
 	@State private var showNewDeck: Bool = false
-	@State private var showDeleteCard: Bool = false
+	@State private var showDeleteDeck: Bool = false
 	@State private var showSelectedDecks: Bool = false
 	
 	var body: some View {
@@ -34,7 +37,8 @@ struct DecksView: View {
 				ForEach(decks) { deck in
 					VStack(alignment: .leading) {
 						Button {
-							//
+							selectedDeck = deck
+							showDeck = true
 						} label: {
 							HStack(spacing: 12) {
 								Image(image: deck.image, storage: storage)
@@ -63,7 +67,7 @@ struct DecksView: View {
 						.contextMenu {
 							Button(role: .destructive) {
 								item = deck
-								showDeleteCard.toggle()
+								showDeleteDeck.toggle()
 							} label: {
 								Label("Delete from Library", systemImage: "trash")
 							}
@@ -95,6 +99,14 @@ struct DecksView: View {
 			.animation(.easeInOut(duration: 0.15), value: multiSelection.isEmpty)
 			.animation(.easeInOut(duration: 0.15), value: editMode)
 			.environment(\.editMode, $editMode)
+			.sheet(isPresented: $showDeck) {
+				if let _ = selectedDeck {
+					DeckView(deck: Binding(get: { selectedDeck! }, set: { selectedDeck = $0 }), namespace: namespace)
+						.presentationDetents([.height(320), .large])
+						.presentationBackgroundInteraction(.enabled)
+						.presentationDragIndicator(.hidden)
+				}
+			}
 			.sheet(isPresented: $showNewCard) {
 				NewCardView()
 					.presentationDetents([.height(520), .large])
@@ -105,7 +117,7 @@ struct DecksView: View {
 					.presentationDetents([.medium, .large])
 					.presentationDragIndicator(.visible)
 			}
-			.alert("Are you sure you want to delete this deck from your library?", isPresented: $showDeleteCard) {
+			.alert("Are you sure you want to delete this deck from your library?", isPresented: $showDeleteDeck) {
 				Button("Remove", role: .destructive) { if let item { context.delete(item) } }
 				Button("Cancel", role: .cancel) { }
 			}
