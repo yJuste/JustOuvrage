@@ -8,6 +8,8 @@
 import SwiftUI
 import SwiftData
 
+/// A view that shows every deck.
+/// External Dependencies: Card, Deck, FileImageStorage, DeckView, NewCardView, NewDeckView
 struct DecksView: View {
 	
 	@Environment(\.modelContext) private var context
@@ -18,7 +20,7 @@ struct DecksView: View {
 	@Query(sort: \Deck.lastOpenedAt, order: .reverse) private var decks: [Deck]
 	
 	@State private var item: Deck?
-	@State private var multiSelection: Set<Deck> = []
+	@State private var selection: Set<Deck> = []
 	
 	@State private var selectedDeck: Deck?
 	@State private var showDeck: Bool = false
@@ -33,7 +35,7 @@ struct DecksView: View {
 	
 	var body: some View {
 		NavigationStack {
-			List(selection: $multiSelection) {
+			List(selection: $selection) {
 				ForEach(decks) { deck in
 					VStack(alignment: .leading) {
 						Button {
@@ -96,7 +98,7 @@ struct DecksView: View {
 				}
 			}
 			.toolbar { toolbar }
-			.animation(.easeInOut(duration: 0.15), value: multiSelection.isEmpty)
+			.animation(.easeInOut(duration: 0.15), value: selection.isEmpty)
 			.animation(.easeInOut(duration: 0.15), value: editMode)
 			.environment(\.editMode, $editMode)
 			.sheet(isPresented: $showDeck) {
@@ -136,10 +138,10 @@ private extension DecksView {
 	
 	private func deleteSelection() {
 		
-		for card in multiSelection {
+		for card in selection {
 			context.delete(card)
 		}
-		multiSelection.removeAll()
+		selection.removeAll()
 	}
 	
 	private func toggleEditMode() {
@@ -148,7 +150,7 @@ private extension DecksView {
 		showEditMode.toggle()
 		if editMode == .active {
 			editMode = .inactive
-			multiSelection.removeAll()
+			selection.removeAll()
 		} else {
 			editMode = .active
 		}
@@ -164,11 +166,11 @@ private extension DecksView {
 	@ToolbarContentBuilder private var toolbar: some ToolbarContent {
 		
 		ToolbarItem(placement: .topBarLeading) {
-			if !multiSelection.isEmpty {
+			if !selection.isEmpty {
 				Button(role: .destructive) {
 					showSelectedDecks.toggle()
 				} label: {
-					Text("Delete (\(multiSelection.count))")
+					Text("Delete (\(selection.count))")
 				}
 			}
 		}
@@ -260,15 +262,8 @@ private extension DecksView {
 }
 
 #Preview {
-	
-	let container = try! ModelContainer(
-		for: Deck.self,
-		configurations: ModelConfiguration(isStoredInMemoryOnly: true)
-	)
-	
+	let container = try! ModelContainer(for: Deck.self, configurations: ModelConfiguration(isStoredInMemoryOnly: true))
 	let context = container.mainContext
-	
-	// seed data
 	context.insert(Deck(name: "Hello", image: "deck"))
 	context.insert(Deck(name: "Lucas", image: "deck"))
 	context.insert(Deck(name: "I love you", image: "deck"))
@@ -277,7 +272,6 @@ private extension DecksView {
 	context.insert(Deck(name: "Hello", image: "deck"))
 	context.insert(Deck(name: "Hello", image: "deck"))
 	context.insert(Deck(name: "Hello", image: "deck"))
-	
 	return DecksView()
 		.modelContainer(container)
 		.environment(FileImageStorage())

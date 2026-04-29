@@ -9,7 +9,7 @@ import SwiftUI
 import SwiftData
 
 /// The main View where everything comes through.
-/// External Dependencies: Card, HomeView, SafariExtensionView, SettingsView
+/// External Dependencies: NewCardView, LibraryView, SearchView
 struct ContentView: View {
 	
 	var body: some View {
@@ -24,7 +24,7 @@ struct ContentView: View {
 }
 
 /// An extension that creates the native tab view nowadays. (iOS 26.4.1)
-extension ContentView {
+private extension ContentView {
 	
 	@ViewBuilder func NativeTabView() -> some View {
 		

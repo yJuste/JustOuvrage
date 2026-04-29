@@ -9,7 +9,7 @@ import SwiftUI
 import SwiftData
 
 /// A view that can creates a new Card.
-/// External Dependencies: Card, FlagPicker, SplendidField
+/// External Dependencies: Card, FlagPicker, SplendidField, Preferences
 struct NewCardView: View {
 	
 	@Environment(\.modelContext) private var context
@@ -91,34 +91,7 @@ struct NewCardView: View {
 					}
 				}
 			}
-			.toolbar {
-				ToolbarItem(placement: .topBarLeading) {
-					Button {
-						let newFrontEntry = frontEntry.trimmingCharacters(in: .whitespacesAndNewlines)
-						let newBackEntry = backEntry.trimmingCharacters(in: .whitespacesAndNewlines)
-						if newFrontEntry.isEmpty && newBackEntry.isEmpty {
-							dismiss()
-						} else {
-							showCancelAlert.toggle()
-						}
-					} label: {
-						Text("Cancel")
-					}
-				}
-				ToolbarItem(placement: .principal) {
-					Text("\(cards.first?.frontEntry ?? "Front Entry") : \(cards.first?.backEntry ?? "Back Entry")")
-						.font(.caption)
-				}
-				ToolbarItem(placement: .topBarTrailing) {
-					Button {
-						addCard()
-					} label: {
-						Label("Done", systemImage: "checkmark")
-					}
-					.buttonStyle(.borderedProminent)
-					.disabled(frontEntry.isEmpty || backEntry.isEmpty)
-				}
-			}
+			.toolbar { toolbar }
 			.onSubmit {
 				if focusField == .front {
 					focusField = .back
@@ -162,6 +135,10 @@ struct NewCardView: View {
 			}
 		}
 	}
+}
+
+/// Methods of NewCardView.
+private extension NewCardView {
 	
 	func showAdded() {
 		withAnimation(.snappy) {
@@ -196,12 +173,46 @@ struct NewCardView: View {
 }
 
 /// An interface to use to toggle a focusState.
-extension NewCardView {
+private extension NewCardView {
 	
 	enum FocusField: Hashable {
 		
 		case front
 		case back
+	}
+}
+
+/// Toolbar.
+private extension NewCardView {
+	
+	@ToolbarContentBuilder private var toolbar: some ToolbarContent {
+		
+		ToolbarItem(placement: .topBarLeading) {
+			Button {
+				let newFrontEntry = frontEntry.trimmingCharacters(in: .whitespacesAndNewlines)
+				let newBackEntry = backEntry.trimmingCharacters(in: .whitespacesAndNewlines)
+				if newFrontEntry.isEmpty && newBackEntry.isEmpty {
+					dismiss()
+				} else {
+					showCancelAlert.toggle()
+				}
+			} label: {
+				Text("Cancel")
+			}
+		}
+		ToolbarItem(placement: .principal) {
+			Text("\(cards.first?.frontEntry ?? "Front Entry") : \(cards.first?.backEntry ?? "Back Entry")")
+				.font(.caption)
+		}
+		ToolbarItem(placement: .topBarTrailing) {
+			Button {
+				addCard()
+			} label: {
+				Label("Done", systemImage: "checkmark")
+			}
+			.buttonStyle(.borderedProminent)
+			.disabled(frontEntry.isEmpty || backEntry.isEmpty)
+		}
 	}
 }
 

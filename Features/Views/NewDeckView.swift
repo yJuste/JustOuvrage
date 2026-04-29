@@ -10,7 +10,7 @@ import SwiftData
 import PhotosUI
 
 /// A view that creates a new Deck.
-/// External Dependencies:
+/// External Dependencies: Deck, Errors, FileImageStorage
 struct NewDeckView: View {
 	
 	@Environment(FileImageStorage.self) private var storage
@@ -34,8 +34,7 @@ struct NewDeckView: View {
 							RoundedRectangle(cornerRadius: 10, style: .continuous)
 								.fill(.ultraThinMaterial)
 								.overlay {
-									if let data = selectedImageData,
-									   let uiImage = UIImage(data: data) {
+									if let data = selectedImageData, let uiImage = UIImage(data: data) {
 										Image(uiImage: uiImage)
 											.resizable()
 											.scaledToFill()
@@ -83,42 +82,7 @@ struct NewDeckView: View {
 				.scrollDismissesKeyboard(.interactively)
 				.scrollIndicators(.hidden)
 			}
-			.toolbar {
-				ToolbarItem(placement: .topBarLeading) {
-					Button {
-						if !deckName.isEmpty || selectedImageData != nil {
-							showCancelAlert.toggle()
-						}
-					} label: {
-						Text("Cancel")
-					}
-				}
-				ToolbarItem(placement: .principal) {
-					Text("New Deck")
-				}
-				ToolbarItem(placement: .topBarTrailing) {
-					Button {
-						let newDeckName = deckName.trimmingCharacters(in: .whitespacesAndNewlines)
-						if newDeckName.isEmpty {
-							return showCancelAlert.toggle()
-						}
-						var image = "deck"
-						if let data = selectedImageData, let uiImage = UIImage(data: data) {
-							do {
-								image = try storage.save(image: uiImage)
-							} catch {
-								print(Errors.ImageError)
-							}
-						}
-						context.insert(Deck(name: newDeckName, image: image))
-						dismiss()
-					} label: {
-						Label("Done", systemImage: "checkmark")
-					}
-					.buttonStyle(.borderedProminent)
-					.disabled(deckName.isEmpty)
-				}
-			}
+			.toolbar { toolbar }
 			.onChange(of: selectedPhotoItem) { _, newItem in
 				guard let newItem else { return }
 				Task {
@@ -134,6 +98,48 @@ struct NewDeckView: View {
 			} message: {
 				Text("Are you sure you want to discard this new deck?")
 			}
+		}
+	}
+}
+
+/// Toolbar.
+private extension NewDeckView {
+	
+	@ToolbarContentBuilder private var toolbar: some ToolbarContent {
+		
+		ToolbarItem(placement: .topBarLeading) {
+			Button {
+				if !deckName.isEmpty || selectedImageData != nil {
+					showCancelAlert.toggle()
+				}
+			} label: {
+				Text("Cancel")
+			}
+		}
+		ToolbarItem(placement: .principal) {
+			Text("New Deck")
+		}
+		ToolbarItem(placement: .topBarTrailing) {
+			Button {
+				let newDeckName = deckName.trimmingCharacters(in: .whitespacesAndNewlines)
+				if newDeckName.isEmpty {
+					return showCancelAlert.toggle()
+				}
+				var image = "deck"
+				if let data = selectedImageData, let uiImage = UIImage(data: data) {
+					do {
+						image = try storage.save(image: uiImage)
+					} catch {
+						print(Errors.ImageError)
+					}
+				}
+				context.insert(Deck(name: newDeckName, image: image))
+				dismiss()
+			} label: {
+				Label("Done", systemImage: "checkmark")
+			}
+			.buttonStyle(.borderedProminent)
+			.disabled(deckName.isEmpty)
 		}
 	}
 }

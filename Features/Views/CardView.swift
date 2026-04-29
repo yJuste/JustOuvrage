@@ -7,6 +7,8 @@
 
 import SwiftUI
 
+/// A view that displays a Card.
+/// External Dependencies: Card, SFSafariViewWrapper
 struct CardView: View {
 	
 	let card: Card
@@ -89,20 +91,20 @@ struct CardView: View {
 	}
 }
 
-//#Preview {
-//	CardPreviewWrapper()
-//}
-//
-//struct CardPreviewWrapper: View {
-//	
-//	@State private var card = Card(
-//		frontEntry: "hello",
-//		backEntry: "bonjour",
-//		frontLanguage: .en_US,
-//		backLanguage: .fr_CA
-//	)
-//	
-//	var body: some View {
-//		CardView(card: $card)
-//	}
-//}
+#Preview {
+	CardPreviewWrapper()
+}
+
+struct CardPreviewWrapper: View {
+	
+	@State private var card = Card(
+		frontEntry: "hello",
+		backEntry: "bonjour",
+		frontLanguage: .en_US,
+		backLanguage: .fr_CA
+	)
+	
+	var body: some View {
+		CardView(card: card)
+	}
+}

@@ -8,7 +8,7 @@
 import SwiftUI
 
 /// A view that can browse in Safari.
-/// External Dependencies: SFSafariViewWrapper.
+/// External Dependencies: SFSafariViewWrapper
 struct SafariExtensionView: View {
 	
 	@State private var showSafariExtension: Bool = false

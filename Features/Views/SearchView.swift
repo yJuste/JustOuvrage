@@ -10,7 +10,7 @@ import SwiftData
 import os // MARK: debug
 
 /// A view that shows the search scene.
-/// External Dependencies: Card, SearchFocusView, Constants
+/// External Dependencies: Card, Deck, SearchFocusView, Constants, FileImageStorage
 struct SearchView: View {
 	
 	@Environment(FileImageStorage.self) private var storage

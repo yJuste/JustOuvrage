@@ -8,6 +8,8 @@
 import SwiftUI
 import SwiftData
 
+/// A view that adds Cards to a Deck.
+/// External Dependencies: Card
 struct CardsToDeck: View {
 	
 	let deck: Deck
@@ -58,6 +60,7 @@ struct CardsToDeck: View {
 	}
 }
 
+/// Toolbar.
 private extension CardsToDeck {
 	
 	@ToolbarContentBuilder private var toolbar: some ToolbarContent {

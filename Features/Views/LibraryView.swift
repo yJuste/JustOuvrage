@@ -8,6 +8,8 @@
 import SwiftUI
 import SwiftData
 
+/// A view that shows the Library hub.
+/// External Dependencies: Card, Deck, FileImageStorage, CardsView, DecksView, DeckView, NewCardView, NewDeckView
 struct LibraryView: View {
 	
 	@Environment(FileImageStorage.self) var storage
@@ -114,6 +116,7 @@ struct LibraryView: View {
 	}
 }
 
+/// Toolbar.
 private extension LibraryView {
 	
 	@ToolbarContentBuilder private var toolbar: some ToolbarContent {
@@ -154,14 +157,8 @@ private extension LibraryView {
 
 #Preview {
 	
-	let container = try! ModelContainer(
-		for: Deck.self,
-		configurations: ModelConfiguration(isStoredInMemoryOnly: true)
-	)
-	
+	let container = try! ModelContainer(for: Deck.self, configurations: ModelConfiguration(isStoredInMemoryOnly: true))
 	let context = container.mainContext
-	
-	// seed data
 	context.insert(Deck(name: "Hello", image: "deck"))
 	context.insert(Deck(name: "Lucas", image: "deck"))
 	context.insert(Deck(name: "I love you", image: "deck"))
@@ -170,7 +167,6 @@ private extension LibraryView {
 	context.insert(Deck(name: "Hello", image: "deck"))
 	context.insert(Deck(name: "Hello", image: "deck"))
 	context.insert(Deck(name: "Hello", image: "deck"))
-	
 	return LibraryView()
 		.modelContainer(container)
 		.environment(FileImageStorage())

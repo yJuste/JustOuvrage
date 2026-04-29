@@ -8,6 +8,8 @@
 import SwiftUI
 import SwiftData
 
+/// A view that displays a Deck.
+/// External Dependencies: Card, Deck, FileImageStorage, CardView, CardsToDeck
 struct DeckView: View {
 	
 	let deck: Deck
@@ -194,17 +196,17 @@ private extension DeckView {
 	}
 }
 
-//#Preview {
-//	DeckViewWrapper()
-//}
-//
-//struct DeckViewWrapper: View {
-//	
-//	@State private var deck = Deck(name: "Hello", image: "deck")
-//	@Namespace private var namespace
-//	
-//	var body: some View {
-//		DeckView(deck: $deck, namespace: namespace)
-//			.environment(FileImageStorage())
-//	}
-//}
+#Preview {
+	DeckViewWrapper()
+}
+
+struct DeckViewWrapper: View {
+	
+	@State private var deck = Deck(name: "Hello", image: "deck")
+	@Namespace private var namespace
+	
+	var body: some View {
+		DeckView(deck: deck, namespace: namespace)
+			.environment(FileImageStorage())
+	}
+}

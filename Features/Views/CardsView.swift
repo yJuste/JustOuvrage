@@ -10,7 +10,7 @@ import SwiftData
 import os // MARK: debug
 
 /// A view where all the cards are displayed.
-/// External Dependencies: Card, NewCardView
+/// External Dependencies: Card, CardView, NewCardView, NewDeckView
 struct CardsView: View {
 	
 	@Environment(\.modelContext) private var context
