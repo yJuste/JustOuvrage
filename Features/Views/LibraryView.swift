@@ -88,18 +88,15 @@ struct LibraryView: View {
 					.padding(.top, -3)
 				}
 			}
+			.toolbar { toolbar }
 			.sheet(isPresented: $showDeck) {
-				if let _ = selectedDeck {
-					DeckView(deck: Binding(get: { selectedDeck! }, set: { selectedDeck = $0 }), namespace: namespace)
+				if let deck = selectedDeck {
+					DeckView(deck: deck, namespace: namespace)
 						.presentationDetents([.height(320), .large])
 						.presentationBackgroundInteraction(.enabled)
 						.presentationDragIndicator(.hidden)
 				}
 			}
-			.toolbar { toolbar }
-			.navigationTitle("Library")
-			.toolbarTitleDisplayMode(.inlineLarge)
-			.listStyle(.plain)
 			.sheet(isPresented: $showNewCard) {
 				NewCardView()
 					.presentationDetents([.height(520), .large])
@@ -110,6 +107,9 @@ struct LibraryView: View {
 					.presentationDetents([.medium, .large])
 					.presentationDragIndicator(.visible)
 			}
+			.navigationTitle("Library")
+			.toolbarTitleDisplayMode(.inlineLarge)
+			.listStyle(.plain)
 		}
 	}
 }

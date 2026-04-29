@@ -9,7 +9,7 @@ import SwiftUI
 
 struct CardView: View {
 	
-	@Binding var card: Card
+	let card: Card
 	
 	@State private var showForvo: Bool = false
 	@State private var showWordReference: Bool = false
@@ -40,13 +40,8 @@ struct CardView: View {
 								.font(.caption)
 								.foregroundStyle(.secondary)
 						}
-						Picker("Leitner Score", selection: $card.leitnerScore) {
-							ForEach(1...7, id: \.self) { value in
-								Text("\(value)")
-									.tag(value)
-							}
-						}
-						.pickerStyle(.segmented)
+						Picker("Leitner Score", selection: Binding(get: { card.leitnerScore }, set: { card.leitnerScore = $0 })) { ForEach(1...7, id: \.self) { value in Text("\(value)").tag(value) } }
+							.pickerStyle(.segmented)
 						HStack {
 							Button {
 								showForvo.toggle()
@@ -94,20 +89,20 @@ struct CardView: View {
 	}
 }
 
-#Preview {
-	CardPreviewWrapper()
-}
-
-struct CardPreviewWrapper: View {
-	
-	@State private var card = Card(
-		frontEntry: "hello",
-		backEntry: "bonjour",
-		frontLanguage: .en_US,
-		backLanguage: .fr_CA
-	)
-	
-	var body: some View {
-		CardView(card: $card)
-	}
-}
+//#Preview {
+//	CardPreviewWrapper()
+//}
+//
+//struct CardPreviewWrapper: View {
+//	
+//	@State private var card = Card(
+//		frontEntry: "hello",
+//		backEntry: "bonjour",
+//		frontLanguage: .en_US,
+//		backLanguage: .fr_CA
+//	)
+//	
+//	var body: some View {
+//		CardView(card: $card)
+//	}
+//}

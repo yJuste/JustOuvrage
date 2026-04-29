@@ -10,7 +10,7 @@ import SwiftData
 
 struct DeckView: View {
 	
-	@Binding var deck: Deck
+	let deck: Deck
 	var namespace: Namespace.ID
 	
 	@Environment(FileImageStorage.self) private var storage
@@ -91,6 +91,13 @@ struct DeckView: View {
 								.onTapGesture {
 									showDepiction.toggle()
 								}
+								.sheet(isPresented: $showDepiction) {
+									ScrollView {
+										Text(deck.depiction)
+											.padding(.vertical, 20)
+											.padding(.horizontal, 20)
+									}
+								}
 						}
 						.padding(.horizontal)
 						.padding(.top, 10)
@@ -125,6 +132,14 @@ struct DeckView: View {
 								Divider()
 									.padding(.horizontal)
 							}
+							.sheet(isPresented: $showCard) {
+								if let card = selectedCard {
+									CardView(card: card)
+										.presentationDetents([.height(180)])
+										.presentationBackgroundInteraction(.enabled)
+										.presentationDragIndicator(.hidden)
+								}
+							}
 						}
 						VStack(alignment: .leading) {
 							Text(deck.createdAt, format: .dateTime.year().month().day())
@@ -146,23 +161,8 @@ struct DeckView: View {
 				.scrollIndicators(.hidden)
 			}
 			.toolbar { toolbar }
-			.sheet(isPresented: $showCard) {
-				if let _ = selectedCard {
-					CardView(card: Binding(get: { selectedCard! }, set: { selectedCard = $0 }))
-						.presentationDetents([.height(180)])
-						.presentationBackgroundInteraction(.enabled)
-						.presentationDragIndicator(.hidden)
-				}
-			}
-			.sheet(isPresented: $showDepiction) {
-				ScrollView {
-					Text(deck.depiction)
-						.padding(.vertical, 20)
-						.padding(.horizontal, 20)
-				}
-			}
 			.sheet(isPresented: $showCardsToDeck) {
-				CardsToDeck(deck: $deck)
+				CardsToDeck(deck: deck)
 			}
 		}
 	}
@@ -194,17 +194,17 @@ private extension DeckView {
 	}
 }
 
-#Preview {
-	DeckViewWrapper()
-}
-
-struct DeckViewWrapper: View {
-	
-	@State private var deck = Deck(name: "Hello", image: "deck")
-	@Namespace private var namespace
-	
-	var body: some View {
-		DeckView(deck: $deck, namespace: namespace)
-			.environment(FileImageStorage())
-	}
-}
+//#Preview {
+//	DeckViewWrapper()
+//}
+//
+//struct DeckViewWrapper: View {
+//	
+//	@State private var deck = Deck(name: "Hello", image: "deck")
+//	@Namespace private var namespace
+//	
+//	var body: some View {
+//		DeckView(deck: $deck, namespace: namespace)
+//			.environment(FileImageStorage())
+//	}
+//}

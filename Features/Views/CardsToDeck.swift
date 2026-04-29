@@ -10,7 +10,7 @@ import SwiftData
 
 struct CardsToDeck: View {
 	
-	@Binding var deck: Deck
+	let deck: Deck
 	
 	@Environment(\.dismiss) private var dismiss
 	

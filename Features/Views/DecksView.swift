@@ -100,8 +100,8 @@ struct DecksView: View {
 			.animation(.easeInOut(duration: 0.15), value: editMode)
 			.environment(\.editMode, $editMode)
 			.sheet(isPresented: $showDeck) {
-				if let _ = selectedDeck {
-					DeckView(deck: Binding(get: { selectedDeck! }, set: { selectedDeck = $0 }), namespace: namespace)
+				if let deck = selectedDeck {
+					DeckView(deck: deck, namespace: namespace)
 						.presentationDetents([.height(320), .large])
 						.presentationBackgroundInteraction(.enabled)
 						.presentationDragIndicator(.hidden)

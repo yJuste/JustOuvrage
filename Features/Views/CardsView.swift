@@ -70,8 +70,8 @@ struct CardsView: View {
 			.animation(.easeInOut(duration: 0.15), value: editMode)
 			.environment(\.editMode, $editMode)
 			.sheet(isPresented: $showCard) {
-				if let _ = selectedCard {
-					CardView(card: Binding(get: { selectedCard! }, set: { selectedCard = $0 }))
+				if let card = selectedCard {
+					CardView(card: card)
 						.presentationDetents([.height(180)])
 						.presentationBackgroundInteraction(.enabled)
 						.presentationDragIndicator(.hidden)
