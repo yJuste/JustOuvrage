@@ -159,7 +159,6 @@ struct DeckView: View {
 					.frame(maxWidth: .infinity)
 					.padding(.top, 17)
 				}
-				.scrollIndicators(.hidden)
 			}
 			.toolbar { toolbar }
 			.sheet(isPresented: $showCardsToDeck) {
