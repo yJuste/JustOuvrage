@@ -19,7 +19,7 @@ struct CardsView: View {
 	@Query(sort: \Card.createdAt, order: .reverse) private var cards: [Card]
 	
 	@State private var item: Card?
-	@State private var multiSelection: Set<Card> = []
+	@State private var selection: Set<Card> = []
 	
 	@State private var selectedCard: Card?
 	@State private var showCard: Bool = false
@@ -36,7 +36,7 @@ struct CardsView: View {
 	var body: some View {
 		
 		NavigationStack {
-			List(selection: $multiSelection) {
+			List(selection: $selection) {
 				ForEach(cards) { card in
 					VStack(alignment: .leading) {
 						Button {
@@ -66,7 +66,7 @@ struct CardsView: View {
 				}
 			}
 			.toolbar { toolbar }
-			.animation(.easeInOut(duration: 0.15), value: multiSelection.isEmpty)
+			.animation(.easeInOut(duration: 0.15), value: selection.isEmpty)
 			.animation(.easeInOut(duration: 0.15), value: editMode)
 			.environment(\.editMode, $editMode)
 			.sheet(isPresented: $showCard) {
@@ -74,7 +74,6 @@ struct CardsView: View {
 					CardView(card: card)
 						.presentationDetents([.height(180)])
 						.presentationBackgroundInteraction(.enabled)
-						.presentationDragIndicator(.hidden)
 				}
 			}
 			.sheet(isPresented: $showNewCard) {
@@ -113,10 +112,10 @@ private extension CardsView {
 	
 	private func deleteSelection() {
 		
-		for card in multiSelection {
+		for card in selection {
 			context.delete(card)
 		}
-		multiSelection.removeAll()
+		selection.removeAll()
 	}
 	
 	private func toggleEditMode() {
@@ -125,7 +124,7 @@ private extension CardsView {
 		showEditMode.toggle()
 		if editMode == .active {
 			editMode = .inactive
-			multiSelection.removeAll()
+			selection.removeAll()
 		} else {
 			editMode = .active
 		}
@@ -141,11 +140,11 @@ private extension CardsView {
 	@ToolbarContentBuilder private var toolbar: some ToolbarContent {
 		
 		ToolbarItem(placement: .topBarLeading) {
-			if !multiSelection.isEmpty {
+			if !selection.isEmpty {
 				Button(role: .destructive) {
 					showSelectedCards.toggle()
 				} label: {
-					Text("Delete (\(multiSelection.count))")
+					Text("Delete (\(selection.count))")
 				}
 			}
 		}

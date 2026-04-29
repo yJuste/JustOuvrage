@@ -77,6 +77,7 @@ struct CardView: View {
 					}
 					.padding()
 				}
+				.scrollIndicators(.hidden)
 			}
 			.fullScreenCover(isPresented: $showForvo) {
 				SFSafariViewWrapper(url: URL(string: "https://forvo.com/word/teen/#en_usa")!)

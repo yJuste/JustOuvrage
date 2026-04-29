@@ -139,7 +139,6 @@ struct DeckView: View {
 									CardView(card: card)
 										.presentationDetents([.height(180)])
 										.presentationBackgroundInteraction(.enabled)
-										.presentationDragIndicator(.hidden)
 								}
 							}
 						}
