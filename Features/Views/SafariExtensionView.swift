@@ -31,7 +31,9 @@ struct SafariExtensionView: View {
 #Preview {
 	
 	struct SafariExtensionPreview: View {
+		
 		@State var showSafariExtension: Bool = false
+		
 		var body: some View {
 			SafariExtensionView()
 		}

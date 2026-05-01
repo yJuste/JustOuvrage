@@ -20,13 +20,10 @@ struct CardsView: View {
 	
 	@State private var item: Card?
 	@State private var selection: Set<Card> = []
-	
 	@State private var selectedCard: Card?
 	@State private var showCard: Bool = false
-	
 	@State private var editMode: EditMode = .inactive
 	@State private var showEditMode: Bool = false
-	
 	@State private var showNewCard: Bool = false
 	@State private var showNewDeck: Bool = false
 	@State private var showDeleteCard: Bool = false
@@ -34,7 +31,6 @@ struct CardsView: View {
 	@State private var showSafariExtension: Bool = false
 	
 	var body: some View {
-		
 		NavigationStack {
 			List(selection: $selection) {
 				ForEach(cards) { card in
@@ -72,7 +68,7 @@ struct CardsView: View {
 			.sheet(isPresented: $showCard) {
 				if let card = selectedCard {
 					CardView(card: card)
-						.presentationDetents([.height(180)])
+						.presentationDetents([.height(420)])
 						.presentationBackgroundInteraction(.enabled)
 				}
 			}
@@ -108,10 +104,9 @@ struct CardsView: View {
 }
 
 /// Methods of CardsView.
-private extension CardsView {
+fileprivate extension CardsView {
 	
 	private func deleteSelection() {
-		
 		for card in selection {
 			context.delete(card)
 		}
@@ -119,7 +114,6 @@ private extension CardsView {
 	}
 	
 	private func toggleEditMode() {
-		
 		guard !showEditMode else { return }
 		showEditMode.toggle()
 		if editMode == .active {
@@ -135,10 +129,9 @@ private extension CardsView {
 }
 
 /// Toolbar.
-private extension CardsView {
+fileprivate extension CardsView {
 	
 	@ToolbarContentBuilder private var toolbar: some ToolbarContent {
-		
 		ToolbarItem(placement: .topBarLeading) {
 			if !selection.isEmpty {
 				Button(role: .destructive) {
@@ -236,6 +229,7 @@ private extension CardsView {
 }
 
 #Preview {
+	
 	do {
 		let container = try ModelContainer(for: Card.self, configurations: ModelConfiguration(isStoredInMemoryOnly: true))
 		let context = container.mainContext

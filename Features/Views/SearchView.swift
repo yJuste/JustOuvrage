@@ -103,18 +103,10 @@ struct SearchView: View {
 			.listStyle(.plain)
 		}
 	}
-	
-	private func trimRecents() {
-		
-		guard recents.count > Constants.maxRecents else { return }
-		for card in recents.dropFirst(Constants.maxRecents) {
-			card.lastViewedAt = nil
-		}
-	}
 }
 
 /// Filtered results between Cards/Decks.
-extension SearchView {
+fileprivate extension SearchView {
 	
 	private enum SearchResult: Identifiable {
 		
@@ -137,7 +129,6 @@ extension SearchView {
 	}
 	
 	private var filteredResults: [SearchResult] {
-		
 		let trimmed = search.trimmingCharacters(in: .whitespacesAndNewlines)
 		guard !trimmed.isEmpty else { return [] }
 		let cardResults = cards.filter { $0.frontEntry.localizedCaseInsensitiveContains(trimmed) }.map { SearchResult.card($0) }
@@ -151,27 +142,35 @@ extension SearchView {
 			return deckResults
 		}
 	}
+	
+	private func trimRecents() {
+		guard recents.count > Constants.maxRecents else { return }
+		for card in recents.dropFirst(Constants.maxRecents) {
+			card.lastViewedAt = nil
+		}
+	}
 }
 
 #Preview {
-	SearchPreview()
-}
-
-struct SearchPreview: View {
 	
-	let container: ModelContainer = {
-		let container = try! ModelContainer(for: Card.self, Deck.self, configurations: ModelConfiguration(isStoredInMemoryOnly: true))
-		let context = container.mainContext
-		context.insert(Card(frontEntry: "dig in", backEntry: "mangez!", frontLanguage: .en_US, backLanguage: .fr_FR))
-		context.insert(Card(frontEntry: "hello", backEntry: "bonjour", frontLanguage: .en_US, backLanguage: .fr_FR))
-		return container
-	}()
-	
-	@State private var search = ""
-	
-	var body: some View {
-		SearchView()
-			.environment(FileImageStorage())
-			.modelContainer(container)
+	struct SearchPreview: View {
+		
+		let container: ModelContainer = {
+			let container = try! ModelContainer(for: Card.self, Deck.self, configurations: ModelConfiguration(isStoredInMemoryOnly: true))
+			let context = container.mainContext
+			context.insert(Card(frontEntry: "dig in", backEntry: "mangez!", frontLanguage: .en_US, backLanguage: .fr_FR))
+			context.insert(Card(frontEntry: "hello", backEntry: "bonjour", frontLanguage: .en_US, backLanguage: .fr_FR))
+			return container
+		}()
+		
+		@State private var search = ""
+		
+		var body: some View {
+			SearchView()
+				.environment(FileImageStorage())
+				.modelContainer(container)
+		}
 	}
+
+	return SearchPreview()
 }

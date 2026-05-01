@@ -11,8 +11,9 @@ import SwiftUI
 /// External Dependencies: Language
 struct FlagPicker: View {
 	
-	@Environment(\.dismiss) private var dismiss
 	@Binding var selected: Language
+	
+	@Environment(\.dismiss) private var dismiss
 	
 	var body: some View {
 		ScrollView {
@@ -42,7 +43,7 @@ struct FlagPicker: View {
 
 #Preview {
 	
-	struct PreviewWrapper: View {
+	struct FlagPickerWrapper: View {
 		
 		@State private var language: Language = .es_ES
 		
@@ -50,5 +51,5 @@ struct FlagPicker: View {
 			FlagPicker(selected: $language)
 		}
 	}
-	return PreviewWrapper()
+	return FlagPickerWrapper()
 }

@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+/// Create a ``User``.
 @Observable final class User {
 	
 	var name: String

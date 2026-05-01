@@ -144,13 +144,7 @@
     "for \"%@\"" : {
 
     },
-    "Forvo" : {
-
-    },
     "French" : {
-
-    },
-    "Google" : {
 
     },
     "Got it" : {
@@ -234,6 +228,9 @@
     "Selected Decks" : {
 
     },
+    "Selected: %@" : {
+
+    },
     "Settings" : {
 
     },
@@ -247,9 +244,6 @@
 
     },
     "Visible" : {
-
-    },
-    "Word Reference" : {
 
     }
   },

@@ -17,70 +17,66 @@ struct NewDeckView: View {
 	@Environment(\.modelContext) private var context
 	@Environment(\.dismiss) private var dismiss
 	
+	let rectangle: RoundedRectangle = RoundedRectangle(cornerRadius: 10, style: .continuous)
+	
 	@State private var selectedPhotoItem: PhotosPickerItem?
 	@State private var selectedImageData: Data?
 	@State private var deckName: String = ""
-	
 	@State private var showCancelAlert: Bool = false
 	@State private var showPhotoPicker: Bool = false
 	
 	var body: some View {
-		
 		NavigationStack {
-			ScrollViewReader { proxy in
-				ScrollView {
-					VStack(spacing: 30) {
-						ZStack {
-							RoundedRectangle(cornerRadius: 10, style: .continuous)
-								.fill(.ultraThinMaterial)
-								.overlay {
-									if let data = selectedImageData, let uiImage = UIImage(data: data) {
-										Image(uiImage: uiImage)
-											.resizable()
-											.scaledToFill()
-									}
-								}
-								.frame(width: 180, height: 180)
-								.clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
-							Menu {
-								Button {
-									// Take Photo
-								} label: {
-									Label("Take Photo", systemImage: "camera")
-								}
-								Button {
-									showPhotoPicker.toggle()
-								} label: {
-									Label("Choose Photo", systemImage: "photo.on.rectangle")
-								}
-								Button {
-									// Open Files
-								} label: {
-									Label("Choose File", systemImage: "folder")
-								}
-							} label: {
-								Button {
-									//
-								} label: {
-									Image(systemName: "photo")
-										.font(.custom("picture icon", size: 19))
-										.foregroundStyle(Color.white)
-										.frame(width: 65, height: 65)
-										.background(Circle().fill(Color.accentColor))
+			ScrollView {
+				VStack(spacing: 30) {
+					ZStack {
+						rectangle
+							.fill(.ultraThinMaterial)
+							.overlay {
+								if let data = selectedImageData, let uiImage = UIImage(data: data) {
+									Image(uiImage: uiImage)
+										.resizable()
+										.scaledToFill()
 								}
 							}
+							.frame(width: 180, height: 180)
+							.clipShape(rectangle)
+						Menu {
+							Button {
+								// Take Photo
+							} label: {
+								Label("Take Photo", systemImage: "camera")
+							}
+							Button {
+								showPhotoPicker.toggle()
+							} label: {
+								Label("Choose Photo", systemImage: "photo.on.rectangle")
+							}
+							Button {
+								// Open Files
+							} label: {
+								Label("Choose File", systemImage: "folder")
+							}
+						} label: {
+							Button {
+								//
+							} label: {
+								Image(systemName: "photo")
+									.font(.custom("picture icon", size: 19))
+									.foregroundStyle(Color.white)
+									.frame(width: 65, height: 65)
+									.background(Circle().fill(Color.accentColor))
+							}
 						}
-						TextField("Deck Name", text: $deckName)
-							.bold()
-							.multilineTextAlignment(.center)
-							.padding(12)
-							.background(Capsule().fill(.thinMaterial))
-							.padding()
 					}
-					.frame(maxWidth: .infinity, alignment: .bottom)
+					TextField("Deck Name", text: $deckName)
+						.bold()
+						.multilineTextAlignment(.center)
+						.padding(12)
+						.background(Capsule().fill(.thinMaterial))
+						.padding()
 				}
-				.scrollDismissesKeyboard(.interactively)
-				.scrollIndicators(.hidden)
+				.frame(maxWidth: .infinity, alignment: .bottom)
 			}
 			.toolbar { toolbar }
 			.onChange(of: selectedPhotoItem) { _, newItem in
@@ -98,15 +94,16 @@ struct NewDeckView: View {
 			} message: {
 				Text("Are you sure you want to discard this new deck?")
 			}
+			.scrollDismissesKeyboard(.interactively)
+			.scrollIndicators(.hidden)
 		}
 	}
 }
 
 /// Toolbar.
-private extension NewDeckView {
+fileprivate extension NewDeckView {
 	
 	@ToolbarContentBuilder private var toolbar: some ToolbarContent {
-		
 		ToolbarItem(placement: .topBarLeading) {
 			Button {
 				if !deckName.isEmpty || selectedImageData != nil {
@@ -145,6 +142,7 @@ private extension NewDeckView {
 }
 
 #Preview {
+	
 	let container = try! ModelContainer(for: Deck.self, configurations: ModelConfiguration(isStoredInMemoryOnly: true))
 	
 	return NewDeckView()

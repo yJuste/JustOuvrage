@@ -8,104 +8,100 @@
 import SwiftUI
 
 /// A view that displays a Card.
-/// External Dependencies: Card, SFSafariViewWrapper
+/// External Dependencies: Card, SFSafariViewWrapper, LabelTrailing, WordsLinkingToSite, ForvoSite
 struct CardView: View {
 	
 	let card: Card
 	
-	@State private var showForvo: Bool = false
-	@State private var showWordReference: Bool = false
-	@State private var showGoogle: Bool = false
+	let forvo: ForvoSite = ForvoSite()
+	
+	@State private var destination: SiteDestination?
+	
+	var cleanFrontEntry: [String] { cleanWords(expression: card.frontEntry) }
+	var cleanBackEntry: [String] { cleanWords(expression: card.backEntry) }
 	
 	var body: some View {
 		NavigationStack {
-			ScrollViewReader { proxy in
-				ScrollView {
-					VStack(alignment: .leading) {
-						HStack {
-							Spacer()
-							Text("\(card.frontLanguage.language)")
-								.font(.caption)
-								.foregroundStyle(.secondary)
+			ScrollView {
+				VStack(alignment: .leading) {
+					Section { /// ``First Entry``
+						LabelTrailing(title: "\(card.frontLanguage.language)") {
+							Text("\(card.frontEntry)")
 						}
-						Text("\(card.frontEntry)")
-						HStack {
-							Spacer()
-							Text("\(card.backLanguage.language)")
-								.font(.caption)
-								.foregroundStyle(.secondary)
+						WordsLinkingToSite("Forvo", item: cleanFrontEntry) { entry in
+							destination = forvo.link(for: entry, in: card.frontLanguage)
 						}
-						Text("\(card.backEntry)")
-						HStack {
-							Spacer()
-							Text("Leitner Score")
-								.font(.caption)
-								.foregroundStyle(.secondary)
+						WordsLinkingToSite("WordReference", item: cleanFrontEntry) { entry in
+							destination = forvo.link(for: entry, in: card.frontLanguage)
 						}
-						Picker("Leitner Score", selection: Binding(get: { card.leitnerScore }, set: { card.leitnerScore = $0 })) { ForEach(1...7, id: \.self) { value in Text("\(value)").tag(value) } }
-							.pickerStyle(.segmented)
-						HStack {
-							Button {
-								showForvo.toggle()
-							} label: {
-								Text("Forvo")
-									.font(.system(size: 15, weight: .medium))
-									.padding(.vertical, 10)
-									.padding(.horizontal, 10)
-									.glassEffect(.regular.interactive())
-							}
-							Button {
-								showWordReference.toggle()
-							} label: {
-								Text("Word Reference")
-									.font(.system(size: 15, weight: .medium))
-									.padding(.vertical, 10)
-									.padding(.horizontal, 10)
-									.glassEffect(.regular.interactive())
-							}
-							Button {
-								showGoogle.toggle()
-							} label: {
-								Text("Google")
-									.font(.system(size: 15, weight: .medium))
-									.padding(.vertical, 10)
-									.padding(.horizontal, 10)
-									.glassEffect(.regular.interactive())
-							}
+						WordsLinkingToSite("Google", item: cleanFrontEntry) { entry in
+							destination = forvo.link(for: entry, in: card.frontLanguage)
 						}
-						.buttonStyle(.plain)
 					}
-					.padding()
+					Section { /// ``Second Entry``
+						LabelTrailing(title: "\(card.backLanguage.language)") {
+							Text("\(card.backEntry)")
+						}
+						WordsLinkingToSite("Forvo", item: cleanBackEntry) { entry in
+							destination = forvo.link(for: entry, in: card.backLanguage)
+						}
+						WordsLinkingToSite("WordReference", item: cleanBackEntry) { entry in
+							destination = forvo.link(for: entry, in: card.backLanguage)
+						}
+						WordsLinkingToSite("Google", item: cleanBackEntry) { entry in
+							destination = forvo.link(for: entry, in: card.backLanguage)
+						}
+					}
+					Section { /// ``Leitner Score``
+						LabelTrailing(title: "Leitner Score") {
+							Picker("Leitner Score",
+								   selection: Binding(
+									get: { card.leitnerScore },
+									set: { card.leitnerScore = $0 })
+							) {
+								ForEach(1...7, id: \.self) { value in
+									Text("\(value)")
+										.tag(value)
+								}
+							}
+							.pickerStyle(.segmented)
+						}
+					}
 				}
-				.scrollIndicators(.hidden)
+				.buttonStyle(.plain)
+				.padding()
 			}
-			.fullScreenCover(isPresented: $showForvo) {
-				SFSafariViewWrapper(url: URL(string: "https://forvo.com/word/teen/#en_usa")!)
+			.scrollIndicators(.hidden)
+			.fullScreenCover(item: $destination) {
+				SFSafariViewWrapper(url: $0.url)
 			}
-			.fullScreenCover(isPresented: $showGoogle) {
-				SFSafariViewWrapper(url: URL(string: "https://www.google.com/search?q=drip+definition&hl=en&gl=us")!)
-			}
-			.fullScreenCover(isPresented: $showWordReference) {
-				SFSafariViewWrapper(url: URL(string: "https://www.wordreference.com/enfr/get%20off")!)
-			}
+			// other fullScreenCovers
 		}
 	}
 }
 
-#Preview {
-	CardPreviewWrapper()
+/// Methods of CardView.
+fileprivate extension CardView {
+	
+	private func cleanWords(expression: String) -> [String] {
+		return expression
+			.components(separatedBy: ",")
+			.map {
+				$0.unicodeScalars.filter { !($0.properties.isEmoji && $0.properties.isEmojiPresentation) }.map { String($0) }.joined()
+					.trimmingCharacters(in: .whitespacesAndNewlines)
+			}
+			.filter { !$0.isEmpty }
+	}
 }
 
-struct CardPreviewWrapper: View {
+#Preview {
 	
-	@State private var card = Card(
-		frontEntry: "hello",
-		backEntry: "bonjour",
-		frontLanguage: .en_US,
-		backLanguage: .fr_CA
+	CardView(
+		card: Card(
+			frontEntry: "hello my na🇺🇸m on, l, l,",
+			backEntry: ",,,bonjour,,,,",
+			frontLanguage: .en_US,
+			backLanguage: .fr_CA
+		)
 	)
-	
-	var body: some View {
-		CardView(card: card)
-	}
 }

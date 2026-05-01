@@ -9,6 +9,8 @@ import SwiftUI
 import SwiftData
 import os // MARK: debug
 
+/// ``I Have to add recent for albums too.``
+
 /// A view that shows the focus state of the SearchView.
 /// External Dependencies: Card, Constants
 struct SearchFocusView: View {
@@ -22,7 +24,6 @@ struct SearchFocusView: View {
 	@State private var showClearAllAlert: Bool = false
 	
 	var body: some View {
-		
 		if isSearching && search.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
 			Section {
 				ForEach(recents.prefix(Constants.maxRecents)) { card in
@@ -67,6 +68,7 @@ struct SearchFocusView: View {
 }
 
 #Preview {
+	
 	NavigationStack {
 		SearchFocusView(search: .constant(""))
 			.searchable(text: .constant(""))

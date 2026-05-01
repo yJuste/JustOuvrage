@@ -9,7 +9,7 @@ import SwiftUI
 import SwiftData
 
 /// A view that adds Cards to a Deck.
-/// External Dependencies: Card
+/// External Dependencies: Card, Deck
 struct CardsToDeck: View {
 	
 	let deck: Deck
@@ -53,15 +53,15 @@ struct CardsToDeck: View {
 				}
 			}
 			.task { selectedCards = Set(deck.cards.map(\.id)) }
-			.toolbar { toolbar }
 			.searchable(text: $search)
+			.toolbar { toolbar }
 			.listStyle(.plain)
 		}
 	}
 }
 
 /// Toolbar.
-private extension CardsToDeck {
+fileprivate extension CardsToDeck {
 	
 	@ToolbarContentBuilder private var toolbar: some ToolbarContent {
 		ToolbarItem(placement: .topBarLeading) {
@@ -90,4 +90,8 @@ private extension CardsToDeck {
 			.buttonStyle(.borderedProminent)
 		}
 	}
+}
+
+#Preview {
+	CardsToDeck(deck: Deck(name: "LOL Taylor", image: "deck"))
 }

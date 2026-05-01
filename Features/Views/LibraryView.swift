@@ -9,7 +9,7 @@ import SwiftUI
 import SwiftData
 
 /// A view that shows the Library hub.
-/// External Dependencies: Card, Deck, FileImageStorage, CardsView, DecksView, DeckView, NewCardView, NewDeckView
+/// External Dependencies: Deck, FileImageStorage, CardsView, DecksView, DeckView, NewCardView, NewDeckView
 struct LibraryView: View {
 	
 	@Environment(FileImageStorage.self) var storage
@@ -19,33 +19,25 @@ struct LibraryView: View {
 	@Query(sort: \Deck.lastOpenedAt, order: .reverse) private var decks: [Deck]
 	
 	@State private var selectedDeck: Deck?
-	@State private var showDeck: Bool = false
-	
 	@State private var showNewCard: Bool = false
 	@State private var showNewDeck: Bool = false
 	
 	var body: some View {
 		NavigationStack {
 			List {
-				Section {
+				Section { /// ``links to every card/deck``
 					NavigationLink {
 						CardsView()
-							.onAppear {
-								showDeck = false
-							}
 					} label: {
 						Label("Cards", systemImage: "text.pad.header")
 					}
 					NavigationLink {
 						DecksView()
-							.onAppear() {
-								showDeck = false
-							}
 					} label: {
 						Label("Decks", systemImage: "rectangle.stack.fill")
 					}
 				}
-				Section {
+				Section { /// ``recent decks``
 					Text("Recently Opened")
 						.font(.system(size: 23, weight: .semibold))
 						.foregroundStyle(.primary)
@@ -53,13 +45,10 @@ struct LibraryView: View {
 						.padding(.top, 5)
 						.padding(.bottom, -20)
 						.padding(.leading, 3)
-				}
-				Section {
 					LazyVGrid(columns: [GridItem(.adaptive(minimum: 140), spacing: 10)], spacing: 10) {
 						ForEach(decks) { deck in
 							Button {
 								selectedDeck = deck
-								showDeck = true
 							} label: {
 								VStack(alignment: .leading, spacing: 6) {
 									Image(image: deck.image, storage: storage)
@@ -73,12 +62,11 @@ struct LibraryView: View {
 									VStack(alignment: .leading) {
 										Text(deck.name)
 											.font(.system(size: 16, weight: .semibold, design: .default))
-											.lineLimit(1)
 										Text(deck.depiction)
 											.font(.system(size: 16, weight: .regular, design: .default))
 											.foregroundStyle(.secondary)
-											.lineLimit(1)
 									}
+									.lineLimit(1)
 									.padding(.bottom, 9)
 								}
 							}
@@ -90,15 +78,10 @@ struct LibraryView: View {
 					.padding(.top, -3)
 				}
 			}
-			.toolbar { toolbar }
-			.sheet(isPresented: $showDeck) {
-				if let deck = selectedDeck {
-					DeckView(deck: deck, namespace: namespace)
-						.presentationDetents([.height(320), .large])
-						.presentationBackgroundInteraction(.enabled)
-						.presentationDragIndicator(.hidden)
-				}
+			.navigationDestination(item: $selectedDeck) { deck in
+				DeckView(deck: deck, namespace: namespace)
 			}
+			.toolbar { toolbar }
 			.sheet(isPresented: $showNewCard) {
 				NewCardView()
 					.presentationDetents([.height(520), .large])
@@ -117,10 +100,9 @@ struct LibraryView: View {
 }
 
 /// Toolbar.
-private extension LibraryView {
+fileprivate extension LibraryView {
 	
 	@ToolbarContentBuilder private var toolbar: some ToolbarContent {
-		
 		ToolbarItem(placement: .topBarTrailing) {
 			Menu {
 				Menu {

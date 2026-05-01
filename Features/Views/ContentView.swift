@@ -13,7 +13,6 @@ import SwiftData
 struct ContentView: View {
 	
 	var body: some View {
-		
 		if #available(iOS 26, *) {
 			NativeTabView()
 				//.tabViewBottomAccessory { EmptyView() }
@@ -24,10 +23,9 @@ struct ContentView: View {
 }
 
 /// An extension that creates the native tab view nowadays. (iOS 26.4.1)
-private extension ContentView {
+fileprivate extension ContentView {
 	
 	@ViewBuilder func NativeTabView() -> some View {
-		
 		TabView {
 			Tab("New", systemImage: "plus.rectangle.portrait") {
 				NewCardView()

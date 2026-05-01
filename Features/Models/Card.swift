@@ -9,7 +9,7 @@ import SwiftData
 import Foundation
 
 /// A Model for a ``Card``.
-/// External Dependencies: Language
+/// External Dependencies: Language, Deck
 @Model final class Card {
 	
 	var id: UUID

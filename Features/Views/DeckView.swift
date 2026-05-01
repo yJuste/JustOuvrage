@@ -20,16 +20,15 @@ struct DeckView: View {
 	
 	@State private var selectedCard: Card?
 	@State private var showCard: Bool = false
-	
 	@State private var showToolbar: Bool = false
 	@State private var showDepiction: Bool = false
 	@State private var showCardsToDeck: Bool = false
 	
 	var body: some View {
 		NavigationStack {
-			ScrollViewReader { proxy in
-				ScrollView {
-					VStack {
+			ScrollView {
+				VStack {
+					Section { /// ``header``
 						Image(image: deck.image, storage: storage)
 							.resizable()
 							.scaledToFill()
@@ -45,47 +44,38 @@ struct DeckView: View {
 							Text(deck.author)
 								.font(.title3)
 								.foregroundStyle(.secondary)
-						}
-						.padding(.top, 18)
-						.padding(.horizontal, 50)
-						VStack(alignment: .center) {
 							Text("\(deck.createdAt.formatted(.dateTime.year())) ⋅ " + Set(deck.cards.flatMap {[$0.frontLanguage, $0.backLanguage]}).sorted { $0.rawValue < $1.rawValue }.map { $0.rawValue }.joined(separator: " ⋅ "))
 								.font(.system(size: 12, weight: .semibold))
 								.foregroundStyle(.secondary)
-						}
-						.padding(.top, 1)
-						Spacer()
-						GlassEffectContainer {
-							HStack(alignment: .center) {
-								Button {
-									//
-								} label: {
-									Image(systemName: "shuffle")
-										.font(.system(size: 20, weight: .semibold))
-										.frame(width: 50, height: 50)
-										.glassEffect(.regular.tint(.secondary.opacity(0.2)).interactive())
+								.padding(.top, 5)
+							GlassEffectContainer {
+								HStack(alignment: .center, spacing: 15) {
+									Button {
+										//
+									} label: {
+										Image(systemName: "shuffle")
+											.frame(width: 50, height: 50)
+											.glassEffect(.regular.tint(.secondary.opacity(0.2)).interactive())
+									}
+									Button {
+										//
+									} label: {
+										Label("Play", systemImage: "arrowtriangle.forward.fill")
+											.frame(width: 160, height: 50)
+											.glassEffect(.regular.tint(.accentColor).interactive())
+									}
+									Button {
+										//
+									} label: {
+										Image(systemName: "arrow.down")
+											.frame(width: 50, height: 50)
+											.glassEffect(.regular.tint(.secondary.opacity(0.2)).interactive())
+									}
 								}
-								Button {
-									//
-								} label: {
-									Label("Play", systemImage: "arrowtriangle.forward.fill")
-										.font(.system(size: 20, weight: .semibold))
-										.frame(width: 150, height: 50)
-										.glassEffect(.regular.tint(.accentColor).interactive())
-								}
-								Button {
-									//
-								} label: {
-									Image(systemName: "arrow.down")
-										.font(.system(size: 20, weight: .semibold))
-										.frame(width: 50, height: 50)
-										.glassEffect(.regular.tint(.secondary.opacity(0.2)).interactive())
-								}
+								.font(.system(size: 20, weight: .semibold))
 							}
-						}
-						.tint(.primary)
-						.padding(.top, 10)
-						VStack {
+							.tint(.primary)
+							.padding(.top, 10)
 							Text(deck.depiction)
 								.foregroundStyle(.secondary)
 								.lineLimit(2)
@@ -103,6 +93,8 @@ struct DeckView: View {
 						}
 						.padding(.horizontal)
 						.padding(.top, 10)
+					}
+					Section { /// ``items``
 						Divider()
 							.padding(.horizontal)
 						LazyVStack(alignment: .leading) {
@@ -119,11 +111,10 @@ struct DeckView: View {
 											.frame(width: 30, alignment: .center)
 										VStack(alignment: .leading, spacing: 5) {
 											Text(card.frontEntry)
-												.font(.subheadline)
 											Text(card.backEntry)
-												.font(.subheadline)
 												.foregroundStyle(.gray)
 										}
+										.font(.subheadline)
 										.frame(maxWidth: .infinity, alignment: .leading)
 									}
 									.padding(.vertical, 3)
@@ -144,35 +135,32 @@ struct DeckView: View {
 						}
 						VStack(alignment: .leading) {
 							Text(deck.createdAt, format: .dateTime.year().month().day())
-								.foregroundStyle(.secondary)
 							Text("\(deck.cards.count) cards")
-								.foregroundStyle(.secondary)
 							Text("\(deck.author)")
-								.foregroundStyle(.secondary)
 							Text(Set(deck.cards.flatMap {[$0.frontLanguage, $0.backLanguage]}).sorted { $0.language < $1.language }.map { $0.language }.joined(separator: " ⋅ "))
 								.font(.caption)
-								.foregroundStyle(.secondary)
 						}
+						.foregroundStyle(.secondary)
 						.frame(maxWidth: .infinity, alignment: .leading)
 						.padding()
 					}
-					.frame(maxWidth: .infinity)
-					.padding(.top, 17)
 				}
+				.frame(maxWidth: .infinity)
+				.padding(.top, 17)
 			}
 			.toolbar { toolbar }
 			.sheet(isPresented: $showCardsToDeck) {
 				CardsToDeck(deck: deck)
 			}
+			.navigationBarBackButtonHidden(true)
 		}
 	}
 }
 
 /// Toolbar.
-private extension DeckView {
+fileprivate extension DeckView {
 	
 	@ToolbarContentBuilder private var toolbar: some ToolbarContent {
-		
 		ToolbarItem(placement: .topBarLeading) {
 			Button {
 				dismiss()
@@ -195,16 +183,10 @@ private extension DeckView {
 }
 
 #Preview {
-	DeckViewWrapper()
-}
-
-struct DeckViewWrapper: View {
 	
-	@State private var deck = Deck(name: "Hello", image: "deck")
-	@Namespace private var namespace
+	@Previewable @State var deck = Deck(name: "Hello", image: "deck")
+	@Previewable @Namespace var namespace
 	
-	var body: some View {
-		DeckView(deck: deck, namespace: namespace)
-			.environment(FileImageStorage())
-	}
+	DeckView(deck: deck, namespace: namespace)
+		.environment(FileImageStorage())
 }

@@ -24,7 +24,6 @@ struct NewCardView: View {
 	@State private var backEntry: String = ""
 	@State private var frontLanguage: Language = Preferences.unique.frontLanguage
 	@State private var backLanguage: Language = Preferences.unique.backLanguage
-	
 	@State private var showFrontLanguage: Bool = false
 	@State private var showBackLanguage: Bool = false
 	@State private var showAddedCard: Bool = false
@@ -138,9 +137,9 @@ struct NewCardView: View {
 }
 
 /// Methods of NewCardView.
-private extension NewCardView {
+fileprivate extension NewCardView {
 	
-	func showAdded() {
+	private func showAdded() {
 		withAnimation(.snappy) {
 			showAddedBanner.toggle()
 		}
@@ -154,8 +153,7 @@ private extension NewCardView {
 		}
 	}
 	
-	func addCard() {
-		
+	private func addCard() {
 		let newFrontEntry = frontEntry.trimmingCharacters(in: .whitespacesAndNewlines)
 		let newBackEntry = backEntry.trimmingCharacters(in: .whitespacesAndNewlines)
 		if newFrontEntry.isEmpty || newBackEntry.isEmpty {
@@ -173,9 +171,9 @@ private extension NewCardView {
 }
 
 /// An interface to use to toggle a focusState.
-private extension NewCardView {
+fileprivate extension NewCardView {
 	
-	enum FocusField: Hashable {
+	private enum FocusField: Hashable {
 		
 		case front
 		case back
@@ -183,10 +181,9 @@ private extension NewCardView {
 }
 
 /// Toolbar.
-private extension NewCardView {
+fileprivate extension NewCardView {
 	
 	@ToolbarContentBuilder private var toolbar: some ToolbarContent {
-		
 		ToolbarItem(placement: .topBarLeading) {
 			Button {
 				let newFrontEntry = frontEntry.trimmingCharacters(in: .whitespacesAndNewlines)

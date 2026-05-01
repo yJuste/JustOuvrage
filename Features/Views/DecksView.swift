@@ -9,7 +9,7 @@ import SwiftUI
 import SwiftData
 
 /// A view that shows every deck.
-/// External Dependencies: Card, Deck, FileImageStorage, DeckView, NewCardView, NewDeckView
+/// External Dependencies: Deck, FileImageStorage, DeckView, NewCardView, NewDeckView
 struct DecksView: View {
 	
 	@Environment(\.modelContext) private var context
@@ -21,13 +21,10 @@ struct DecksView: View {
 	
 	@State private var item: Deck?
 	@State private var selection: Set<Deck> = []
-	
 	@State private var selectedDeck: Deck?
 	@State private var showDeck: Bool = false
-	
 	@State private var editMode: EditMode = .inactive
 	@State private var showEditMode: Bool = false
-	
 	@State private var showNewCard: Bool = false
 	@State private var showNewDeck: Bool = false
 	@State private var showDeleteDeck: Bool = false
@@ -134,10 +131,9 @@ struct DecksView: View {
 }
 
 /// Methods of DecksView.
-private extension DecksView {
+fileprivate extension DecksView {
 	
 	private func deleteSelection() {
-		
 		for card in selection {
 			context.delete(card)
 		}
@@ -145,7 +141,6 @@ private extension DecksView {
 	}
 	
 	private func toggleEditMode() {
-		
 		guard !showEditMode else { return }
 		showEditMode.toggle()
 		if editMode == .active {
@@ -161,10 +156,9 @@ private extension DecksView {
 }
 
 /// Toolbar.
-private extension DecksView {
+fileprivate extension DecksView {
 	
 	@ToolbarContentBuilder private var toolbar: some ToolbarContent {
-		
 		ToolbarItem(placement: .topBarLeading) {
 			if !selection.isEmpty {
 				Button(role: .destructive) {
@@ -262,6 +256,7 @@ private extension DecksView {
 }
 
 #Preview {
+	
 	let container = try! ModelContainer(for: Deck.self, configurations: ModelConfiguration(isStoredInMemoryOnly: true))
 	let context = container.mainContext
 	context.insert(Deck(name: "Hello", image: "deck"))

@@ -12,11 +12,9 @@ struct SettingsView: View {
 	
 	var body: some View {
 		NavigationStack {
-			ScrollViewReader { proxy in
-				ScrollView {
-					VStack {
-						Text("Settings")
-					}
+			ScrollView {
+				VStack {
+					Text("Settings")
 				}
 			}
 		}

@@ -11,10 +11,11 @@ import SwiftUI
 struct SplendidField: View {
 	
 	let title: String
-	let shape = RoundedRectangle(cornerRadius: 14)
-	
 	@Binding var text: String
+	
 	@FocusState var isTyping: Bool
+	
+	let rectangle: RoundedRectangle = RoundedRectangle(cornerRadius: 14, style: .continuous)
 	
 	var body: some View {
 		ZStack(alignment: .leading) {
@@ -22,11 +23,11 @@ struct SplendidField: View {
 				.padding(.horizontal, 14)
 				.frame(height: 55)
 				.focused($isTyping)
-				.background(isTyping ? Color.accentColor : Color.primary, in: shape.stroke(lineWidth: 2))
+				.background(isTyping ? Color.accentColor : Color.primary, in: rectangle.stroke(lineWidth: 2))
 			Text(title)
 				.padding(.horizontal, 5)
 				.padding(.vertical, -3)
-				.background(shape.fill(Color(.systemBackground).opacity(isTyping || !text.isEmpty ? 1 : 0)))
+				.background(rectangle.fill(Color(.systemBackground).opacity(isTyping || !text.isEmpty ? 1 : 0)))
 				.foregroundStyle(isTyping ? Color.accentColor : Color.primary)
 				.padding(.leading)
 				.offset(y: isTyping || !text.isEmpty ? -27 : 0)
