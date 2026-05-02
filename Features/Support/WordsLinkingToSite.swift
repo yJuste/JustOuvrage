@@ -25,7 +25,7 @@ struct WordsLinkingToSite: View {
 		WrapHStack {
 			Text(title)
 				.font(.caption)
-				.foregroundStyle(.secondary)
+				.foregroundStyle(.accent)
 				.padding(.top, 14)
 			ForEach(item, id: \.self) { item in
 				Button {

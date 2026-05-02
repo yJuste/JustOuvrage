@@ -101,14 +101,14 @@ struct DecksView: View {
 			.sheet(isPresented: $showDeck) {
 				if let deck = selectedDeck {
 					DeckView(deck: deck, namespace: namespace)
-						.presentationDetents([.height(320), .large])
+						.presentationDetents([.height(Constants.deck), .large])
 						.presentationBackgroundInteraction(.enabled)
 						.presentationDragIndicator(.hidden)
 				}
 			}
 			.sheet(isPresented: $showNewCard) {
 				NewCardView()
-					.presentationDetents([.height(520), .large])
+					.presentationDetents([.height(Constants.newCard), .large])
 					.presentationDragIndicator(.visible)
 			}
 			.sheet(isPresented: $showNewDeck) {

@@ -7,10 +7,10 @@
 
 import SwiftUI
 import SwiftData
-import os // MARK: debug
+import os /// `debug`
 
 /// A view where all the cards are displayed.
-/// External Dependencies: Card, CardView, NewCardView, NewDeckView
+/// External Dependencies: Card, Constants, CardView, NewCardView, NewDeckView
 struct CardsView: View {
 	
 	@Environment(\.modelContext) private var context
@@ -68,13 +68,13 @@ struct CardsView: View {
 			.sheet(isPresented: $showCard) {
 				if let card = selectedCard {
 					CardView(card: card)
-						.presentationDetents([.height(420)])
+						.presentationDetents([.fraction(0.3), .fraction(0.4)])
 						.presentationBackgroundInteraction(.enabled)
 				}
 			}
 			.sheet(isPresented: $showNewCard) {
 				NewCardView()
-					.presentationDetents([.height(520), .large])
+					.presentationDetents([.height(Constants.newCard), .large])
 					.presentationDragIndicator(.visible)
 			}
 			.sheet(isPresented: $showNewDeck) {

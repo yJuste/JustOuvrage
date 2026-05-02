@@ -14,9 +14,9 @@ import Foundation
 	
 	var id: UUID
 	var name: String
+	var image: String
 	var depiction: String
 	var author: String
-	var image: String
 	var lastViewedAt: Date?
 	var lastOpenedAt: Date?
 	
@@ -28,9 +28,9 @@ import Foundation
 	init(name: String, image: String) {
 		self.id = UUID()
 		self.name = name
+		self.image = image
 		self.depiction = ""
 		self.author = "[author]"
-		self.image = image
 		self.cards = []
 		self.createdAt = .now
 		self.lockDelete = false

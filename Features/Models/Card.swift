@@ -18,6 +18,7 @@ import Foundation
 	var frontLanguage: Language
 	var backLanguage: Language
 	var leitnerScore: Int
+	var author: String
 	var lastViewedAt: Date?
 	
 	@Relationship var decks: [Deck]
@@ -30,9 +31,9 @@ import Foundation
 		self.backEntry = backEntry
 		self.frontLanguage = frontLanguage
 		self.backLanguage = backLanguage
-		self.lastViewedAt = nil
-		self.decks = []
 		self.leitnerScore = 1
+		self.author = "[author]"
+		self.decks = []
 		self.createdAt = .now
 	}
 }

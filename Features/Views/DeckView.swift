@@ -128,21 +128,23 @@ struct DeckView: View {
 							.sheet(isPresented: $showCard) {
 								if let card = selectedCard {
 									CardView(card: card)
-										.presentationDetents([.height(180)])
+										.presentationDetents([.fraction(0.3), .fraction(0.4)])
 										.presentationBackgroundInteraction(.enabled)
 								}
 							}
 						}
-						VStack(alignment: .leading) {
-							Text(deck.createdAt, format: .dateTime.year().month().day())
-							Text("\(deck.cards.count) cards")
-							Text("\(deck.author)")
-							Text(Set(deck.cards.flatMap {[$0.frontLanguage, $0.backLanguage]}).sorted { $0.language < $1.language }.map { $0.language }.joined(separator: " ⋅ "))
-								.font(.caption)
+						Section { /// ``metadata``
+							VStack(alignment: .leading) {
+								Text(deck.createdAt, format: .dateTime.year().month().day())
+								Text("\(deck.cards.count) cards")
+								Text("\(deck.author)")
+								Text(Set(deck.cards.flatMap {[$0.frontLanguage, $0.backLanguage]}).sorted { $0.language < $1.language }.map { $0.language }.joined(separator: " ⋅ "))
+									.font(.caption)
+							}
+							.foregroundStyle(.secondary)
+							.frame(maxWidth: .infinity, alignment: .leading)
+							.padding()
 						}
-						.foregroundStyle(.secondary)
-						.frame(maxWidth: .infinity, alignment: .leading)
-						.padding()
 					}
 				}
 				.frame(maxWidth: .infinity)

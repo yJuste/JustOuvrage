@@ -84,7 +84,7 @@ struct LibraryView: View {
 			.toolbar { toolbar }
 			.sheet(isPresented: $showNewCard) {
 				NewCardView()
-					.presentationDetents([.height(520), .large])
+					.presentationDetents([.height(Constants.newCard), .large])
 					.presentationDragIndicator(.visible)
 			}
 			.sheet(isPresented: $showNewDeck) {

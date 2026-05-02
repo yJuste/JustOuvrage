@@ -5,8 +5,10 @@
 //  Created by Jules Longin on 4/23/26.
 //
 
+import CoreFoundation
+
 /// An Interface defining every ``constant``.
-// MARK: The constants has to be invariant, verify that every (⚠️ critical) value exists.
+/// `The constants has to be invariant, verify that every (⚠️ critical) value exists.`
 enum Constants {
 	
 	// How many searches are listed.
@@ -14,4 +16,13 @@ enum Constants {
 	
 	// ⚠️ Assets catalog -> "deck" (image)
 	static let defaultDeckImage: String = "deck"
+	
+	// Size of the sheet of a new card view.
+	static let newCard: CGFloat = 520
+	
+	// Size of the sheet of a card view.
+	static let card: CGFloat = 345
+	
+	// Size of the sheet of a deck view.
+	static let deck: CGFloat = 345
 }

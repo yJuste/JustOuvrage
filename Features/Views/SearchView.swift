@@ -7,7 +7,7 @@
 
 import SwiftUI
 import SwiftData
-import os // MARK: debug
+import os /// `debug`
 
 /// A view that shows the search scene.
 /// External Dependencies: Card, Deck, SearchFocusView, Constants, FileImageStorage

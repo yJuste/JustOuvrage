@@ -1,34 +1,37 @@
 //
-//  NewCardView.swift
+//  EditCardView.swift
 //  JustOuvrage
 //
-//  Created by Jules Longin on 4/19/26.
+//  Created by Jules Longin on 5/2/26.
 //
 
 import SwiftUI
-import SwiftData
 
-/// A view that can creates a new Card.
-/// External Dependencies: Card, FlagPicker, SplendidField, Preferences
-struct NewCardView: View {
+struct EditCardView: View {
 	
-	@Environment(\.modelContext) private var context
+	let card: Card
+	
 	@Environment(\.dismiss) private var dismiss
-	
-	@Query(sort: \Card.createdAt, order: .reverse) private var cards: [Card]
 	
 	@FocusState private var focusField: FocusField?
 	
-	@State private var preferences: Preferences = Preferences.unique
 	@State private var frontEntry: String = ""
 	@State private var backEntry: String = ""
-	@State private var frontLanguage: Language = Preferences.unique.frontLanguage
-	@State private var backLanguage: Language = Preferences.unique.backLanguage
+	@State private var frontLanguage: Language = Language.en_US
+	@State private var backLanguage: Language = Language.en_US
+	@State private var leitnerScore: Int = 1
 	@State private var showFrontLanguage: Bool = false
 	@State private var showBackLanguage: Bool = false
-	@State private var showAddedCard: Bool = false
-	@State private var showAddedBanner: Bool = false
 	@State private var showCancelAlert: Bool = false
+	
+	init(card: Card) {
+		self.card = card
+		_frontEntry = State(initialValue: card.frontEntry)
+		_backEntry = State(initialValue: card.backEntry)
+		_frontLanguage = State(initialValue: card.frontLanguage)
+		_backLanguage = State(initialValue: card.backLanguage)
+		_leitnerScore = State(initialValue: card.leitnerScore)
+	}
 	
 	var body: some View {
 		NavigationStack {
@@ -75,6 +78,17 @@ struct NewCardView: View {
 								.id(FocusField.back)
 								.focused($focusField, equals: .back)
 						}
+						Section { /// ``Leitner Score``
+							LabelTrailing(title: "Leitner Score") {
+								Picker("Leitner Score", selection: $leitnerScore) {
+									ForEach(1...7, id: \.self) { value in
+										Text("\(value)")
+											.tag(value)
+									}
+								}
+								.pickerStyle(.navigationLink)
+							}
+						}
 					}
 					.padding(30)
 				}
@@ -94,85 +108,48 @@ struct NewCardView: View {
 			.onSubmit {
 				if focusField == .front {
 					focusField = .back
-				} else {
-					addCard()
 				}
 			}
 			.onTapGesture {
 				focusField = nil
 			}
-			.overlay(alignment: .top) {
-				if showAddedBanner {
-					HStack(spacing: 6) {
-						Text("Ajouté")
-						Image(systemName: "checkmark.circle.fill")
-					}
-					.font(.subheadline.weight(.medium))
-					.padding(.horizontal, 14)
-					.padding(.vertical, 10)
-					.background(.thinMaterial)
-					.clipShape(Capsule())
-					.padding(.top, 0)
-					.transition(.move(edge: .top).combined(with: .opacity))
-				}
-			}
-			.alert("Missing Information", isPresented: $showAddedCard) {
-				Button("Got it", role: .cancel) { }
-			} message: {
-				Text("Please fill in both sides before saving.")
-			}
-			.alert("New Card", isPresented: $showCancelAlert) {
+			.alert("Edit Card", isPresented: $showCancelAlert) {
 				Button("Discard Changes", role: .destructive) {
 					frontEntry = ""
 					backEntry = ""
+					leitnerScore = 1
 					focusField = nil
 					dismiss()
 				}
 				Button("Keep Editing", role: .cancel) { }
 			} message: {
-				Text("Are you sure you want to discard this new card?")
+				Text("Are you sure you want to discard changes to this card?")
 			}
 		}
 	}
 }
 
-/// Methods of NewCardView.
-fileprivate extension NewCardView {
+/// Methods of EditCardView.
+fileprivate extension EditCardView {
 	
-	private func showAdded() {
-		withAnimation(.snappy) {
-			showAddedBanner.toggle()
-		}
-		Task {
-			try? await Task.sleep(for: .seconds(1.5))
-			await MainActor.run {
-				withAnimation(.snappy) {
-					showAddedBanner.toggle()
-				}
-			}
-		}
-	}
-	
-	private func addCard() {
+	private func editCard() {
 		let newFrontEntry = frontEntry.trimmingCharacters(in: .whitespacesAndNewlines)
 		let newBackEntry = backEntry.trimmingCharacters(in: .whitespacesAndNewlines)
-		if newFrontEntry.isEmpty || newBackEntry.isEmpty {
-			showAddedCard.toggle()
+		if newFrontEntry == card.frontEntry && newBackEntry == card.backEntry && leitnerScore == card.leitnerScore && frontLanguage == card.frontLanguage && backLanguage == card.backLanguage {
+			dismiss()
 		} else {
-			context.insert(Card(frontEntry: newFrontEntry, backEntry: newBackEntry, frontLanguage: frontLanguage, backLanguage: backLanguage))
-			preferences.frontLanguage = frontLanguage
-			preferences.backLanguage = backLanguage
-			frontEntry = ""
-			backEntry = ""
-			focusField = .front
-			showAdded()
+			card.frontEntry = newFrontEntry
+			card.backEntry = newBackEntry
+			card.frontLanguage = frontLanguage
+			card.backLanguage = backLanguage
+			card.leitnerScore = leitnerScore
 			dismiss()
 		}
 	}
 }
 
 /// An interface to use to toggle a focusState.
-fileprivate extension NewCardView {
+fileprivate extension EditCardView {
 	
 	private enum FocusField: Hashable {
 		
@@ -182,14 +159,14 @@ fileprivate extension NewCardView {
 }
 
 /// Toolbar.
-fileprivate extension NewCardView {
+fileprivate extension EditCardView {
 	
 	@ToolbarContentBuilder private var toolbar: some ToolbarContent {
 		ToolbarItem(placement: .topBarLeading) {
 			Button {
 				let newFrontEntry = frontEntry.trimmingCharacters(in: .whitespacesAndNewlines)
 				let newBackEntry = backEntry.trimmingCharacters(in: .whitespacesAndNewlines)
-				if newFrontEntry.isEmpty && newBackEntry.isEmpty {
+				if newFrontEntry == card.frontEntry && newBackEntry == card.backEntry {
 					dismiss()
 				} else {
 					showCancelAlert.toggle()
@@ -199,12 +176,12 @@ fileprivate extension NewCardView {
 			}
 		}
 		ToolbarItem(placement: .principal) {
-			Text("\(cards.first?.frontEntry ?? "Front Entry") : \(cards.first?.backEntry ?? "Back Entry")")
-				.font(.caption)
+			Text("Edit Card")
+				.font(.headline)
 		}
 		ToolbarItem(placement: .topBarTrailing) {
 			Button {
-				addCard()
+				editCard()
 			} label: {
 				Label("Done", systemImage: "checkmark")
 			}
@@ -215,5 +192,13 @@ fileprivate extension NewCardView {
 }
 
 #Preview {
-	NewCardView()
+	
+	EditCardView(
+		card: Card(
+			frontEntry: "hello my na🇺🇸m on, l, l,",
+			backEntry: ",,,bonjour,,,,",
+			frontLanguage: .en_US,
+			backLanguage: .fr_CA
+		)
+	)
 }

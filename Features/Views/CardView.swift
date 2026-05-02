@@ -13,9 +13,12 @@ struct CardView: View {
 	
 	let card: Card
 	
+	@Environment(\.dismiss) private var dismiss
+	
 	let forvo: ForvoSite = ForvoSite()
 	
 	@State private var destination: SiteDestination?
+	@State private var showEditCard: Bool = false
 	
 	var cleanFrontEntry: [String] { cleanWords(expression: card.frontEntry) }
 	var cleanBackEntry: [String] { cleanWords(expression: card.backEntry) }
@@ -67,15 +70,48 @@ struct CardView: View {
 							.pickerStyle(.segmented)
 						}
 					}
+					Section { /// ``metadata``
+						VStack(alignment: .leading) {
+							Text(card.createdAt, format: .dateTime.year().month().day())
+							Text("\(card.author)")
+							let names = Set(card.decks.map { $0.name }).sorted()
+							Text(names.isEmpty ? "Not in any deck" : "In decks: " + names.joined(separator: " ⋅ "))
+								.font(.caption)
+						}
+						.foregroundStyle(.secondary)
+						.padding(.vertical)
+					}
 				}
 				.buttonStyle(.plain)
-				.padding()
+				.padding(.horizontal)
 			}
+			.toolbar { toolbar }
 			.scrollIndicators(.hidden)
+			.sheet(isPresented: $showEditCard) {
+				EditCardView(card: card)
+			}
 			.fullScreenCover(item: $destination) {
 				SFSafariViewWrapper(url: $0.url)
 			}
 			// other fullScreenCovers
+		}
+	}
+}
+
+/// Toolbar.
+fileprivate extension CardView {
+	
+	@ToolbarContentBuilder private var toolbar: some ToolbarContent {
+		ToolbarItem(placement: .topBarTrailing) {
+			Menu {
+				Button {
+					showEditCard.toggle()
+				} label: {
+					Label("Edit Card", systemImage: "slider.horizontal.3")
+				}
+			} label: {
+				Image(systemName: "ellipsis")
+			}
 		}
 	}
 }
