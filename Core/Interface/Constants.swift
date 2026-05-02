@@ -12,7 +12,7 @@ import CoreFoundation
 enum Constants {
 	
 	// How many searches are listed.
-	static let maxRecents: Int = 100
+	static let maxRecents: Int = 200
 	
 	// ⚠️ Assets catalog -> "deck" (image)
 	static let defaultDeckImage: String = "deck"

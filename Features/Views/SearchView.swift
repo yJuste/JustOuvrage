@@ -10,18 +10,20 @@ import SwiftData
 import os /// `debug`
 
 /// A view that shows the search scene.
-/// External Dependencies: Card, Deck, SearchFocusView, Constants, FileImageStorage
+/// External Dependencies: Card, Deck, Draft, Language, Search, SearchFocusView, Constants, FileImageStorage
 struct SearchView: View {
 	
 	@Environment(FileImageStorage.self) private var storage
+	@Environment(\.modelContext) private var context
 	
 	@Query(sort: \Card.createdAt, order: .reverse) private var cards: [Card]
-	@Query(filter: #Predicate<Card> { $0.lastViewedAt != nil }, sort: \Card.lastViewedAt, order: .reverse) private var recents: [Card]
 	@Query(sort: \Deck.createdAt, order: .reverse) private var decks: [Deck]
+	@Query private var drafts: [Draft]
 	
 	@State private var search: String = ""
 	@State private var showPicker: Bool = false
-	@State private var select: Filter = .all
+	@State private var select: Int = 0
+	@State private var showExactMatch: Bool = false
 	
 	var body: some View {
 		NavigationStack {
@@ -32,10 +34,9 @@ struct SearchView: View {
 					case .card(let card):
 						Button {
 							card.lastViewedAt = .now
-							trimRecents()
 						} label: {
 							Label {
-								Text(card.frontEntry)
+								Text("\(card.frontEntry)")
 									.font(.subheadline)
 							} icon: {
 								Image(systemName: "magnifyingglass")
@@ -72,18 +73,38 @@ struct SearchView: View {
 						}
 						.buttonStyle(.plain)
 						.listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
+					case .draft( _ ): Button { } label: { }
+					case .exactMatch(let match):
+						Button {
+							let normalized = match.trimmingCharacters(in: .whitespacesAndNewlines)
+							if let existing = drafts.first(where: { $0.entry.caseInsensitiveCompare(normalized) == .orderedSame }) {
+								existing.lastViewedAt = .now
+							} else {
+								let draft = Draft(entry: normalized, language: .en_US)
+								context.insert(draft)
+							}
+						} label: {
+							Label {
+								Text("\"\(match)\"")
+							} icon: {
+								Image(systemName: "magnifyingglass.circle.fill")
+							}
+							.font(.headline)
+							.fontWeight(.medium)
+							.foregroundStyle(.accent)
+						}
 					}
 				}
 			}
 			.safeAreaInset(edge: .top) {
-				if !search.isEmpty {
+				if !search.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
 					Picker("", selection: $select) {
 						Text("All")
-							.tag(Filter.all)
+							.tag(0)
 						Text("Only Cards")
-							.tag(Filter.cards)
+							.tag(1)
 						Text("Only Decks")
-							.tag(Filter.decks)
+							.tag(2)
 					}
 					.pickerStyle(.segmented)
 					.scaleEffect(1.2)
@@ -95,7 +116,10 @@ struct SearchView: View {
 				}
 			}
 			.onChange(of: search) { _, newValue in
-				showPicker = !newValue.isEmpty
+				showPicker = !newValue.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+			}
+			.sheet(isPresented: $showExactMatch) {
+				
 			}
 			.searchable(text: $search, placement: .toolbar)
 			.scrollDismissesKeyboard(.immediately)
@@ -108,45 +132,27 @@ struct SearchView: View {
 /// Filtered results between Cards/Decks.
 fileprivate extension SearchView {
 	
-	private enum SearchResult: Identifiable {
-		
-		case card(Card)
-		case deck(Deck)
-		
-		var id: UUID {
-			switch self {
-			case .card(let card): return card.id
-			case .deck(let deck): return deck.id
-			}
-		}
-	}
-	
-	private enum Filter: Int {
-		
-		case all
-		case cards
-		case decks
-	}
-	
-	private var filteredResults: [SearchResult] {
+	private var filteredResults: [Search] {
 		let trimmed = search.trimmingCharacters(in: .whitespacesAndNewlines)
 		guard !trimmed.isEmpty else { return [] }
-		let cardResults = cards.filter { $0.frontEntry.localizedCaseInsensitiveContains(trimmed) }.map { SearchResult.card($0) }
-		let deckResults = decks.filter { $0.name.localizedCaseInsensitiveContains(trimmed) }.map { SearchResult.deck($0) }
+		
+		let exactResult: [Search] = [.exactMatch(trimmed)]
+		let cardResults = cards
+			.filter { $0.frontEntry.localizedCaseInsensitiveContains(trimmed) }
+			.map { Search.card($0) }
+		let deckResults = decks
+			.filter { $0.name.localizedCaseInsensitiveContains(trimmed) }
+			.map { Search.deck($0) }
+		
 		switch select {
-		case .all:
-			return cardResults + deckResults
-		case .cards:
+		case 0:
+			return exactResult + cardResults + deckResults
+		case 1:
 			return cardResults
-		case .decks:
+		case 2:
 			return deckResults
-		}
-	}
-	
-	private func trimRecents() {
-		guard recents.count > Constants.maxRecents else { return }
-		for card in recents.dropFirst(Constants.maxRecents) {
-			card.lastViewedAt = nil
+		default:
+			return exactResult + cardResults + deckResults
 		}
 	}
 }
@@ -171,6 +177,5 @@ fileprivate extension SearchView {
 				.modelContainer(container)
 		}
 	}
-
 	return SearchPreview()
 }

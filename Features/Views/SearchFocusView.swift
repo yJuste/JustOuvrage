@@ -9,23 +9,23 @@ import SwiftUI
 import SwiftData
 import os /// `debug`
 
-// MARK: I Have to add recent for albums too.
-
 /// A view that shows the focus state of the SearchView.
-/// External Dependencies: Card, Deck, Constants
+/// External Dependencies: Card, Deck, Draft, Constants, FileImageStorage, Search, CardView, DeckView, DraftView
 struct SearchFocusView: View {
 	
 	@Binding var search: String
 	
 	@Environment(\.isSearching) private var isSearching
 	@Environment(FileImageStorage.self) private var storage
+	@Environment(\.modelContext) private var context
 	@Namespace private var namespace
 	
 	@Query(filter: #Predicate<Card> { $0.lastViewedAt != nil }, sort: \Card.lastViewedAt, order: .reverse) private var recentCards: [Card]
 	@Query(filter: #Predicate<Deck> { $0.lastViewedAt != nil }, sort: \Deck.lastViewedAt, order: .reverse) private var recentDecks: [Deck]
+	@Query private var recentDrafts: [Draft]
 	
-	private var recentItems: [RecentItem] {
-		(recentCards.map(RecentItem.card) + recentDecks.map(RecentItem.deck))
+	private var recentItems: [Search] {
+		(recentCards.map(Search.card) + recentDecks.map(Search.deck) + recentDrafts.map(Search.draft))
 			.sorted { $0.date > $1.date }
 	}
 	
@@ -33,6 +33,8 @@ struct SearchFocusView: View {
 	@State private var showCard: Bool = false
 	@State private var selectedDeck: Deck?
 	@State private var showDeck: Bool = false
+	@State private var selectedDraft: Draft?
+	@State private var showDraft: Bool = false
 	@State private var showClearAllAlert: Bool = false
 	
 	var body: some View {
@@ -43,9 +45,11 @@ struct SearchFocusView: View {
 					case .card(let card):
 						Button {
 							showDeck = false
+							showDraft = false
 							selectedCard = card
 							showCard = true
 							card.lastViewedAt = .now
+							trimRecentsGlobal()
 						} label: {
 							Text("\(card.frontEntry)")
 								.font(.system(size: 15, weight: .regular, design: .default))
@@ -60,9 +64,11 @@ struct SearchFocusView: View {
 					case .deck(let deck):
 						Button {
 							showCard = false
+							showDraft = false
 							selectedDeck = deck
 							showDeck = true
 							deck.lastViewedAt = .now
+							trimRecentsGlobal()
 						} label: {
 							HStack(spacing: 12) {
 								Image(image: deck.image, storage: storage)
@@ -86,6 +92,26 @@ struct SearchFocusView: View {
 								Label("Clear", systemImage: "xmark.circle.fill")
 							}
 						}
+					case .draft(let draft):
+						Button {
+							showCard = false
+							showDeck = false
+							selectedDraft = draft
+							showDraft = true
+							draft.lastViewedAt = .now
+							trimRecentsGlobal()
+						} label: {
+							Text("\(draft.entry)")
+								.font(.system(size: 15, weight: .regular, design: .default))
+						}
+						.swipeActions {
+							Button {
+								context.delete(draft)
+							} label: {
+								Label("Clear", systemImage: "xmark.circle.fill")
+							}
+						}
+					case .exactMatch( _ ): Button { } label: { }
 					}
 				}
 			} header: {
@@ -115,10 +141,18 @@ struct SearchFocusView: View {
 						.presentationDragIndicator(.hidden)
 				}
 			}
+			.sheet(isPresented: $showDraft) {
+				if let draft = selectedDraft {
+					DraftView(draft: draft)
+						.presentationDetents([.fraction(0.3), .fraction(0.4)])
+						.presentationBackgroundInteraction(.enabled)
+				}
+			}
 			.alert("Clear Searches?", isPresented: $showClearAllAlert) {
 				Button("Clear All", role: .destructive) {
 					recentCards.forEach { $0.lastViewedAt = nil }
 					recentDecks.forEach { $0.lastViewedAt = nil }
+					recentDrafts.forEach { context.delete($0) }
 				}
 				Button("Cancel", role: .cancel) { }
 			} message: {
@@ -130,24 +164,21 @@ struct SearchFocusView: View {
 
 fileprivate extension SearchFocusView {
 	
-	private enum RecentItem: Identifiable {
+	func trimRecentsGlobal() {
+		let all = recentItems
+		guard all.count > Constants.maxRecents else { return }
+		let toRemove = all.dropFirst(Constants.maxRecents)
 		
-		case card(Card)
-		case deck(Deck)
-		
-		var id: UUID {
-			switch self {
-			case .card(let card): return card.id
-			case .deck(let deck): return deck.id
-			}
-		}
-		
-		var date: Date {
-			switch self {
+		for item in toRemove {
+			switch item {
 			case .card(let card):
-				return card.lastViewedAt ?? .distantPast
+				card.lastViewedAt = nil
 			case .deck(let deck):
-				return deck.lastViewedAt ?? .distantPast
+				deck.lastViewedAt = nil
+			case .draft(let draft):
+				context.delete(draft)
+			case .exactMatch:
+				break
 			}
 		}
 	}
