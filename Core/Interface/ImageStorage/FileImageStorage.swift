@@ -7,8 +7,10 @@
 
 import SwiftUI
 
-/// An Interface that handles ``local file image storage`` within the App Sandbox ( -> Documents/Image ).
-/// Handles ``file storage cache`` as well.
+// MARK: When VIewModel will be added, Use Data over UIImage
+
+/// An Interface that handles `local file image storage` within the App Sandbox ( -> Documents/Image ).
+/// Handles `file storage cache` as well.
 /// External Dependencies: Constants, Errors
 @Observable final class FileImageStorage: ImageStorageService {
 	

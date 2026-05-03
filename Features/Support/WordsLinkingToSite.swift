@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-/// A section that links ``words to a site``.
+/// A section that links `words to a site`.
 /// External Dependencies: WrapHStack
 struct WordsLinkingToSite: View {
 	

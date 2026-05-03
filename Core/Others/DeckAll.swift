@@ -9,7 +9,7 @@ import SwiftUI
 import SwiftData
 
 /// Create the "All" Deck when running the App for the first time.
-func ensureAllDeckExists(context: ModelContext) {
+func configureAllDeck(context: ModelContext) {
 	
 	let decks = (try? context.fetch(FetchDescriptor<Deck>())) ?? []
 	let allDecks = decks.filter { $0.lockDelete }

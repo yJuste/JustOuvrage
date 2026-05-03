@@ -7,7 +7,9 @@
 
 import CoreFoundation
 
-/// An Interface defining every ``constant``.
+// MARK: Names will be changed for better ones.
+
+/// An Interface defining every `constant`.
 /// `The constants has to be invariant, verify that every (⚠️ critical) value exists.`
 enum Constants {
 	

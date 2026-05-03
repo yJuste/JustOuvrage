@@ -5,7 +5,7 @@
 //  Created by Jules Longin on 4/18/26.
 //
 
-/// An interface to categorize the ``language codes``.
+/// An interface to categorize the `language codes`.
 /// [ISO 639-1] + \_ + [ISO 3166]
 enum Language: String, Codable, CaseIterable {
 	

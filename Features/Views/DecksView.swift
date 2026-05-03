@@ -8,6 +8,8 @@
 import SwiftUI
 import SwiftData
 
+// MARK: Protect 'All Deck'
+
 /// A view that shows every deck.
 /// External Dependencies: Deck, FileImageStorage, DeckView, NewCardView, NewDeckView
 struct DecksView: View {
@@ -117,7 +119,11 @@ struct DecksView: View {
 					.presentationDragIndicator(.visible)
 			}
 			.alert("Are you sure you want to delete this deck from your library?", isPresented: $showDeleteDeck) {
-				Button("Remove", role: .destructive) { if let item { context.delete(item) } }
+				Button("Remove", role: .destructive) {
+					if let item {
+						context.delete(item)
+					}
+				}
 				Button("Cancel", role: .cancel) { }
 			}
 			.alert("Selected Decks", isPresented: $showSelectedDecks) {
@@ -134,8 +140,8 @@ struct DecksView: View {
 fileprivate extension DecksView {
 	
 	private func deleteSelection() {
-		for card in selection {
-			context.delete(card)
+		for deck in selection {
+			context.delete(deck)
 		}
 		selection.removeAll()
 	}

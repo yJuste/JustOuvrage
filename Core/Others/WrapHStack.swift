@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-/// An extension for HStack that can ``wrap elements`` for a better layout.
+/// An extension for HStack that can `wrap elements` for a better layout.
 struct WrapHStack: Layout {
 	
 	var spacing: CGFloat = 8

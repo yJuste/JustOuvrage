@@ -12,10 +12,15 @@ import SwiftData
 /// External Dependencies: NewCardView, LibraryView, SearchView
 struct ContentView: View {
 	
+	@Environment(\.modelContext) private var context
+	
 	var body: some View {
 		if #available(iOS 26, *) {
 			NativeTabView()
 				//.tabViewBottomAccessory { EmptyView() }
+				.task {
+					configureAllDeck(context: context)
+				}
 		} else {
 			NativeTabView()
 		}

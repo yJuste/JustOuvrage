@@ -8,7 +8,7 @@
 import SwiftUI
 import Observation
 
-/// An Interface that lists all ``persisted selections``.
+/// An Interface that lists all `persisted selections` with UserDefault.
 enum PreferencesKey: String {
 	
 	/// for NewCardView
