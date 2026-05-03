@@ -1,26 +1,38 @@
 //
-//  PickerView.swift
+//  Appearance.swift
 //  JustOuvrage
 //
-//  Created by Jules Longin on 4/26/26.
+//  Created by Jules Longin on 5/3/26.
 //
 
 import SwiftUI
 
-/// Add a new default configuration for the appearance of a ``Picker.segmented``.
-enum PickerView {
+/// Configures the global UI appearance across the App.
+enum Appearance {
 	
-	static func configure() {
+	/// Applies a `default picker appearance` globally.
+	///
+	/// ## Example
+	/// ```swift
+	/// struct App: App {
+	///		init() {
+	///			View.configurePicker()
+	///		}
+	/// }
+	/// ```
+	static func configurePicker() {
 		
 		let appearance = UISegmentedControl.appearance()
 		let font = UIFont.boldSystemFont(ofSize: 12)
 		let accent = UIColor(Color.accentColor)
 		
 		appearance.selectedSegmentTintColor = accent.withAlphaComponent(0.75)
+		
 		appearance.setTitleTextAttributes([
 			.font: font,
 			.foregroundColor: accent
 		], for: .normal)
+		
 		appearance.setTitleTextAttributes([
 			.font: font,
 			.foregroundColor: UIColor.label

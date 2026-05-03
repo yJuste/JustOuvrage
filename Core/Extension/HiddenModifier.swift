@@ -7,10 +7,20 @@
 
 import SwiftUI
 
-/// Add an extension for the modifier .hidden()
-/// .hidden() can now take a Bool parameter -> ``.hidden( Bool )``
 extension View {
 	
+	/// Extends `.hidden()` to accept a Boolean value.
+	///
+	/// - Parameters:
+	///   - toHide: `true` hides the view, `false` shows it.
+	///
+	/// - Returns: A `View` if it's false, otherwise nothing.
+	///
+	/// ## Example
+	/// ```swift
+	/// Text("Hello")
+	///     .hidden(true)
+	/// ```
 	@ViewBuilder func hidden(_ toHide: Bool) -> some View {
 		if toHide {
 			self.hidden()
