@@ -13,9 +13,11 @@ struct DraftView: View {
 	let draft: Draft
 	
 	let forvo: ForvoSite = ForvoSite()
+	let wordReference: WordReferenceSite = WordReferenceSite()
+	let google: GoogleSite = GoogleSite()
 	
 	@Bindable private var preferences: Preferences = Preferences.unique
-	@State private var destination: SiteDestination?
+	@State private var destination: Destination?
 	@State private var showLanguage: Bool = false
 	
 	var cleanEntry: [String] { cleanWords(expression: draft.entry) }
@@ -33,13 +35,13 @@ struct DraftView: View {
 							Text("\(draft.entry)")
 						}
 						WordsLinkingToSite("Forvo", item: cleanEntry) { entry in
-							destination = forvo.link(for: entry, in: selectedLanguage)
+							destination = forvo.link(for: entry, in: (selectedLanguage, selectedLanguage))
 						}
 						WordsLinkingToSite("WordReference", item: cleanEntry) { entry in
-							destination = forvo.link(for: entry, in: selectedLanguage)
+							destination = wordReference.link(for: entry, in: selectedLanguage)
 						}
 						WordsLinkingToSite("Google", item: cleanEntry) { entry in
-							destination = forvo.link(for: entry, in: selectedLanguage)
+							destination = google.link(for: entry, in: selectedLanguage)
 						}
 					}
 				}
@@ -48,8 +50,8 @@ struct DraftView: View {
 			}
 			.toolbar { toolbar }
 			.scrollIndicators(.hidden)
-			.fullScreenCover(item: $destination) {
-				SFSafariViewWrapper(url: $0.url)
+			.fullScreenCover(item: $destination) { destination in
+				SFSafariViewWrapper(url: destination.url)
 			}
 		}
 	}

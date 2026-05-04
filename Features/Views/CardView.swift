@@ -16,8 +16,10 @@ struct CardView: View {
 	@Environment(\.dismiss) private var dismiss
 	
 	let forvo: ForvoSite = ForvoSite()
+	let wordReference: WordReferenceSite = WordReferenceSite()
+	let google: GoogleSite = GoogleSite()
 	
-	@State private var destination: SiteDestination?
+	@State private var destination: Destination?
 	@State private var showEditCard: Bool = false
 	
 	var cleanFrontEntry: [String] { cleanWords(expression: card.frontEntry) }
@@ -35,10 +37,10 @@ struct CardView: View {
 							destination = forvo.link(for: entry, in: card.frontLanguage)
 						}
 						WordsLinkingToSite("WordReference", item: cleanFrontEntry) { entry in
-							destination = forvo.link(for: entry, in: card.frontLanguage)
+							destination = wordReference.link(for: entry, in: (card.frontLanguage, card.backLanguage))
 						}
 						WordsLinkingToSite("Google", item: cleanFrontEntry) { entry in
-							destination = forvo.link(for: entry, in: card.frontLanguage)
+							destination = google.link(for: entry, in: card.frontLanguage)
 						}
 					}
 					Section { /// ``Second Entry``
@@ -49,10 +51,10 @@ struct CardView: View {
 							destination = forvo.link(for: entry, in: card.backLanguage)
 						}
 						WordsLinkingToSite("WordReference", item: cleanBackEntry) { entry in
-							destination = forvo.link(for: entry, in: card.backLanguage)
+							destination = wordReference.link(for: entry, in: (card.backLanguage, card.frontLanguage))
 						}
 						WordsLinkingToSite("Google", item: cleanBackEntry) { entry in
-							destination = forvo.link(for: entry, in: card.backLanguage)
+							destination = google.link(for: entry, in: card.backLanguage)
 						}
 					}
 					Section { /// ``Leitner Score``

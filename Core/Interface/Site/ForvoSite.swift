@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct ForvoSite: Site {
+struct ForvoSite: SiteService {
 	
 	func specificLanguage(language: Language) -> String {
 		
@@ -20,15 +20,19 @@ struct ForvoSite: Site {
 		}
 	}
 	
-	func link(for expression: String, in language: Language) -> SiteDestination? {
+	func link(for expression: String, in language: Language) -> Destination? {
 		
-		let language_code = specificLanguage(language: language)
-		let expression_encoded = expression.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? expression
+		let languageCode = specificLanguage(language: language)
+		let expressionEncoded = expression.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? expression
 		let link = expression.contains(" ")
-		? "https://forvo.com/search/\(expression_encoded)/\(language_code)"
-		: "https://forvo.com/word/\(expression_encoded)/#\(language_code)"
+		? "https://forvo.com/search/\(expressionEncoded)/\(languageCode)"
+		: "https://forvo.com/word/\(expressionEncoded)/#\(languageCode)"
 		
 		guard let url = URL(string: link) else { return nil }
-		return SiteDestination(url: url)
+		return Destination(url: url)
+	}
+	
+	func link(for expression: String, in language: (Language, Language)) -> Destination? {
+		link(for: expression, in: language.0)
 	}
 }
