@@ -19,7 +19,7 @@ struct NewCardView: View {
 	
 	@FocusState private var focusField: FocusField?
 	
-	@State private var preferences: Preferences = Preferences.unique
+	@Bindable private var preferences: Preferences = Preferences.unique
 	@State private var frontEntry: String = ""
 	@State private var backEntry: String = ""
 	@State private var frontLanguage: Language = Preferences.unique.frontLanguage

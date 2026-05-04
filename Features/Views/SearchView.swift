@@ -15,6 +15,7 @@ struct SearchView: View {
 	
 	@Environment(FileImageStorage.self) private var storage
 	@Environment(\.modelContext) private var context
+	@Namespace private var namespace
 	
 	@Query(sort: \Card.createdAt, order: .reverse) private var cards: [Card]
 	@Query(sort: \Deck.createdAt, order: .reverse) private var decks: [Deck]
@@ -23,6 +24,11 @@ struct SearchView: View {
 	@State private var search: String = ""
 	@State private var showPicker: Bool = false
 	@State private var select: Int = 0
+	@State private var selectedCard: Card?
+	@State private var showCard: Bool = false
+	@State private var selectedDeck: Deck?
+	@State private var showDeck: Bool = false
+	@State private var selectedMatch: Draft?
 	@State private var showExactMatch: Bool = false
 	
 	var body: some View {
@@ -33,6 +39,10 @@ struct SearchView: View {
 					switch result {
 					case .card(let card):
 						Button {
+							showDeck = false
+							showExactMatch = false
+							selectedCard = card
+							showCard = true
 							card.lastViewedAt = .now
 						} label: {
 							Label {
@@ -46,6 +56,10 @@ struct SearchView: View {
 						}
 					case .deck(let deck):
 						Button {
+							showCard = false
+							showExactMatch = false
+							selectedDeck = deck
+							showDeck = true
 							deck.lastViewedAt = .now
 						} label: {
 							HStack(spacing: 12) {
@@ -76,13 +90,12 @@ struct SearchView: View {
 					case .draft( _ ): Button { } label: { }
 					case .exactMatch(let match):
 						Button {
-							let normalized = match.trimmingCharacters(in: .whitespacesAndNewlines)
-							if let existing = drafts.first(where: { $0.entry.caseInsensitiveCompare(normalized) == .orderedSame }) {
-								existing.lastViewedAt = .now
-							} else {
-								let draft = Draft(entry: normalized, language: .en_US)
-								context.insert(draft)
-							}
+							let draft = Draft(entry: match, language: .en_US)
+							context.insert(draft)
+							showCard = false
+							showDeck = false
+							selectedMatch = draft
+							showExactMatch = true
 						} label: {
 							Label {
 								Text("\"\(match)\"")
@@ -118,8 +131,27 @@ struct SearchView: View {
 			.onChange(of: search) { _, newValue in
 				showPicker = !newValue.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
 			}
+			.sheet(isPresented: $showCard) {
+				if let card = selectedCard {
+					CardView(card: card)
+						.presentationDetents([.fraction(0.3), .fraction(0.4)])
+						.presentationBackgroundInteraction(.enabled)
+				}
+			}
+			.sheet(isPresented: $showDeck) {
+				if let deck = selectedDeck {
+					DeckView(deck: deck, namespace: namespace)
+						.presentationDetents([.height(Constants.deck), .large])
+						.presentationBackgroundInteraction(.enabled)
+						.presentationDragIndicator(.hidden)
+				}
+			}
 			.sheet(isPresented: $showExactMatch) {
-				
+				if let match = selectedMatch {
+					DraftView(draft: match)
+						.presentationDetents([.fraction(0.3), .fraction(0.4)])
+						.presentationBackgroundInteraction(.enabled)
+				}
 			}
 			.searchable(text: $search, placement: .toolbar)
 			.scrollDismissesKeyboard(.immediately)

@@ -14,6 +14,9 @@ enum PreferencesKey: String {
 	/// for NewCardView
 	case frontLanguage
 	case backLanguage
+	
+	/// for SearchView match
+	case exactMatch
 }
 
 /// A singleton that manages persisted user selections.
@@ -24,10 +27,12 @@ enum PreferencesKey: String {
 	
 	private var frontLanguageRaw: String = ""
 	private var backLanguageRaw: String = ""
+	private var exactMatchRaw: String = ""
 	
 	private init() {
 		frontLanguageRaw = UserDefaults.standard.string(forKey: PreferencesKey.frontLanguage.rawValue) ?? Language.en_US.rawValue
 		backLanguageRaw = UserDefaults.standard.string(forKey: PreferencesKey.backLanguage.rawValue) ?? Language.en_US.rawValue
+		exactMatchRaw = UserDefaults.standard.string(forKey: PreferencesKey.exactMatch.rawValue) ?? Language.en_US.rawValue
 	}
 }
 
@@ -46,6 +51,14 @@ extension Preferences {
 		set {
 			backLanguageRaw = newValue.rawValue
 			UserDefaults.standard.set(newValue.rawValue, forKey: PreferencesKey.backLanguage.rawValue)
+		}
+	}
+	
+	var exactMatch: Language {
+		get { Language(rawValue: exactMatchRaw) ?? .en_US }
+		set {
+			exactMatchRaw = newValue.rawValue
+			UserDefaults.standard.set(newValue.rawValue, forKey: PreferencesKey.exactMatch.rawValue)
 		}
 	}
 }
