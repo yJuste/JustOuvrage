@@ -41,6 +41,13 @@ struct DraftView: View {
 							destination = site.google.link(for: entry, in: selectedLanguage)
 						}
 					}
+					Section { /// ``Metadata``
+						VStack(alignment: .leading) {
+							Text(draft.createdAt, format: .dateTime.year().month().day())
+						}
+						.foregroundStyle(.secondary)
+						.padding(.vertical)
+					}
 				}
 				.buttonStyle(.plain)
 				.padding(.horizontal)
@@ -85,7 +92,7 @@ fileprivate extension DraftView {
 			}
 		}
 		ToolbarItem(placement: .principal) {
-			Text("\(selectedLanguage.language)")
+			Text("Recent searches")
 				.font(.caption)
 		}
 	}

@@ -68,18 +68,21 @@ struct CardsView: View {
 			.sheet(isPresented: $showCard) {
 				if let card = selectedCard {
 					CardView(card: card)
-						.presentationDetents([.fraction(0.3), .fraction(0.4)])
+						.presentationDetents([
+							.fraction(Constants.heightOfACard[0]),
+							.fraction(Constants.heightOfACard[1])
+						])
 						.presentationBackgroundInteraction(.enabled)
 				}
 			}
 			.sheet(isPresented: $showNewCard) {
 				NewCardView()
-					.presentationDetents([.height(Constants.newCard), .large])
+					.presentationDetents([.fraction(Constants.heightOfANewCard), .large])
 					.presentationDragIndicator(.visible)
 			}
 			.sheet(isPresented: $showNewDeck) {
 				NewDeckView()
-					.presentationDetents([.medium, .large])
+					.presentationDetents([.fraction(Constants.heightOfANewDeck), .large])
 					.presentationDragIndicator(.visible)
 			}
 			.alert("Are you sure you want to delete this card from your library?", isPresented: $showDeleteCard) {

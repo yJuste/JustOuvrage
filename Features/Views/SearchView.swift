@@ -138,22 +138,28 @@ struct SearchView: View {
 			.sheet(isPresented: $showCard) {
 				if let card = selectedCard {
 					CardView(card: card)
-						.presentationDetents([.fraction(0.3), .fraction(0.4)])
+						.presentationDetents([
+							.fraction(Constants.heightOfACard[0]),
+							.fraction(Constants.heightOfACard[1])
+						])
 						.presentationBackgroundInteraction(.enabled)
 				}
 			}
 			.sheet(isPresented: $showDeck) {
 				if let deck = selectedDeck {
 					DeckView(deck: deck, namespace: namespace)
-						.presentationDetents([.height(Constants.deck), .large])
+						.presentationDetents([.fraction(Constants.heightOfADeck[0]), .large])
 						.presentationBackgroundInteraction(.enabled)
-						.presentationDragIndicator(.hidden)
+						.presentationDragIndicator(.visible)
 				}
 			}
 			.sheet(isPresented: $showExactMatch) {
 				if let match = selectedMatch {
 					DraftView(draft: match)
-						.presentationDetents([.fraction(0.3), .fraction(0.4)])
+						.presentationDetents([
+							.fraction(Constants.heightOfADraft[0]),
+							.fraction(Constants.heightOfADraft[1])
+						])
 						.presentationBackgroundInteraction(.enabled)
 				}
 			}

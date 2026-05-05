@@ -81,17 +81,17 @@ struct LibraryView: View {
 			.navigationDestination(item: $selectedDeck) { deck in
 				DeckView(deck: deck, namespace: namespace)
 			}
-			.toolbar { toolbar }
 			.sheet(isPresented: $showNewCard) {
 				NewCardView()
-					.presentationDetents([.height(Constants.newCard), .large])
+					.presentationDetents([.fraction(Constants.heightOfANewCard), .large])
 					.presentationDragIndicator(.visible)
 			}
 			.sheet(isPresented: $showNewDeck) {
 				NewDeckView()
-					.presentationDetents([.medium, .large])
+					.presentationDetents([.fraction(Constants.heightOfANewDeck), .large])
 					.presentationDragIndicator(.visible)
 			}
+			.toolbar { toolbar }
 			.navigationTitle("Library")
 			.toolbarTitleDisplayMode(.inlineLarge)
 			.listStyle(.plain)

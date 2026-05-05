@@ -103,19 +103,19 @@ struct DecksView: View {
 			.sheet(isPresented: $showDeck) {
 				if let deck = selectedDeck {
 					DeckView(deck: deck, namespace: namespace)
-						.presentationDetents([.height(Constants.deck), .large])
+						.presentationDetents([.fraction(Constants.heightOfADeck[0]), .large])
 						.presentationBackgroundInteraction(.enabled)
-						.presentationDragIndicator(.hidden)
+						.presentationDragIndicator(.visible)
 				}
 			}
 			.sheet(isPresented: $showNewCard) {
 				NewCardView()
-					.presentationDetents([.height(Constants.newCard), .large])
+					.presentationDetents([.fraction(Constants.heightOfANewCard), .large])
 					.presentationDragIndicator(.visible)
 			}
 			.sheet(isPresented: $showNewDeck) {
 				NewDeckView()
-					.presentationDetents([.medium, .large])
+					.presentationDetents([.fraction(Constants.heightOfANewDeck), .large])
 					.presentationDragIndicator(.visible)
 			}
 			.alert("Are you sure you want to delete this deck from your library?", isPresented: $showDeleteDeck) {

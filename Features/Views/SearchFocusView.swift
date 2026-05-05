@@ -40,7 +40,7 @@ struct SearchFocusView: View {
 	var body: some View {
 		if isSearching && search.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
 			Section {
-				ForEach(recentItems.prefix(Constants.maxRecents)) { item in
+				ForEach(recentItems.prefix(Constants.maxRecentSearches)) { item in
 					switch item {
 					case .card(let card):
 						Button {
@@ -129,22 +129,28 @@ struct SearchFocusView: View {
 			.sheet(isPresented: $showCard) {
 				if let card = selectedCard {
 					CardView(card: card)
-						.presentationDetents([.fraction(0.3), .fraction(0.4)])
+						.presentationDetents([
+							.fraction(Constants.heightOfACard[0]),
+							.fraction(Constants.heightOfACard[1])
+						])
 						.presentationBackgroundInteraction(.enabled)
 				}
 			}
 			.sheet(isPresented: $showDeck) {
 				if let deck = selectedDeck {
 					DeckView(deck: deck, namespace: namespace)
-						.presentationDetents([.height(Constants.deck), .large])
+						.presentationDetents([.fraction(Constants.heightOfADeck[0]), .large])
 						.presentationBackgroundInteraction(.enabled)
-						.presentationDragIndicator(.hidden)
+						.presentationDragIndicator(.visible)
 				}
 			}
 			.sheet(isPresented: $showDraft) {
 				if let draft = selectedDraft {
 					DraftView(draft: draft)
-						.presentationDetents([.fraction(0.3), .fraction(0.4)])
+						.presentationDetents([
+							.fraction(Constants.heightOfADraft[0]),
+							.fraction(Constants.heightOfADraft[1])
+						])
 						.presentationBackgroundInteraction(.enabled)
 				}
 			}
@@ -166,8 +172,8 @@ fileprivate extension SearchFocusView {
 	
 	func trimRecentsGlobal() {
 		let all = recentItems
-		guard all.count > Constants.maxRecents else { return }
-		let toRemove = all.dropFirst(Constants.maxRecents)
+		guard all.count > Constants.maxRecentSearches else { return }
+		let toRemove = all.dropFirst(Constants.maxRecentSearches)
 		
 		for item in toRemove {
 			switch item {

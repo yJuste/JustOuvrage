@@ -14,17 +14,23 @@ import CoreFoundation
 enum Constants {
 	
 	// How many searches are listed.
-	static let maxRecents: Int = 200
+	static let maxRecentSearches: Int = 200
 	
 	// ⚠️ Assets catalog -> "deck" (image)
 	static let defaultDeckImage: String = "deck"
 	
-	// Size of the sheet of a new card view.
-	static let newCard: CGFloat = 520
+	// Height of the sheet of the new card view.
+	static let heightOfANewCard: CGFloat = 0.72
 	
-	// Size of the sheet of a card view.
-	static let card: CGFloat = 345
+	// Height of the sheet of the new card view.
+	static let heightOfANewDeck: CGFloat = 0.55
 	
-	// Size of the sheet of a deck view.
-	static let deck: CGFloat = 345
+	// Height of the sheet of the card view.
+	static let heightOfACard: [CGFloat] = [0.31, 0.38]
+	
+	// Height of the sheet of the deck view.
+	static let heightOfADeck: [CGFloat] = [0.47]
+	
+	// Height of a sheet of the draft view.
+	static let heightOfADraft: [CGFloat] = [0.315, 0.38]
 }
