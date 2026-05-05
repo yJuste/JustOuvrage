@@ -13,11 +13,11 @@ import PhotosUI
 /// External Dependencies: Deck, Errors, FileImageStorage
 struct NewDeckView: View {
 	
+	let rectangle: RoundedRectangle = RoundedRectangle(cornerRadius: 10, style: .continuous)
+	
 	@Environment(FileImageStorage.self) private var storage
 	@Environment(\.modelContext) private var context
 	@Environment(\.dismiss) private var dismiss
-	
-	let rectangle: RoundedRectangle = RoundedRectangle(cornerRadius: 10, style: .continuous)
 	
 	@State private var selectedPhotoItem: PhotosPickerItem?
 	@State private var selectedImageData: Data?

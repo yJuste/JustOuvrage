@@ -44,10 +44,12 @@ struct DeckView: View {
 							Text(deck.author)
 								.font(.title3)
 								.foregroundStyle(.secondary)
-							Text("\(deck.createdAt.formatted(.dateTime.year())) ⋅ " + Set(deck.cards.flatMap {[$0.frontLanguage, $0.backLanguage]}).sorted { $0.rawValue < $1.rawValue }.map { $0.rawValue }.joined(separator: " ⋅ "))
-								.font(.system(size: 12, weight: .semibold))
-								.foregroundStyle(.secondary)
-								.padding(.top, 5)
+							Text({let langs = Set(deck.cards.flatMap { [$0.frontLanguage, $0.backLanguage] }).map { $0.rawValue }.sorted()
+								let year = deck.createdAt.formatted(.dateTime.year())
+								return langs.isEmpty ? year : year + " ⋅ " + langs.joined(separator: " ⋅ ")}())
+							.font(.system(size: 12, weight: .semibold))
+							.foregroundStyle(.secondary)
+							.padding(.top, 5)
 							GlassEffectContainer {
 								HStack(alignment: .center, spacing: 15) {
 									Button {

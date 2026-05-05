@@ -39,11 +39,11 @@ struct SearchView: View {
 					switch result {
 					case .card(let card):
 						Button {
+							selectedCard = card
+							card.lastViewedAt = .now
 							showDeck = false
 							showExactMatch = false
-							selectedCard = card
 							showCard = true
-							card.lastViewedAt = .now
 						} label: {
 							Label {
 								Text("\(card.frontEntry)")
@@ -56,11 +56,11 @@ struct SearchView: View {
 						}
 					case .deck(let deck):
 						Button {
+							selectedDeck = deck
+							deck.lastViewedAt = .now
 							showCard = false
 							showExactMatch = false
-							selectedDeck = deck
 							showDeck = true
-							deck.lastViewedAt = .now
 						} label: {
 							HStack(spacing: 12) {
 								Image(image: deck.image, storage: storage)
@@ -90,11 +90,15 @@ struct SearchView: View {
 					case .draft( _ ): Button { } label: { }
 					case .exactMatch(let match):
 						Button {
-							let draft = Draft(entry: match, language: .en_US)
-							context.insert(draft)
+							if let existingDraft = drafts.first(where: { $0.entry == match }) {
+								selectedMatch = existingDraft
+							} else {
+								let draft = Draft(entry: match, language: .en_US)
+								context.insert(draft)
+								selectedMatch = draft
+							}
 							showCard = false
 							showDeck = false
-							selectedMatch = draft
 							showExactMatch = true
 						} label: {
 							Label {

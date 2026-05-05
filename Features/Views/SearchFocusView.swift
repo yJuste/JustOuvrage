@@ -24,11 +24,6 @@ struct SearchFocusView: View {
 	@Query(filter: #Predicate<Deck> { $0.lastViewedAt != nil }, sort: \Deck.lastViewedAt, order: .reverse) private var recentDecks: [Deck]
 	@Query private var recentDrafts: [Draft]
 	
-	private var recentItems: [Search] {
-		(recentCards.map(Search.card) + recentDecks.map(Search.deck) + recentDrafts.map(Search.draft))
-			.sorted { $0.date > $1.date }
-	}
-	
 	@State private var selectedCard: Card?
 	@State private var showCard: Bool = false
 	@State private var selectedDeck: Deck?
@@ -37,6 +32,11 @@ struct SearchFocusView: View {
 	@State private var showDraft: Bool = false
 	@State private var showClearAllAlert: Bool = false
 	
+	private var recentItems: [Search] {
+		(recentCards.map(Search.card) + recentDecks.map(Search.deck) + recentDrafts.map(Search.draft))
+			.sorted { $0.date > $1.date }
+	}
+	
 	var body: some View {
 		if isSearching && search.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
 			Section {
@@ -44,11 +44,11 @@ struct SearchFocusView: View {
 					switch item {
 					case .card(let card):
 						Button {
+							selectedCard = card
+							card.lastViewedAt = .now
 							showDeck = false
 							showDraft = false
-							selectedCard = card
 							showCard = true
-							card.lastViewedAt = .now
 							trimRecentsGlobal()
 						} label: {
 							Text("\(card.frontEntry)")
@@ -63,11 +63,11 @@ struct SearchFocusView: View {
 						}
 					case .deck(let deck):
 						Button {
+							selectedDeck = deck
+							deck.lastViewedAt = .now
 							showCard = false
 							showDraft = false
-							selectedDeck = deck
 							showDeck = true
-							deck.lastViewedAt = .now
 							trimRecentsGlobal()
 						} label: {
 							HStack(spacing: 12) {
@@ -94,11 +94,11 @@ struct SearchFocusView: View {
 						}
 					case .draft(let draft):
 						Button {
+							selectedDraft = draft
+							draft.lastViewedAt = .now
 							showCard = false
 							showDeck = false
-							selectedDraft = draft
 							showDraft = true
-							draft.lastViewedAt = .now
 							trimRecentsGlobal()
 						} label: {
 							Text("\(draft.entry)")

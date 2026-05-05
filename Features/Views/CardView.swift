@@ -12,12 +12,9 @@ import SwiftUI
 struct CardView: View {
 	
 	let card: Card
+	let site: Site.Sites = Site.unique
 	
 	@Environment(\.dismiss) private var dismiss
-	
-	let forvo: ForvoSite = ForvoSite()
-	let wordReference: WordReferenceSite = WordReferenceSite()
-	let google: GoogleSite = GoogleSite()
 	
 	@State private var destination: Destination?
 	@State private var showEditCard: Bool = false
@@ -34,13 +31,13 @@ struct CardView: View {
 							Text("\(card.frontEntry)")
 						}
 						WordsLinkingToSite("Forvo", item: cleanFrontEntry) { entry in
-							destination = forvo.link(for: entry, in: card.frontLanguage)
+							destination = site.forvo.link(for: entry, in: card.frontLanguage)
 						}
 						WordsLinkingToSite("WordReference", item: cleanFrontEntry) { entry in
-							destination = wordReference.link(for: entry, in: (card.frontLanguage, card.backLanguage))
+							destination = site.wordReference.link(for: entry, in: (card.frontLanguage, card.backLanguage))
 						}
 						WordsLinkingToSite("Google", item: cleanFrontEntry) { entry in
-							destination = google.link(for: entry, in: card.frontLanguage)
+							destination = site.google.link(for: entry, in: card.frontLanguage)
 						}
 					}
 					Section { /// ``Second Entry``
@@ -48,13 +45,13 @@ struct CardView: View {
 							Text("\(card.backEntry)")
 						}
 						WordsLinkingToSite("Forvo", item: cleanBackEntry) { entry in
-							destination = forvo.link(for: entry, in: card.backLanguage)
+							destination = site.forvo.link(for: entry, in: card.backLanguage)
 						}
 						WordsLinkingToSite("WordReference", item: cleanBackEntry) { entry in
-							destination = wordReference.link(for: entry, in: (card.backLanguage, card.frontLanguage))
+							destination = site.wordReference.link(for: entry, in: (card.backLanguage, card.frontLanguage))
 						}
 						WordsLinkingToSite("Google", item: cleanBackEntry) { entry in
-							destination = google.link(for: entry, in: card.backLanguage)
+							destination = site.google.link(for: entry, in: card.backLanguage)
 						}
 					}
 					Section { /// ``Leitner Score``

@@ -11,10 +11,7 @@ import SwiftUI
 struct DraftView: View {
 	
 	let draft: Draft
-	
-	let forvo: ForvoSite = ForvoSite()
-	let wordReference: WordReferenceSite = WordReferenceSite()
-	let google: GoogleSite = GoogleSite()
+	let site: Site.Sites = Site.unique
 	
 	@Bindable private var preferences: Preferences = Preferences.unique
 	@State private var destination: Destination?
@@ -35,13 +32,13 @@ struct DraftView: View {
 							Text("\(draft.entry)")
 						}
 						WordsLinkingToSite("Forvo", item: cleanEntry) { entry in
-							destination = forvo.link(for: entry, in: (selectedLanguage, selectedLanguage))
+							destination = site.forvo.link(for: entry, in: (selectedLanguage, selectedLanguage))
 						}
 						WordsLinkingToSite("WordReference", item: cleanEntry) { entry in
-							destination = wordReference.link(for: entry, in: selectedLanguage)
+							destination = site.wordReference.link(for: entry, in: selectedLanguage)
 						}
 						WordsLinkingToSite("Google", item: cleanEntry) { entry in
-							destination = google.link(for: entry, in: selectedLanguage)
+							destination = site.google.link(for: entry, in: selectedLanguage)
 						}
 					}
 				}

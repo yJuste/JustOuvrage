@@ -8,6 +8,8 @@
 import SwiftUI
 import SwiftData
 
+// MARK: 
+
 /// Main of the JustOuvrage App.
 @main
 struct JustOuvrageApp: App {

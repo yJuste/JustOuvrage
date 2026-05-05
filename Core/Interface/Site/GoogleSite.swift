@@ -7,7 +7,6 @@
 
 //https://www.google.com/search?q=drip+definition&hl=en&gl=us
 //https://www.google.com/search?q=こんにちは+定義&hl=ja&gl=jp
-
 import SwiftUI
 
 struct GoogleSite: SiteService {

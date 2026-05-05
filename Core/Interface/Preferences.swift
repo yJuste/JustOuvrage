@@ -11,12 +11,9 @@ import Observation
 /// An Interface that lists all `persisted selections` with UserDefault.
 enum PreferencesKey: String {
 	
-	/// for NewCardView
-	case frontLanguage
-	case backLanguage
-	
-	/// for SearchView match
-	case exactMatch
+	case frontLanguage	/// for NewCardView
+	case backLanguage	///
+	case exactMatch		/// for SearchView match
 }
 
 /// A singleton that manages persisted user selections.
