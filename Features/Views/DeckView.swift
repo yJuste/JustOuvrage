@@ -114,7 +114,7 @@ struct DeckView: View {
 										VStack(alignment: .leading, spacing: 5) {
 											Text(card.frontEntry)
 											Text(card.backEntry)
-												.foregroundStyle(.gray)
+												.foregroundStyle(.secondary)
 										}
 										.font(.subheadline)
 										.frame(maxWidth: .infinity, alignment: .leading)

@@ -11,14 +11,14 @@ import SwiftUI
 /// External Dependencies: Card, Deck, Draft
 enum Search: Identifiable {
 	
-	case card(Card)
+	case card(Card, back: Bool)
 	case deck(Deck)
 	case draft(Draft)
 	case exactMatch(String)
 	
 	var id: String {
 		switch self {
-		case .card(let card): return card.id.uuidString
+		case .card(let card, _): return card.id.uuidString
 		case .deck(let deck): return deck.id.uuidString
 		case .draft(let draft): return draft.id.uuidString
 		case .exactMatch(let match): return "\(match)"
@@ -27,7 +27,7 @@ enum Search: Identifiable {
 	
 	var date: Date {
 		switch self {
-		case .card(let card):
+		case .card(let card, _):
 			return card.lastViewedAt ?? .distantPast
 		case .deck(let deck):
 			return deck.lastViewedAt ?? .distantPast

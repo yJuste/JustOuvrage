@@ -37,7 +37,7 @@ struct SearchView: View {
 				SearchFocusView(search: $search)
 				ForEach(filteredResults) { result in
 					switch result {
-					case .card(let card):
+					case .card(let card, let back):
 						Button {
 							selectedCard = card
 							card.lastViewedAt = .now
@@ -46,7 +46,7 @@ struct SearchView: View {
 							showCard = true
 						} label: {
 							Label {
-								Text("\(card.frontEntry)")
+								Text("\(back ? card.backEntry : card.frontEntry)")
 									.font(.subheadline)
 							} icon: {
 								Image(systemName: "magnifyingglass")
@@ -180,9 +180,21 @@ fileprivate extension SearchView {
 		guard !trimmed.isEmpty else { return [] }
 		
 		let exactResult: [Search] = [.exactMatch(trimmed)]
-		let cardResults = cards
-			.filter { $0.frontEntry.localizedCaseInsensitiveContains(trimmed) }
-			.map { Search.card($0) }
+		let cardResults = cards.compactMap { card -> Search? in
+			let matchFront = card.frontEntry.localizedCaseInsensitiveContains(trimmed)
+			let matchBack = card.backEntry.localizedCaseInsensitiveContains(trimmed)
+
+			switch (matchFront, matchBack) {
+			case (true, true):
+				return .card(card, back: false)
+			case (true, false):
+				return .card(card, back: false)
+			case (false, true):
+				return .card(card, back: true)
+			default:
+				return nil
+			}
+		}
 		let deckResults = decks
 			.filter { $0.name.localizedCaseInsensitiveContains(trimmed) }
 			.map { Search.deck($0) }

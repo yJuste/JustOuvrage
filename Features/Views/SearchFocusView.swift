@@ -33,7 +33,12 @@ struct SearchFocusView: View {
 	@State private var showClearAllAlert: Bool = false
 	
 	private var recentItems: [Search] {
-		(recentCards.map(Search.card) + recentDecks.map(Search.deck) + recentDrafts.map(Search.draft))
+		
+		let cards = recentCards.map { Search.card($0, back: false) }
+		let decks = recentDecks.map(Search.deck)
+		let drafts = recentDrafts.map(Search.draft)
+		
+		return (cards + decks + drafts)
 			.sorted { $0.date > $1.date }
 	}
 	
@@ -42,7 +47,7 @@ struct SearchFocusView: View {
 			Section {
 				ForEach(recentItems.prefix(Constants.maxRecentSearches)) { item in
 					switch item {
-					case .card(let card):
+					case .card(let card, _):
 						Button {
 							selectedCard = card
 							card.lastViewedAt = .now
@@ -51,8 +56,13 @@ struct SearchFocusView: View {
 							showCard = true
 							trimRecentsGlobal()
 						} label: {
-							Text("\(card.frontEntry)")
-								.font(.system(size: 15, weight: .regular, design: .default))
+							VStack(alignment: .leading, spacing: 5) {
+								Text(card.frontEntry)
+									.font(.subheadline)
+								Text(card.backEntry)
+									.font(.subheadline)
+									.foregroundStyle(.secondary)
+							}
 						}
 						.swipeActions {
 							Button {
@@ -177,7 +187,7 @@ fileprivate extension SearchFocusView {
 		
 		for item in toRemove {
 			switch item {
-			case .card(let card):
+			case .card(let card, _):
 				card.lastViewedAt = nil
 			case .deck(let deck):
 				deck.lastViewedAt = nil

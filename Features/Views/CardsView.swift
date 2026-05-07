@@ -45,7 +45,7 @@ struct CardsView: View {
 									.font(.subheadline)
 								Text(card.backEntry)
 									.font(.subheadline)
-									.foregroundStyle(.gray)
+									.foregroundStyle(.secondary)
 							}
 						}
 						.contextMenu {
