@@ -21,6 +21,7 @@ struct LibraryView: View {
 	@State private var selectedDeck: Deck?
 	@State private var showNewCard: Bool = false
 	@State private var showNewDeck: Bool = false
+	@State private var showProfile: Bool = false
 	
 	var body: some View {
 		NavigationStack {
@@ -49,6 +50,7 @@ struct LibraryView: View {
 						ForEach(decks) { deck in
 							Button {
 								selectedDeck = deck
+								deck.lastOpenedAt = .now
 							} label: {
 								VStack(alignment: .leading, spacing: 6) {
 									Image(image: deck.image, storage: storage)
@@ -91,6 +93,11 @@ struct LibraryView: View {
 					.presentationDetents([.fraction(Constants.heightOfANewDeck), .large])
 					.presentationDragIndicator(.visible)
 			}
+			.sheet(isPresented: $showProfile) {
+				ProfileView()
+					.presentationDetents([.large])
+					.presentationDragIndicator(.hidden)
+			}
 			.toolbar { toolbar }
 			.navigationTitle("Library")
 			.toolbarTitleDisplayMode(.inlineLarge)
@@ -131,7 +138,7 @@ fileprivate extension LibraryView {
 				.frame(width: 36, height: 36)
 				.clipShape(Circle())
 				.onTapGesture {
-					// profile
+					showProfile.toggle()
 				}
 		}
 	}

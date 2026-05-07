@@ -19,7 +19,7 @@ struct DecksView: View {
 	@Environment(\.dismiss) private var dismiss
 	@Namespace private var namespace
 	
-	@Query(sort: \Deck.lastOpenedAt, order: .reverse) private var decks: [Deck]
+	@Query(sort: \Deck.createdAt, order: .reverse) private var decks: [Deck]
 	
 	@State private var item: Deck?
 	@State private var selection: Set<Deck> = []
@@ -40,6 +40,7 @@ struct DecksView: View {
 						Button {
 							selectedDeck = deck
 							showDeck = true
+							deck.lastOpenedAt = .now
 						} label: {
 							HStack(spacing: 12) {
 								Image(image: deck.image, storage: storage)
@@ -129,7 +130,7 @@ struct DecksView: View {
 			.alert("Selected Decks", isPresented: $showSelectedDecks) {
 				Button("Delete", role: .destructive) { deleteSelection(); toggleEditMode() }
 			} message: {
-				Text("Are you sure you want to delete the selection?")
+				Text("Are you sure you want to delete all the selection?")
 			}
 			.listStyle(.plain)
 		}
@@ -273,6 +274,8 @@ fileprivate extension DecksView {
 	context.insert(Deck(name: "Hello", image: "deck"))
 	context.insert(Deck(name: "Hello", image: "deck"))
 	context.insert(Deck(name: "Hello", image: "deck"))
+	let all = Deck(name: "All", image: "deck")
+	context.insert(all)
 	return DecksView()
 		.modelContainer(container)
 		.environment(FileImageStorage())

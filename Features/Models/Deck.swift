@@ -23,7 +23,6 @@ import Foundation
 	@Relationship(inverse: \Card.decks) var cards: [Card]
 	
 	private(set) var createdAt: Date
-	private(set) var lockDelete: Bool
 	
 	init(name: String, image: String) {
 		self.id = UUID()
@@ -33,14 +32,5 @@ import Foundation
 		self.author = "[author]"
 		self.cards = []
 		self.createdAt = .now
-		self.lockDelete = false
-	}
-}
-
-/// Lock a Deck from removal.
-extension Deck {
-	
-	func lockRemoval() {
-		lockDelete = true
 	}
 }

@@ -14,7 +14,6 @@ struct EditCardView: View {
 	@Environment(\.dismiss) private var dismiss
 	
 	@FocusState private var focusField: FocusField?
-	
 	@State private var frontEntry: String = ""
 	@State private var backEntry: String = ""
 	@State private var frontLanguage: Language = Language.en_US

@@ -58,6 +58,7 @@ struct SearchView: View {
 						Button {
 							selectedDeck = deck
 							deck.lastViewedAt = .now
+							deck.lastOpenedAt = .now
 							showCard = false
 							showExactMatch = false
 							showDeck = true
@@ -113,6 +114,10 @@ struct SearchView: View {
 					}
 				}
 			}
+			.searchable(text: $search, placement: .toolbar)
+			.onChange(of: search) { _, newValue in
+				showPicker = !newValue.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+			}
 			.safeAreaInset(edge: .top) {
 				if !search.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
 					Picker("", selection: $select) {
@@ -131,9 +136,6 @@ struct SearchView: View {
 					.opacity(showPicker ? 1 : 0)
 					.animation(.easeInOut(duration: 0.15), value: showPicker)
 				}
-			}
-			.onChange(of: search) { _, newValue in
-				showPicker = !newValue.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
 			}
 			.sheet(isPresented: $showCard) {
 				if let card = selectedCard {
@@ -163,7 +165,6 @@ struct SearchView: View {
 						.presentationBackgroundInteraction(.enabled)
 				}
 			}
-			.searchable(text: $search, placement: .toolbar)
 			.scrollDismissesKeyboard(.immediately)
 			.navigationTitle("Search")
 			.listStyle(.plain)

@@ -18,9 +18,6 @@ struct ContentView: View {
 		if #available(iOS 26, *) {
 			NativeTabView()
 				//.tabViewBottomAccessory { EmptyView() }
-				.task {
-					configureAllDeck(context: context)
-				}
 		} else {
 			NativeTabView()
 		}
@@ -36,7 +33,7 @@ fileprivate extension ContentView {
 				NewCardView()
 			}
 			Tab("Trial", systemImage: "flag.pattern.checkered.2.crossed") {
-				EmptyView()
+				TrialView()
 			}
 			Tab("Record", systemImage: "rectangle.dashed.badge.record") {
 				EmptyView()
@@ -54,4 +51,5 @@ fileprivate extension ContentView {
 
 #Preview {
     ContentView()
+		.environment(FileImageStorage())
 }

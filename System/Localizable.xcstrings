@@ -81,6 +81,9 @@
     "All" : {
 
     },
+    "Are you sure you want to delete all the selection?" : {
+
+    },
     "Are you sure you want to delete the selection?" : {
 
     },
@@ -99,6 +102,9 @@
     "Are you sure you want to discard this new deck?" : {
 
     },
+    "Are you sure you want to log out to your account?" : {
+
+    },
     "Ascending" : {
 
     },
@@ -114,6 +120,15 @@
     "Choose Photo" : {
 
     },
+    "Choose the deck" : {
+
+    },
+    "Choose the deck you are going to work on." : {
+
+    },
+    "Choose the difficulty" : {
+
+    },
     "Clear" : {
 
     },
@@ -126,7 +141,13 @@
     "Clearing your searches will remove your search history from this device." : {
 
     },
+    "Close" : {
+
+    },
     "Date" : {
+
+    },
+    "Deck" : {
 
     },
     "Deck Name" : {
@@ -156,19 +177,34 @@
     "English" : {
 
     },
+    "Every Card" : {
+
+    },
     "for \"%@\"" : {
 
     },
     "French" : {
 
     },
+    "Go!" : {
+
+    },
     "Got it" : {
+
+    },
+    "Hello" : {
 
     },
     "Hide" : {
 
     },
     "Hola" : {
+
+    },
+    "How many cards" : {
+
+    },
+    "Just Account" : {
 
     },
     "Keep Editing" : {
@@ -183,7 +219,16 @@
     "Library" : {
 
     },
+    "Log out" : {
+
+    },
     "Missing Information" : {
+
+    },
+    "Mode" : {
+
+    },
+    "My friend" : {
 
     },
     "Name" : {
@@ -249,6 +294,9 @@
     "Selected: %@" : {
 
     },
+    "Set the maximum time to swipe for each cards." : {
+
+    },
     "Settings" : {
 
     },
@@ -258,10 +306,19 @@
     "Take Photo" : {
 
     },
+    "Time Trial Mode" : {
+
+    },
+    "Timer" : {
+
+    },
     "Trial" : {
 
     },
     "Visible" : {
+
+    },
+    "Your Just Account provides a unique identifier that connects you across all Just Anthology productions." : {
 
     }
   },

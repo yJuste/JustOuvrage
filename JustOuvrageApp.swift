@@ -14,7 +14,7 @@ import SwiftData
 @main
 struct JustOuvrageApp: App {
 	
-	init() { Appearance.configurePicker() }
+	init() { configurePicker() }
 	
 	var body: some Scene {
 		WindowGroup {
