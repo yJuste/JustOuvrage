@@ -90,6 +90,7 @@ struct TrialView: View {
 			.toolbar { toolbar }
 			.navigationDestination(isPresented: $showTimeTrial) {
 				TimeTrialView(cards: filteredCards)
+					.navigationBarBackButtonHidden(true)
 			}
 		}
 	}

@@ -10,16 +10,19 @@ import SwiftUI
 struct TimeTrialView: View {
 	
 	let cards: [Card]
-	let cardDuration: TimeInterval = 3
+	let timeInterval: TimeInterval = 3
 	
 	@Environment(\.dismiss) private var dismiss
 	
 	@State private var currentIndex: Int = 0
+	@State private var hasTimerReachedZero: Bool = false
+	@State private var hasTimerPaused: Bool = false
 	@State private var dragOffset: CGSize = .zero
 	@State private var rotation: Double = 0
-	@State private var progress: CGFloat = 1.0
-	@State private var isFlipped = false
-	@State private var timer: Timer?
+	@State private var trigger: UUID = UUID()
+	@State private var swipeResults: [SwipeDirection] = []
+	@State private var showPause: Bool = false
+	@State private var isSwiping: Bool = false
 	
 	var currentCard: Card? {
 		guard currentIndex < cards.count else { return nil }
@@ -27,374 +30,195 @@ struct TimeTrialView: View {
 	}
 	
 	var body: some View {
-		ZStack {
-			
-			LinearGradient(
-				colors: [
-					Color.blue.opacity(0.25),
-					Color.purple.opacity(0.20),
-					Color.black
-				],
-				startPoint: .topLeading,
-				endPoint: .bottomTrailing
-			)
-			.ignoresSafeArea()
-			
-			// Floating blurry circles
-			Circle()
-				.fill(.blue.opacity(0.18))
-				.frame(width: 300)
-				.blur(radius: 60)
-				.offset(x: -160, y: -280)
-			
-			Circle()
-				.fill(.purple.opacity(0.18))
-				.frame(width: 260)
-				.blur(radius: 60)
-				.offset(x: 170, y: 250)
-			
-			VStack(spacing: 24) {
-				
-				header
-				
-				Spacer()
-				
-				if let card = currentCard {
-					
-					ZStack {
-						
-						// Next card preview
-						RoundedRectangle(cornerRadius: 38, style: .continuous)
-							.fill(.ultraThinMaterial)
-							.overlay {
-								RoundedRectangle(cornerRadius: 38)
-									.stroke(.white.opacity(0.08), lineWidth: 1)
+		NavigationStack {
+			ZStack {
+				backgroundGradient
+				VStack(spacing: 35) {
+					if let card = currentCard {
+						ZStack {
+							backgroundDeck
+							flashcard(card: card)
+						}
+						HStack(spacing: 40) {
+							Button {
+								swipe(.left)
+							} label: {
+								Image(systemName: "xmark")
+									.font(.system(size: 35, weight: .semibold))
+									.foregroundStyle(.red)
+									.frame(width: 70, height: 70)
+									.glassEffect(.regular.interactive())
 							}
-							.scaleEffect(0.94)
-							.opacity(0.45)
-							.padding(.horizontal, 28)
-						
-						flashcard(card)
+							.disabled(isSwiping)
+							TimerView(size: 10, duration: timeInterval, color: UIColor.label, isPaused: $hasTimerPaused, isFinished: $hasTimerReachedZero, restartTrigger: trigger)
+							Button {
+								swipe(.right)
+							} label: {
+								Image(systemName: "checkmark")
+									.font(.system(size: 35, weight: .semibold))
+									.foregroundStyle(.green)
+									.frame(width: 70, height: 70)
+									.glassEffect(.regular.interactive())
+							}
+							.disabled(isSwiping)
+						}
+					} else {
+						TimeTrialResultView()
 					}
-					.transition(.asymmetric(
-						insertion: .scale.combined(with: .opacity),
-						removal: .scale(scale: 0.7).combined(with: .opacity)
-					))
-					
-				} else {
-					
-					finishedView
 				}
-				
-				Spacer()
-				
-				footer
 			}
-			.padding()
-		}
-		.navigationBarBackButtonHidden()
-		.toolbar(.hidden, for: .tabBar)
-		.onAppear {
-			startTimer()
-		}
-		.onDisappear {
-			timer?.invalidate()
-		}
-	}
-}
-
-private extension TimeTrialView {
-	
-	var header: some View {
-		VStack(spacing: 14) {
-			
-			HStack {
-				
-				Button {
+			.onChange(of: hasTimerReachedZero) { _, reached in
+				guard reached else { return }
+				swipe(.left)
+			}
+			.toolbar { toolbar }
+			.toolbar(.hidden, for: .tabBar)
+			.alert("Quit Time Trial ?", isPresented: $showPause) {
+				Button("Continue", role: .cancel) {
+					hasTimerPaused = false
+				}
+				Button("Quit", role: .destructive) {
 					dismiss()
-				} label: {
-					Image(systemName: "xmark")
-						.font(.headline)
-						.foregroundStyle(.white)
-						.frame(width: 42, height: 42)
-						.background(.ultraThinMaterial)
-						.clipShape(Circle())
 				}
-				
-				Spacer()
-				
-				Text("\(min(currentIndex + 1, cards.count))/\(cards.count)")
-					.font(.subheadline.weight(.semibold))
-					.foregroundStyle(.white.opacity(0.8))
-					.padding(.horizontal, 14)
-					.padding(.vertical, 8)
-					.background(.ultraThinMaterial)
-					.clipShape(Capsule())
+			} message: {
+				Text("The timer is currently paused.")
 			}
-			
-			// Timer progress
-			GeometryReader { geo in
-				
-				ZStack(alignment: .leading) {
-					
-					Capsule()
-						.fill(.white.opacity(0.08))
-					
-					Capsule()
-						.fill(
-							LinearGradient(
-								colors: [.blue, .purple],
-								startPoint: .leading,
-								endPoint: .trailing
-							)
-						)
-						.frame(width: geo.size.width * progress)
-				}
-			}
-			.frame(height: 8)
 		}
 	}
 	
-	func flashcard(_ card: Card) -> some View {
+	private func flashcard(card: Card) -> some View {
 		
 		ZStack {
-			
-			RoundedRectangle(cornerRadius: 38, style: .continuous)
+			RoundedRectangle(cornerRadius: 35, style: .continuous)
 				.fill(.ultraThinMaterial)
-			
-			RoundedRectangle(cornerRadius: 38, style: .continuous)
-				.stroke(.white.opacity(0.10), lineWidth: 1)
-			
+			RoundedRectangle(cornerRadius: 35, style: .continuous)
+				.stroke(.white.opacity(0.1), lineWidth: 2)
 			VStack(spacing: 24) {
-				
 				Spacer()
-				
 				Text(card.frontEntry)
-					.font(.system(size: 34, weight: .bold, design: .rounded))
+					.font(.system(size: 30, weight: .semibold))
 					.multilineTextAlignment(.center)
-					.foregroundStyle(.white)
+					.foregroundStyle(.primary)
 					.padding(.horizontal)
-				
 				Spacer()
-				
-				HStack(spacing: 18) {
-					
-					swipeIndicator(
-						icon: "xmark",
-						title: "Wrong",
-						color: .red
-					)
-					
-					swipeIndicator(
-						icon: "checkmark",
-						title: "Correct",
-						color: .green
-					)
-				}
-				.padding(.bottom, 26)
 			}
+			RoundedRectangle(cornerRadius: 35, style: .continuous)
+				.fill(LinearGradient(colors: [.red.opacity(Double(-dragOffset.width / 200)), .red.opacity(0.0)], startPoint: .leading, endPoint: .trailing))
+				.opacity(dragOffset.width < 0 ? 1 : 0)
+			RoundedRectangle(cornerRadius: 35, style: .continuous)
+				.fill(LinearGradient(colors: [.green.opacity(Double(dragOffset.width / 200)), .green.opacity(0.0)], startPoint: .trailing, endPoint: .leading))
+				.opacity(dragOffset.width > 0 ? 1 : 0)
 		}
-		.frame(height: 520)
-		.overlay(alignment: .topLeading) {
-			
-			Image(systemName: "xmark")
-				.font(.system(size: 80, weight: .black))
-				.foregroundStyle(.red)
-				.opacity(dragOffset.width < -40 ? 1 : 0)
-				.padding(30)
-		}
-		.overlay(alignment: .topTrailing) {
-			
-			Image(systemName: "checkmark")
-				.font(.system(size: 80, weight: .black))
-				.foregroundStyle(.green)
-				.opacity(dragOffset.width > 40 ? 1 : 0)
-				.padding(30)
-		}
-		.padding(.horizontal, 18)
+		.frame(height: 525)
+		.padding(.horizontal, 25)
 		.offset(x: dragOffset.width, y: dragOffset.height)
 		.rotationEffect(.degrees(rotation))
 		.gesture(
+			isSwiping ? nil :
 			DragGesture()
 				.onChanged { value in
-					
 					dragOffset = value.translation
-					
-					rotation = value.translation.width / 18
+					rotation = value.translation.width / 30
 				}
 				.onEnded { value in
-					
 					let horizontal = value.translation.width
-					
-					if horizontal > 120 {
+					if horizontal > 80 {
 						swipe(.right)
-					} else if horizontal < -120 {
+					} else if horizontal < -80 {
 						swipe(.left)
 					} else {
-						
-						withAnimation(.spring(
-							response: 0.45,
-							dampingFraction: 0.82
-						)) {
+						withAnimation(.spring(response: 0.4)) {
 							dragOffset = .zero
 							rotation = 0
 						}
 					}
 				}
 		)
-		.shadow(
-			color: .black.opacity(0.22),
-			radius: 30,
-			y: 20
-		)
+		.shadow(color: .black.opacity(0.3), radius: 15)
 	}
+}
+
+/// Toolbar.
+fileprivate extension TimeTrialView {
 	
-	var footer: some View {
-		
-		HStack(spacing: 18) {
-			
-			actionButton(
-				icon: "xmark",
-				color: .red
-			) {
-				swipe(.left)
-			}
-			
-			actionButton(
-				icon: "checkmark",
-				color: .green
-			) {
-				swipe(.right)
+	@ToolbarContentBuilder private var toolbar: some ToolbarContent {
+		ToolbarItem(placement: .topBarLeading) {
+			Button {
+				hasTimerPaused = true
+				showPause.toggle()
+			} label: {
+				Label("Close", systemImage: "xmark")
 			}
 		}
-	}
-	
-	var finishedView: some View {
-		
-		VStack(spacing: 22) {
-			
-			Image(systemName: "sparkles")
-				.font(.system(size: 64))
-				.foregroundStyle(.white)
-			
-			Text("Session Complete")
-				.font(.largeTitle.bold())
-				.foregroundStyle(.white)
-			
+		ToolbarItem(placement: .principal) {
+			Text("[Deck Name]")
+				.font(.title3)
+				.fontWeight(.semibold)
+		}
+		ToolbarItem(placement: .topBarTrailing) {
 			Button {
-				
-				dismiss()
-				
+				//
 			} label: {
-				
-				Text("Done")
-					.fontWeight(.semibold)
-					.foregroundStyle(.black)
-					.padding(.horizontal, 28)
-					.padding(.vertical, 14)
-					.background(.white)
-					.clipShape(Capsule())
+				Text("\(min(currentIndex + 1, cards.count))/\(cards.count)")
 			}
 		}
 	}
 }
 
-private extension TimeTrialView {
+/// SwipeDirection
+fileprivate extension TimeTrialView {
 	
-	enum SwipeDirection {
+	private enum SwipeDirection {
+		
 		case left
 		case right
 	}
 	
-	func swipe(_ direction: SwipeDirection) {
+	private func swipe(_ direction: SwipeDirection) {
 		
-		timer?.invalidate()
-		
+		guard !isSwiping else { return }
+		isSwiping = true
+		swipeResults.append(direction)
+		hasTimerPaused = true
 		let x: CGFloat = direction == .right ? 900 : -900
-		
-		withAnimation(.spring(
-			response: 0.35,
-			dampingFraction: 0.8
-		)) {
-			
+		withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
 			dragOffset.width = x
 			rotation = direction == .right ? 14 : -14
 		}
-		
-		DispatchQueue.main.asyncAfter(deadline: .now() + 0.22) {
-			
+		DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
 			currentIndex += 1
-			
 			dragOffset = .zero
 			rotation = 0
-			progress = 1
-			
-			if currentIndex < cards.count {
-				startTimer()
+			guard currentIndex < cards.count else {
+				return isSwiping = false
 			}
+			hasTimerReachedZero = false
+			hasTimerPaused = false
+			trigger = UUID()
+			isSwiping = false
 		}
 	}
+}
+
+/// Background for Gradient & Deck.
+fileprivate extension TimeTrialView {
 	
-	func startTimer() {
-		
-		progress = 1
-		
-		timer?.invalidate()
-		
-		withAnimation(.linear(duration: cardDuration)) {
-			progress = 0
-		}
-		
-		timer = Timer.scheduledTimer(withTimeInterval: cardDuration, repeats: false) { _ in
-			swipe(.left)
-		}
+	var backgroundDeck: some View {
+		RoundedRectangle(cornerRadius: 35, style: .continuous)
+			.fill(.primary)
+			.opacity(0.05)
+			.padding(.horizontal, 30)
+			.padding(.vertical, 70)
 	}
 	
-	func actionButton(
-		icon: String,
-		color: Color,
-		action: @escaping () -> Void
-	) -> some View {
-		
-		Button(action: action) {
-			
-			Image(systemName: icon)
-				.font(.title2.bold())
-				.foregroundStyle(.white)
-				.frame(width: 68, height: 68)
-				.background(.ultraThinMaterial)
-				.overlay {
-					Circle()
-						.stroke(color.opacity(0.4), lineWidth: 1.2)
-				}
-				.clipShape(Circle())
-		}
-	}
-	
-	func swipeIndicator(
-		icon: String,
-		title: String,
-		color: Color
-	) -> some View {
-		
-		HStack(spacing: 8) {
-			
-			Image(systemName: icon)
-			
-			Text(title)
-		}
-		.font(.subheadline.weight(.semibold))
-		.foregroundStyle(color)
-		.padding(.horizontal, 14)
-		.padding(.vertical, 10)
-		.background(.white.opacity(0.06))
-		.clipShape(Capsule())
+	var backgroundGradient: some View {
+		VStack {}
 	}
 }
 
 #Preview {
-	
-	let sampleCards: [Card] = (1...10).map { index in
+
+	let cards: [Card] = (1...10).map { index in
 		Card(
 			frontEntry: "Sample Front \(index)",
 			backEntry: "Exemple Dos \(index)",
@@ -402,5 +226,5 @@ private extension TimeTrialView {
 			backLanguage: .fr_CA
 		)
 	}
-	return TimeTrialView(cards: sampleCards)
+	return TimeTrialView(cards: cards)
 }

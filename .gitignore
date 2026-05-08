@@ -4,4 +4,4 @@ DerivedData/
 xcuserdata/
 .build/
 .DS_Store
-Features/Tests/*
+Features/Tests/

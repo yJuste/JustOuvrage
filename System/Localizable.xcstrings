@@ -7,6 +7,9 @@
     "\"%@\"" : {
 
     },
+    "[Deck Name]" : {
+
+    },
     "%@" : {
 
     },
@@ -154,6 +157,9 @@
     "Close" : {
 
     },
+    "Continue" : {
+
+    },
     "Date" : {
 
     },
@@ -277,6 +283,12 @@
     "Please fill in both sides before saving." : {
 
     },
+    "Quit" : {
+
+    },
+    "Quit Time Trial ?" : {
+
+    },
     "Recent searches" : {
 
     },
@@ -290,6 +302,9 @@
 
     },
     "Remove" : {
+
+    },
+    "results" : {
 
     },
     "Search" : {
@@ -320,6 +335,9 @@
 
     },
     "Take Photo" : {
+
+    },
+    "The timer is currently paused." : {
 
     },
     "Time Trial Mode" : {
