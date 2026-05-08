@@ -50,7 +50,7 @@ struct TimeTrialView: View {
 									.glassEffect(.regular.interactive())
 							}
 							.disabled(isSwiping)
-							TimerView(size: 10, duration: timeInterval, color: UIColor.label, isPaused: $hasTimerPaused, isFinished: $hasTimerReachedZero, restartTrigger: trigger)
+							TimerView(size: 100, duration: timeInterval, color: UIColor.label, isPaused: $hasTimerPaused, isFinished: $hasTimerReachedZero, restartTrigger: trigger)
 							Button {
 								swipe(.right)
 							} label: {
