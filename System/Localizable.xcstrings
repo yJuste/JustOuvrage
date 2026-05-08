@@ -63,6 +63,16 @@
         }
       }
     },
+    "%lld/%lld" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$lld/%2$lld"
+          }
+        }
+      }
+    },
     "Add" : {
 
     },
@@ -195,6 +205,9 @@
     "Hello" : {
 
     },
+    "Here is your last entries." : {
+
+    },
     "Hide" : {
 
     },
@@ -292,6 +305,9 @@
 
     },
     "Selected: %@" : {
+
+    },
+    "Session Complete" : {
 
     },
     "Set the maximum time to swipe for each cards." : {

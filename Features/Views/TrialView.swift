@@ -19,7 +19,7 @@ struct TrialView: View {
 	@State private var optionsOfTimer: [String] = ["1 sec", "2 sec", "3 sec", "4 sec", "5 sec"]
 	@State private var selectedDeck: Deck? = nil
 	@State private var selectedNumberOfCards: Int = 0
-	@State private var optionsOfNumberOfCards: [String] = ["10", "20", "30", "40", "50", "60", "70", "80", "90", "100", "110", "120", "130", "140", "150", "160", "170", "180", "190", "200", "All"]
+	@State private var optionsOfNumberOfCards: [String] = ["All", "10", "20", "30", "40", "50", "60", "70", "80", "90", "100", "110", "120", "130", "140", "150", "160", "170", "180", "190", "200"]
 	@State private var selectedMode: Int = 0
 	@State private var optionsOfMode: [String] = ["Standard", "Death"]
 	
@@ -86,9 +86,6 @@ struct TrialView: View {
 				} header: {
 					Text("Choose the difficulty")
 				}
-			}
-			.onAppear {
-				selectedDeck = nil
 			}
 			.toolbar { toolbar }
 			.navigationDestination(isPresented: $showTimeTrial) {

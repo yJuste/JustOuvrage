@@ -50,7 +50,16 @@ struct NewCardView: View {
 									.padding(25)
 									.presentationCompactAdaptation(.none)
 							}
-							Image(systemName: "arrow.left.arrow.right")
+							Button {
+								withAnimation(.spring(response: 0.3)) {
+									(frontLanguage, backLanguage) = (backLanguage, frontLanguage)
+								}
+							} label: {
+								Image(systemName: "arrow.left.arrow.right")
+							}
+							.buttonStyle(.plain)
+							.padding()
+							.glassEffect(.regular.interactive())
 							Button {
 								showBackLanguage.toggle()
 							} label: {
@@ -198,8 +207,13 @@ fileprivate extension NewCardView {
 			}
 		}
 		ToolbarItem(placement: .principal) {
-			Text("\(cards.first?.frontEntry ?? "Front Entry") : \(cards.first?.backEntry ?? "Back Entry")")
-				.font(.caption)
+			if ((cards.first?.frontEntry) != nil) && ((cards.first?.backEntry) != nil) {
+				Text("\(cards.first?.frontEntry ?? "Front Entry") : \(cards.first?.backEntry ?? "Back Entry")")
+					.font(.caption)
+			} else {
+				Text("Here is your last entries.")
+					.font(.caption)
+			}
 		}
 		ToolbarItem(placement: .topBarTrailing) {
 			Button {
