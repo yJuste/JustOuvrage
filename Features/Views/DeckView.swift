@@ -13,7 +13,7 @@ import SwiftData
 struct DeckView: View {
 	
 	let deck: Deck
-	var namespace: Namespace.ID
+	var namespace: Namespace.ID?
 	
 	@Environment(FileImageStorage.self) private var storage
 	@Environment(\.dismiss) private var dismiss
@@ -36,7 +36,7 @@ struct DeckView: View {
 							.aspectRatio(1, contentMode: .fit)
 							.clipShape(RoundedRectangle(cornerRadius: 8))
 							.shadow(color: .black.opacity(0.3), radius: 15)
-							.navigationTransition(.zoom(sourceID: deck.id, in: namespace))
+							.navigationTransition(id: deck.id, namespace: namespace)
 						VStack(alignment: .center, spacing: 6) {
 							Text(deck.name)
 								.font(.system(size: 25, weight: .bold))

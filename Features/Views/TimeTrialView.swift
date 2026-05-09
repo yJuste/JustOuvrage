@@ -23,6 +23,7 @@ struct TimeTrialView: View {
 	@State private var swipeResults: [SwipeDirection] = []
 	@State private var showPause: Bool = false
 	@State private var isSwiping: Bool = false
+	@State private var isCardTapped: Bool = false
 	
 	var currentCard: Card? {
 		guard currentIndex < cards.count else { return nil }
@@ -31,40 +32,46 @@ struct TimeTrialView: View {
 	
 	var body: some View {
 		NavigationStack {
-			ZStack {
-				backgroundGradient
-				VStack(spacing: 35) {
-					if let card = currentCard {
-						ZStack {
-							backgroundDeck
-							flashcard(card: card)
-						}
-						HStack(spacing: 40) {
-							Button {
-								swipe(.left)
-							} label: {
-								Image(systemName: "xmark")
-									.font(.system(size: 35, weight: .semibold))
-									.foregroundStyle(.red)
-									.frame(width: 70, height: 70)
-									.glassEffect(.regular.interactive())
+			GeometryReader { geo in
+				let isPortrait = geo.size.height > geo.size.width
+				ZStack {
+					backgroundGradient
+					VStack(spacing: isPortrait ? geo.size.height * 0.05 : geo.size.height * 1.0) {
+						if let card = currentCard {
+							ZStack {
+								flashcard(card: card, geo: geo, isPortrait: isPortrait)
+									.background(
+										RoundedRectangle(cornerRadius: 35)
+											.fill(.primary.opacity(0.05))
+											.frame(width: geo.size.width * (isPortrait ? 0.83 : 0.86), height: geo.size.height * (isPortrait ? 0.8 : 0.89))
+									)
+							}
+							HStack(spacing: geo.size.width * 0.15) {
+								Button {
+									swipe(.left)
+								} label: {
+									Image(systemName: "xmark")
+										.font(.system(size: 35, weight: .semibold))
+										.foregroundStyle(.red)
+										.frame(width: 70, height: 70)
+										.glassEffect(.regular.interactive())
+								}
+								Button {
+									swipe(.right)
+								} label: {
+									Image(systemName: "checkmark")
+										.font(.system(size: 35, weight: .semibold))
+										.foregroundStyle(.green)
+										.frame(width: 70, height: 70)
+										.glassEffect(.regular.interactive())
+								}
 							}
 							.disabled(isSwiping)
-							TimerView(size: 100, duration: timeInterval, color: UIColor.label, isPaused: $hasTimerPaused, isFinished: $hasTimerReachedZero, restartTrigger: trigger)
-							Button {
-								swipe(.right)
-							} label: {
-								Image(systemName: "checkmark")
-									.font(.system(size: 35, weight: .semibold))
-									.foregroundStyle(.green)
-									.frame(width: 70, height: 70)
-									.glassEffect(.regular.interactive())
-							}
-							.disabled(isSwiping)
+						} else {
+							TimeTrialResultView()
 						}
-					} else {
-						TimeTrialResultView()
 					}
+					.frame(maxWidth: .infinity, maxHeight: .infinity)
 				}
 			}
 			.onChange(of: hasTimerReachedZero) { _, reached in
@@ -86,31 +93,41 @@ struct TimeTrialView: View {
 		}
 	}
 	
-	private func flashcard(card: Card) -> some View {
+	private func flashcard(card: Card, geo: GeometryProxy, isPortrait: Bool) -> some View {
 		
 		ZStack {
 			RoundedRectangle(cornerRadius: 35, style: .continuous)
-				.fill(.ultraThinMaterial)
+				.fill(.clear)
+				.contentShape(RoundedRectangle(cornerRadius: 35, style: .continuous))
 			RoundedRectangle(cornerRadius: 35, style: .continuous)
-				.stroke(.white.opacity(0.1), lineWidth: 2)
+				.stroke(.primary.opacity(0.1), lineWidth: 2)
 			VStack(spacing: 24) {
 				Spacer()
-				Text(card.frontEntry)
-					.font(.system(size: 30, weight: .semibold))
-					.multilineTextAlignment(.center)
+				Text("\(card.frontEntry)")
+					.font(.system(size: geo.size.width * (isPortrait ? 0.06 : 0.04), weight: .semibold))
 					.foregroundStyle(.primary)
-					.padding(.horizontal)
+				if isCardTapped {
+					Text("\(card.backEntry)")
+						.font(.system(size: geo.size.width * (isPortrait ? 0.05 : 0.03), weight: .semibold))
+						.foregroundStyle(.secondary)
+				}
+				if !isPortrait {
+					Spacer()
+				}
 				Spacer()
 			}
+			.multilineTextAlignment(.center)
+			.animation(.easeInOut(duration: 0.1), value: isCardTapped)
 			RoundedRectangle(cornerRadius: 35, style: .continuous)
 				.fill(LinearGradient(colors: [.red.opacity(Double(-dragOffset.width / 200)), .red.opacity(0.0)], startPoint: .leading, endPoint: .trailing))
 				.opacity(dragOffset.width < 0 ? 1 : 0)
 			RoundedRectangle(cornerRadius: 35, style: .continuous)
 				.fill(LinearGradient(colors: [.green.opacity(Double(dragOffset.width / 200)), .green.opacity(0.0)], startPoint: .trailing, endPoint: .leading))
 				.opacity(dragOffset.width > 0 ? 1 : 0)
+			TimerView(size: (isPortrait ? 70 : 20), duration: timeInterval, color: UIColor.label, isPaused: $hasTimerPaused, isFinished: $hasTimerReachedZero, restartTrigger: trigger)
+				.offset(y: geo.size.height * 0.25)
 		}
-		.frame(height: 525)
-		.padding(.horizontal, 25)
+		.frame(width: geo.size.width * (isPortrait ? 0.9 : 0.9), height: geo.size.height * (isPortrait ? 0.85 : 1.0))
 		.offset(x: dragOffset.width, y: dragOffset.height)
 		.rotationEffect(.degrees(rotation))
 		.gesture(
@@ -135,6 +152,9 @@ struct TimeTrialView: View {
 				}
 		)
 		.shadow(color: .black.opacity(0.3), radius: 15)
+		.onTapGesture {
+			isCardTapped.toggle()
+		}
 	}
 }
 
@@ -186,6 +206,7 @@ fileprivate extension TimeTrialView {
 			rotation = direction == .right ? 14 : -14
 		}
 		DispatchQueue.main.async {
+			isCardTapped = false
 			currentIndex += 1
 			dragOffset = .zero
 			rotation = 0
@@ -203,12 +224,13 @@ fileprivate extension TimeTrialView {
 /// Background for Gradient & Deck.
 fileprivate extension TimeTrialView {
 	
-	var backgroundDeck: some View {
+	private func backgroundDeck(geo: GeometryProxy) -> some View {
 		RoundedRectangle(cornerRadius: 35, style: .continuous)
-			.fill(.primary)
-			.opacity(0.05)
-			.padding(.horizontal, 30)
-			.padding(.vertical, 70)
+			.fill(.primary.opacity(0.05))
+			.frame(
+				width: geo.size.width * 0.90,
+				height: geo.size.height * 0.58
+			)
 	}
 	
 	var backgroundGradient: some View {
@@ -218,7 +240,7 @@ fileprivate extension TimeTrialView {
 
 #Preview {
 
-	let cards: [Card] = (1...10).map { index in
+	let cards: [Card] = (1...100).map { index in
 		Card(
 			frontEntry: "Sample Front \(index)",
 			backEntry: "Exemple Dos \(index)",

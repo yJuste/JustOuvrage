@@ -27,7 +27,7 @@ enum Constants {
 	static let heightOfACard: [CGFloat] = [0.31, 0.38]
 	
 	// Height of the sheet of the deck view.
-	static let heightOfADeck: [CGFloat] = [0.47]
+	static let heightOfADeck: [CGFloat] = [0.47, 1.0]
 	
 	// Height of a sheet of the draft view.
 	static let heightOfADraft: [CGFloat] = [0.315, 0.38]

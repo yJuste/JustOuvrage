@@ -133,9 +133,8 @@ struct SearchView: View {
 					}
 				}
 			}
-			.searchable(text: $search, placement: .toolbar)
 			.safeAreaInset(edge: .top) {
-				if hasSearch {
+				if !showDeck && !showCard && !showMatch {
 					Picker("", selection: $selectPicker) {
 						Text("All")
 							.tag(0)
@@ -165,7 +164,7 @@ struct SearchView: View {
 			}
 			.sheet(isPresented: $showDeck) {
 				if let deck = selectedDeck {
-					DeckView(deck: deck, namespace: namespace)
+					DeckView(deck: deck, namespace: nil)
 						.presentationDetents([.fraction(Constants.heightOfADeck[0]), .large])
 						.presentationBackgroundInteraction(.enabled)
 						.presentationDragIndicator(.visible)
@@ -184,6 +183,7 @@ struct SearchView: View {
 			.scrollDismissesKeyboard(.immediately)
 			.navigationTitle("Search")
 			.listStyle(.plain)
+			.searchable(text: $search, placement: .toolbar)
 		}
 	}
 }
@@ -219,9 +219,9 @@ fileprivate extension SearchView {
 		case 0:
 			return exactResult + cardResults + deckResults
 		case 1:
-			return cardResults
+			return exactResult + cardResults
 		case 2:
-			return deckResults
+			return exactResult + deckResults
 		default:
 			return exactResult + cardResults + deckResults
 		}

@@ -33,7 +33,7 @@ import SwiftUI
 				}
 			}()
 			let remaining = max(duration - elapsed, 0)
-			let length = max(size, 100)
+			let length = max(size, 70)
 			
 			ZStack {
 				Circle()
@@ -42,9 +42,14 @@ import SwiftUI
 					.trim(from: 0, to: max(remaining / duration, 0))
 					.stroke(Color(uiColor: color), style: StrokeStyle(lineWidth: 8, lineCap: .round))
 					.rotationEffect(.degrees(-90))
-				Text("\(Int(ceil(remaining)))")
-					.font(.system(size: 60, weight: .semibold, design: .rounded))
-					.lineLimit(1)
+				GeometryReader { geo in
+					Text("\(Int(ceil(remaining)))")
+						.font(.system(size: min(geo.size.width, geo.size.height), weight: .semibold, design: .rounded))
+						.minimumScaleFactor(0.01)
+						.lineLimit(1)
+						.frame(width: geo.size.width, height: geo.size.height)
+				}
+				.padding(8)
 			}
 			.frame(width: length, height: length)
 			.onChange(of: restartTrigger) {
@@ -97,8 +102,8 @@ fileprivate extension TimerView {
 		var body: some View {
 			VStack(spacing: 20) {
 				TimerView(
-					size: 100,
-					duration: 5,
+					size: 70,
+					duration: 10,
 					color: .accent,
 					isPaused: $isPaused,
 					isFinished: $isFinished,
