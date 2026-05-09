@@ -26,35 +26,35 @@ struct CardView: View {
 		NavigationStack {
 			ScrollView {
 				VStack(alignment: .leading) {
-					Section { /// ``First Entry``
+					Section {
 						LabelTrailing(title: "\(card.frontLanguage.language)") {
 							Text("\(card.frontEntry)")
 						}
-						WordsLinkingToSite("Forvo", item: cleanFrontEntry) { entry in
+						WordsLinkingToSite(title: "Forvo", item: cleanFrontEntry) { entry in
 							destination = site.forvo.link(for: entry, in: card.frontLanguage)
 						}
-						WordsLinkingToSite("WordReference", item: cleanFrontEntry) { entry in
+						WordsLinkingToSite(title: "WordReference", item: cleanFrontEntry) { entry in
 							destination = site.wordReference.link(for: entry, in: (card.frontLanguage, card.backLanguage))
 						}
-						WordsLinkingToSite("Google", item: cleanFrontEntry) { entry in
+						WordsLinkingToSite(title: "Google", item: cleanFrontEntry) { entry in
 							destination = site.google.link(for: entry, in: card.frontLanguage)
 						}
-					}
-					Section { /// ``Second Entry``
+					} /// ``First Entry``
+					Section {
 						LabelTrailing(title: "\(card.backLanguage.language)") {
 							Text("\(card.backEntry)")
 						}
-						WordsLinkingToSite("Forvo", item: cleanBackEntry) { entry in
+						WordsLinkingToSite(title: "Forvo", item: cleanBackEntry) { entry in
 							destination = site.forvo.link(for: entry, in: card.backLanguage)
 						}
-						WordsLinkingToSite("WordReference", item: cleanBackEntry) { entry in
+						WordsLinkingToSite(title: "WordReference", item: cleanBackEntry) { entry in
 							destination = site.wordReference.link(for: entry, in: (card.backLanguage, card.frontLanguage))
 						}
-						WordsLinkingToSite("Google", item: cleanBackEntry) { entry in
+						WordsLinkingToSite(title: "Google", item: cleanBackEntry) { entry in
 							destination = site.google.link(for: entry, in: card.backLanguage)
 						}
-					}
-					Section { /// ``Leitner Score``
+					} /// ``Second Entry``
+					Section {
 						LabelTrailing(title: "Leitner Score") {
 							Picker("Leitner Score",
 								   selection: Binding(
@@ -68,8 +68,8 @@ struct CardView: View {
 							}
 							.pickerStyle(.segmented)
 						}
-					}
-					Section { /// ``metadata``
+					} /// ``Leitner Score``
+					Section {
 						VStack(alignment: .leading) {
 							Text(card.createdAt, format: .dateTime.year().month().day())
 							Text("\(card.author)")
@@ -79,7 +79,7 @@ struct CardView: View {
 						}
 						.foregroundStyle(.secondary)
 						.padding(.vertical)
-					}
+					} /// ``Metadata``
 				}
 				.buttonStyle(.plain)
 				.padding(.horizontal)

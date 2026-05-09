@@ -11,12 +11,7 @@ import SwiftUI
 struct LabelTrailing<Content: View>: View {
 	
 	let title: String
-	let content: Content
-	
-	init(title: String, @ViewBuilder content: () -> Content) {
-		self.title = title
-		self.content = content()
-	}
+	let content: () -> Content
 	
 	var body: some View {
 		VStack(alignment: .leading) {
@@ -24,7 +19,7 @@ struct LabelTrailing<Content: View>: View {
 				.font(.caption)
 				.foregroundStyle(.secondary)
 				.frame(maxWidth: .infinity, alignment: .trailing)
-			content
+			content()
 		}
 	}
 }

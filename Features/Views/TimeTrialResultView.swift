@@ -12,3 +12,7 @@ struct TimeTrialResultView: View {
 		Text("results")
 	}
 }
+
+#Preview {
+	TimeTrialResultView()
+}

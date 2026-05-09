@@ -15,12 +15,6 @@ struct WordsLinkingToSite: View {
 	let item: [String]
 	let action: (String) -> Void
 	
-	init(_ title: String, item: [String], _ action: @escaping (String) -> Void) {
-		self.title = title
-		self.item = item
-		self.action = action
-	}
-	
 	var body: some View {
 		WrapHStack {
 			Text(title)
@@ -43,24 +37,25 @@ struct WordsLinkingToSite: View {
 }
 
 #Preview {
-	PreviewWrapper()
-}
-
-struct PreviewWrapper: View {
 	
-	let entries: [String] = ["Boeuf", "Agneau", "Canard", "Porc", "Brebis", "Vache"]
-	@State private var selected: String?
-	
-	var body: some View {
-		VStack(spacing: 20) {
-			WordsLinkingToSite("MySite", item: entries) { value in
-				selected = value
+	struct PreviewWrapper: View {
+		
+		let entries: [String] = ["Boeuf", "Agneau", "Canard", "Porc", "Brebis", "Vache"]
+		@State private var selected: String?
+		
+		var body: some View {
+			VStack(spacing: 20) {
+				WordsLinkingToSite(title: "MySite", item: entries) { value in
+					selected = value
+				}
+				if let selected {
+					Text("Selected: \(selected)")
+						.font(.headline)
+				}
 			}
-			if let selected {
-				Text("Selected: \(selected)")
-					.font(.headline)
-			}
+			.padding()
 		}
-		.padding()
 	}
+	
+	return PreviewWrapper()
 }

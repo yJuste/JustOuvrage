@@ -27,27 +27,27 @@ struct DraftView: View {
 		NavigationStack {
 			ScrollView {
 				VStack(alignment: .leading) {
-					Section { /// ``Entry``
+					Section {
 						LabelTrailing(title: "\(selectedLanguage.language)") {
 							Text("\(draft.entry)")
 						}
-						WordsLinkingToSite("Forvo", item: cleanEntry) { entry in
+						WordsLinkingToSite(title: "Forvo", item: cleanEntry) { entry in
 							destination = site.forvo.link(for: entry, in: (selectedLanguage, selectedLanguage))
 						}
-						WordsLinkingToSite("WordReference", item: cleanEntry) { entry in
+						WordsLinkingToSite(title: "WordReference", item: cleanEntry) { entry in
 							destination = site.wordReference.link(for: entry, in: selectedLanguage)
 						}
-						WordsLinkingToSite("Google", item: cleanEntry) { entry in
+						WordsLinkingToSite(title: "Google", item: cleanEntry) { entry in
 							destination = site.google.link(for: entry, in: selectedLanguage)
 						}
-					}
-					Section { /// ``Metadata``
+					} /// ``Entry``
+					Section {
 						VStack(alignment: .leading) {
 							Text(draft.createdAt, format: .dateTime.year().month().day())
 						}
 						.foregroundStyle(.secondary)
 						.padding(.vertical)
-					}
+					} /// ``Metadata``
 				}
 				.buttonStyle(.plain)
 				.padding(.horizontal)

@@ -14,14 +14,14 @@ enum Search: Identifiable {
 	case card(Card, back: Bool)
 	case deck(Deck)
 	case draft(Draft)
-	case exactMatch(String)
+	case match(Draft)
 	
 	var id: String {
 		switch self {
 		case .card(let card, _): return card.id.uuidString
 		case .deck(let deck): return deck.id.uuidString
 		case .draft(let draft): return draft.id.uuidString
-		case .exactMatch(let match): return "\(match)"
+		case .match(let match): return match.id.uuidString
 		}
 	}
 	
@@ -33,8 +33,8 @@ enum Search: Identifiable {
 			return deck.lastViewedAt ?? .distantPast
 		case .draft(let draft):
 			return draft.lastViewedAt ?? .distantPast
-		case .exactMatch(_):
-			return .now
+		case .match(let match):
+			return match.lastViewedAt ?? .distantPast
 		}
 	}
 }

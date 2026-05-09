@@ -185,7 +185,7 @@ fileprivate extension TimeTrialView {
 			dragOffset.width = x
 			rotation = direction == .right ? 14 : -14
 		}
-		DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+		DispatchQueue.main.async {
 			currentIndex += 1
 			dragOffset = .zero
 			rotation = 0

@@ -7,9 +7,8 @@
 
 import SwiftUI
 
-/// Minimum size 100
-@MainActor
-struct TimerView: View {
+/// Minimum size = 100
+@MainActor struct TimerView: View {
 	
 	let size: CGFloat
 	let duration: TimeInterval
@@ -19,7 +18,7 @@ struct TimerView: View {
 	var restartTrigger: UUID
 	var onFinished: (() -> Void)?
 	
-	@State private var startDate = Date()
+	@State private var startDate: Date = Date()
 	@State private var pauseDate: Date?
 	
 	var body: some View {
@@ -80,8 +79,7 @@ fileprivate extension TimerView {
 			pauseDate = Date()
 		} else {
 			if let pauseDate {
-				let pauseDuration = Date().timeIntervalSince(pauseDate)
-				startDate = startDate.addingTimeInterval(pauseDuration)
+				startDate = startDate.addingTimeInterval(Date().timeIntervalSince(pauseDate))
 			}
 			self.pauseDate = nil
 		}
@@ -94,7 +92,7 @@ fileprivate extension TimerView {
 		
 		@State private var isPaused: Bool = false
 		@State private var isFinished: Bool = false
-		@State private var timerID = UUID()
+		@State private var istimer: UUID = UUID()
 		
 		var body: some View {
 			VStack(spacing: 20) {
@@ -104,7 +102,7 @@ fileprivate extension TimerView {
 					color: .accent,
 					isPaused: $isPaused,
 					isFinished: $isFinished,
-					restartTrigger: timerID,
+					restartTrigger: istimer,
 					onFinished: nil
 				)
 				Button(isPaused ? "Resume" : "Stop") {

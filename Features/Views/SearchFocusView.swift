@@ -13,7 +13,7 @@ import os /// `debug`
 /// External Dependencies: Card, Deck, Draft, Constants, FileImageStorage, Search, CardView, DeckView, DraftView
 struct SearchFocusView: View {
 	
-	@Binding var search: String
+	let hasSearch: Bool
 	
 	@Environment(\.isSearching) private var isSearching
 	@Environment(FileImageStorage.self) private var storage
@@ -43,85 +43,98 @@ struct SearchFocusView: View {
 	}
 	
 	var body: some View {
-		if isSearching && search.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+		if isSearching && !hasSearch {
 			Section {
 				ForEach(recentItems.prefix(Constants.maxRecentSearches)) { item in
 					switch item {
 					case .card(let card, _):
-						Button {
-							selectedCard = card
-							card.lastViewedAt = .now
-							showDeck = false
-							showDraft = false
-							showCard = true
-							trimRecentsGlobal()
-						} label: {
-							VStack(alignment: .leading, spacing: 5) {
-								Text(card.frontEntry)
-									.font(.subheadline)
-								Text(card.backEntry)
-									.font(.subheadline)
-									.foregroundStyle(.secondary)
-							}
-						}
-						.swipeActions {
+						Section {
 							Button {
-								card.lastViewedAt = nil
+								selectedCard = card
+								card.lastViewedAt = .now
+								showDeck = false
+								showDraft = false
+								showCard = true
+								trimRecentsGlobal()
 							} label: {
-								Label("Clear", systemImage: "xmark.circle.fill")
-							}
-						}
-					case .deck(let deck):
-						Button {
-							selectedDeck = deck
-							deck.lastViewedAt = .now
-							showCard = false
-							showDraft = false
-							showDeck = true
-							trimRecentsGlobal()
-						} label: {
-							HStack(spacing: 12) {
-								Image(image: deck.image, storage: storage)
-									.resizable()
-									.scaledToFill()
-									.frame(width: 58, height: 58)
-									.clipShape(RoundedRectangle(cornerRadius: 4))
-								VStack(alignment: .leading, spacing: 2) {
-									Text(deck.name)
-										.font(.system(size: 15, weight: .regular, design: .default))
-									Text(deck.depiction)
-										.font(.system(size: 15, weight: .regular, design: .default))
+								VStack(alignment: .leading, spacing: 5) {
+									Text(card.frontEntry)
+										.font(.subheadline)
+									Text(card.backEntry)
+										.font(.subheadline)
 										.foregroundStyle(.secondary)
 								}
 							}
-						}
-						.swipeActions {
-							Button {
-								deck.lastViewedAt = nil
-							} label: {
-								Label("Clear", systemImage: "xmark.circle.fill")
+							.swipeActions {
+								Button {
+									card.lastViewedAt = nil
+								} label: {
+									Label("Clear", systemImage: "xmark.circle.fill")
+								}
 							}
-						}
+						} /// ``Preview for a Card``
+					case .deck(let deck):
+						Section {
+							Button {
+								selectedDeck = deck
+								deck.lastViewedAt = .now
+								showCard = false
+								showDraft = false
+								showDeck = true
+								trimRecentsGlobal()
+							} label: {
+								HStack(spacing: 12) {
+									Image(image: deck.image, storage: storage)
+										.resizable()
+										.scaledToFill()
+										.frame(width: 58, height: 58)
+										.clipShape(RoundedRectangle(cornerRadius: 4))
+									VStack(alignment: .leading, spacing: 2) {
+										Text(deck.name)
+											.font(.system(size: 15, weight: .regular, design: .default))
+										Text(deck.depiction)
+											.font(.system(size: 15, weight: .regular, design: .default))
+											.foregroundStyle(.secondary)
+									}
+								}
+							}
+							.swipeActions {
+								Button {
+									deck.lastViewedAt = nil
+								} label: {
+									Label("Clear", systemImage: "xmark.circle.fill")
+								}
+							}
+						} /// ``Preview for a Deck``
 					case .draft(let draft):
-						Button {
-							selectedDraft = draft
-							draft.lastViewedAt = .now
-							showCard = false
-							showDeck = false
-							showDraft = true
-							trimRecentsGlobal()
-						} label: {
-							Text("\(draft.entry)")
-								.font(.system(size: 15, weight: .regular, design: .default))
-						}
-						.swipeActions {
+						Section {
 							Button {
-								context.delete(draft)
+								selectedDraft = draft
+								draft.lastViewedAt = .now
+								showCard = false
+								showDeck = false
+								showDraft = true
+								trimRecentsGlobal()
 							} label: {
-								Label("Clear", systemImage: "xmark.circle.fill")
+								Text("\(draft.entry)")
+									.font(.system(size: 15, weight: .regular, design: .default))
 							}
-						}
-					case .exactMatch( _ ): Button { } label: { }
+							.swipeActions {
+								Button {
+									context.delete(draft)
+								} label: {
+									Label("Clear", systemImage: "xmark.circle.fill")
+								}
+							}
+						} /// ``Preview for a Draft``
+					case .match( _ ):
+						Section {
+							Button {
+								// Nothing to do
+							} label: {
+								// Nothing
+							}
+						} /// ``Preview for a Match``
 					}
 				}
 			} header: {
@@ -178,13 +191,14 @@ struct SearchFocusView: View {
 	}
 }
 
+/// Methods of SearchFocusView.
 fileprivate extension SearchFocusView {
 	
 	func trimRecentsGlobal() {
+		
 		let all = recentItems
 		guard all.count > Constants.maxRecentSearches else { return }
 		let toRemove = all.dropFirst(Constants.maxRecentSearches)
-		
 		for item in toRemove {
 			switch item {
 			case .card(let card, _):
@@ -193,7 +207,7 @@ fileprivate extension SearchFocusView {
 				deck.lastViewedAt = nil
 			case .draft(let draft):
 				context.delete(draft)
-			case .exactMatch:
+			case .match:
 				break
 			}
 		}
@@ -203,7 +217,7 @@ fileprivate extension SearchFocusView {
 #Preview {
 	
 	NavigationStack {
-		SearchFocusView(search: .constant(""))
+		SearchFocusView(hasSearch: false)
 			.searchable(text: .constant(""))
 			.environment(FileImageStorage())
 	}

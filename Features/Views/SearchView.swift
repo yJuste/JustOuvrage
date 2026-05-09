@@ -22,105 +22,121 @@ struct SearchView: View {
 	@Query private var drafts: [Draft]
 	
 	@State private var search: String = ""
-	@State private var showPicker: Bool = false
-	@State private var select: Int = 0
+	@State private var selectPicker: Int = 0
 	@State private var selectedCard: Card?
 	@State private var showCard: Bool = false
 	@State private var selectedDeck: Deck?
 	@State private var showDeck: Bool = false
 	@State private var selectedMatch: Draft?
-	@State private var showExactMatch: Bool = false
+	@State private var showMatch: Bool = false
+	
+	private var hasSearch: Bool {
+		!search.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+	}
 	
 	var body: some View {
 		NavigationStack {
 			List {
-				SearchFocusView(search: $search)
+				SearchFocusView(hasSearch: hasSearch)
 				ForEach(filteredResults) { result in
 					switch result {
 					case .card(let card, let back):
-						Button {
-							selectedCard = card
-							card.lastViewedAt = .now
-							showDeck = false
-							showExactMatch = false
-							showCard = true
-						} label: {
-							Label {
-								Text("\(back ? card.backEntry : card.frontEntry)")
-									.font(.subheadline)
-							} icon: {
-								Image(systemName: "magnifyingglass")
-									.font(.caption)
-									.foregroundStyle(.secondary)
-							}
-						}
-					case .deck(let deck):
-						Button {
-							selectedDeck = deck
-							deck.lastViewedAt = .now
-							deck.lastOpenedAt = .now
-							showCard = false
-							showExactMatch = false
-							showDeck = true
-						} label: {
-							HStack(spacing: 12) {
-								Image(image: deck.image, storage: storage)
-									.resizable()
-									.scaledToFill()
-									.frame(width: 58, height: 58)
-									.clipShape(RoundedRectangle(cornerRadius: 4))
-								VStack(alignment: .leading, spacing: 2) {
-									Text(deck.name)
-										.font(.system(size: 15, weight: .regular, design: .default))
-									Text(deck.depiction)
-										.font(.system(size: 15, weight: .regular, design: .default))
+						Section {
+							Button {
+								selectedCard = card
+								card.lastViewedAt = .now
+								showDeck = false
+								showMatch = false
+								showCard = true
+							} label: {
+								Label {
+									Text("\(back ? card.backEntry : card.frontEntry)")
+										.font(.subheadline)
+								} icon: {
+									Image(systemName: "magnifyingglass")
+										.font(.caption)
 										.foregroundStyle(.secondary)
 								}
-								Spacer()
-								Button {
-									//
-								} label: {
-									Image(systemName: "ellipsis")
-										.font(.system(size: 20, weight: .bold))
+							}
+						} /// ``Search for a Card``
+					case .deck(let deck):
+						Section {
+							Button {
+								selectedDeck = deck
+								deck.lastViewedAt = .now
+								deck.lastOpenedAt = .now
+								showCard = false
+								showMatch = false
+								showDeck = true
+							} label: {
+								HStack(spacing: 12) {
+									Image(image: deck.image, storage: storage)
+										.resizable()
+										.scaledToFill()
+										.frame(width: 58, height: 58)
+										.clipShape(RoundedRectangle(cornerRadius: 4))
+									VStack(alignment: .leading, spacing: 2) {
+										Text(deck.name)
+											.font(.system(size: 15, weight: .regular, design: .default))
+										Text(deck.depiction)
+											.font(.system(size: 15, weight: .regular, design: .default))
+											.foregroundStyle(.secondary)
+									}
+									Spacer()
+									Button {
+										//
+									} label: {
+										Image(systemName: "ellipsis")
+											.font(.system(size: 20, weight: .bold))
+									}
+									.padding(.trailing, 10)
 								}
-								.padding(.trailing, 10)
 							}
-						}
-						.buttonStyle(.plain)
-						.listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
-					case .draft( _ ): Button { } label: { }
-					case .exactMatch(let match):
-						Button {
-							if let existingDraft = drafts.first(where: { $0.entry == match }) {
-								selectedMatch = existingDraft
-							} else {
-								let draft = Draft(entry: match, language: .en_US)
-								context.insert(draft)
-								selectedMatch = draft
+							.buttonStyle(.plain)
+							.listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
+						} /// ``Search for a Deck``
+					case .draft( _ ):
+						Section {
+							Button {
+								// Nothing to do
+							} label: {
+								// Nothing
 							}
-							showCard = false
-							showDeck = false
-							showExactMatch = true
-						} label: {
-							Label {
-								Text("\"\(match)\"")
-							} icon: {
-								Image(systemName: "magnifyingglass.circle.fill")
+						} /// ``Search for a Draft``
+					case .match(let match):
+						Section {
+							Button {
+								let trimmed = search.trimmingCharacters(in: .whitespacesAndNewlines)
+								if let existingDraft = drafts.first(where: { $0.entry == trimmed }) {
+									selectedMatch = existingDraft
+									existingDraft.lastViewedAt = .now
+								} else {
+									let newDraft = Draft(entry: trimmed, language: .en_US)
+									context.insert(newDraft)
+									selectedMatch = newDraft
+									newDraft.lastViewedAt = .now
+								}
+								showCard = false
+								showDeck = false
+								showMatch = true
+							} label: {
+								Label {
+									Text("\"\(match.entry)\"")
+								} icon: {
+									Image(systemName: "magnifyingglass.circle.fill")
+								}
+								.font(.headline)
+								.fontWeight(.medium)
+								.foregroundStyle(.accent)
 							}
-							.font(.headline)
-							.fontWeight(.medium)
-							.foregroundStyle(.accent)
-						}
+						} /// ``Search for a Match``
 					}
 				}
 			}
 			.searchable(text: $search, placement: .toolbar)
-			.onChange(of: search) { _, newValue in
-				showPicker = !newValue.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
-			}
 			.safeAreaInset(edge: .top) {
-				if !search.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-					Picker("", selection: $select) {
+				if hasSearch {
+					Picker("", selection: $selectPicker) {
 						Text("All")
 							.tag(0)
 						Text("Only Cards")
@@ -132,9 +148,9 @@ struct SearchView: View {
 					.scaleEffect(1.2)
 					.padding(.horizontal, 40)
 					.padding(.vertical, 10)
-					.offset(y: showPicker ? 0 : -20)
-					.opacity(showPicker ? 1 : 0)
-					.animation(.easeInOut(duration: 0.15), value: showPicker)
+					.offset(y: hasSearch ? 0 : -20)
+					.opacity(hasSearch ? 1 : 0)
+					.animation(.easeInOut(duration: 0.15), value: hasSearch)
 				}
 			}
 			.sheet(isPresented: $showCard) {
@@ -155,7 +171,7 @@ struct SearchView: View {
 						.presentationDragIndicator(.visible)
 				}
 			}
-			.sheet(isPresented: $showExactMatch) {
+			.sheet(isPresented: $showMatch) {
 				if let match = selectedMatch {
 					DraftView(draft: match)
 						.presentationDetents([
@@ -179,7 +195,7 @@ fileprivate extension SearchView {
 		let trimmed = search.trimmingCharacters(in: .whitespacesAndNewlines)
 		guard !trimmed.isEmpty else { return [] }
 		
-		let exactResult: [Search] = [.exactMatch(trimmed)]
+		let exactResult: [Search] = [.match(Draft(entry: trimmed, language: .en_US))]
 		let cardResults = cards.compactMap { card -> Search? in
 			let matchFront = card.frontEntry.localizedCaseInsensitiveContains(trimmed)
 			let matchBack = card.backEntry.localizedCaseInsensitiveContains(trimmed)
@@ -199,7 +215,7 @@ fileprivate extension SearchView {
 			.filter { $0.name.localizedCaseInsensitiveContains(trimmed) }
 			.map { Search.deck($0) }
 		
-		switch select {
+		switch selectPicker {
 		case 0:
 			return exactResult + cardResults + deckResults
 		case 1:

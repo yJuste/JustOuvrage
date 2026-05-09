@@ -26,7 +26,7 @@ struct LibraryView: View {
 	var body: some View {
 		NavigationStack {
 			List {
-				Section { /// ``links to every card/deck``
+				Section {
 					NavigationLink {
 						CardsView()
 					} label: {
@@ -37,8 +37,8 @@ struct LibraryView: View {
 					} label: {
 						Label("Decks", systemImage: "rectangle.stack.fill")
 					}
-				}
-				Section { /// ``recent decks``
+				} /// ``links to every card/deck``
+				Section {
 					Text("Recently Opened")
 						.font(.system(size: 23, weight: .semibold))
 						.foregroundStyle(.primary)
@@ -78,7 +78,7 @@ struct LibraryView: View {
 					.listRowSeparator(.hidden)
 					.padding(.horizontal, 4)
 					.padding(.top, -3)
-				}
+				} /// ``recent decks``
 			}
 			.navigationDestination(item: $selectedDeck) { deck in
 				DeckView(deck: deck, namespace: namespace)

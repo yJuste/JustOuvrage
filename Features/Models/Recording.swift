@@ -18,8 +18,8 @@ import Foundation
 	var date: Date
 	var sequence: Int
 	
-	init(id: UUID = UUID(), url: URL, date: Date, sequence: Int) {
-		self.id = id
+	init(id: UUID, url: URL, date: Date, sequence: Int) {
+		self.id = UUID()
 		self.url = url
 		self.date = date
 		self.sequence = sequence
