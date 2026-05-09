@@ -8,7 +8,8 @@
 import SwiftUI
 
 /// Minimum size 100
-@MainActor struct TimerView: View {
+@MainActor
+struct TimerView: View {
 	
 	let size: CGFloat
 	let duration: TimeInterval
@@ -18,14 +19,21 @@ import SwiftUI
 	var restartTrigger: UUID
 	var onFinished: (() -> Void)?
 	
-	@State private var deadline: Date?
-	@State private var pausedRemaining: TimeInterval?
+	@State private var startDate = Date()
+	@State private var pauseDate: Date?
 	
 	var body: some View {
 		
 		TimelineView(.animation) { context in
 			
-			let remaining = timeRemaining(now: context.date)
+			let elapsed: TimeInterval = {
+				if let pauseDate {
+					return pauseDate.timeIntervalSince(startDate)
+				} else {
+					return context.date.timeIntervalSince(startDate)
+				}
+			}()
+			let remaining = max(duration - elapsed, 0)
 			let length = max(size, 100)
 			
 			ZStack {
@@ -36,51 +44,46 @@ import SwiftUI
 					.stroke(Color(uiColor: color), style: StrokeStyle(lineWidth: 8, lineCap: .round))
 					.rotationEffect(.degrees(-90))
 				Text("\(Int(ceil(remaining)))")
-					.font(.system(size: size * 0.35, weight: .bold, design: .rounded))
-					.monospacedDigit()
-					.minimumScaleFactor(0.2)
+					.font(.system(size: 60, weight: .semibold, design: .rounded))
+					.lineLimit(1)
 			}
-			.onChange(of: remaining) { _, value in
-				if value <= 0 && !isFinished {
+			.frame(width: length, height: length)
+			.onChange(of: restartTrigger) {
+				start()
+			}
+			.onChange(of: isPaused) {
+				pause($1)
+			}
+			.onChange(of: remaining) {
+				if $1 <= 0, !isFinished {
 					isFinished = true
 					isPaused = true
 					onFinished?()
 				}
 			}
-			.frame(width: length, height: length)
 		}
-		.onChange(of: isPaused) { _, paused in
-			timePaused(paused: paused)
-		}
-		.task(id: restartTrigger) { reset() }
 	}
 }
 
 /// Methods of TimerView.
 fileprivate extension TimerView {
 	
-	private func reset() {
-		deadline = Date().addingTimeInterval(duration)
-		pausedRemaining = nil
+	private func start() {
+		startDate = Date()
+		pauseDate = nil
 		isPaused = false
 		isFinished = false
 	}
 	
-	private func timeRemaining(now: Date) -> TimeInterval {
-		
-		if isPaused { return pausedRemaining ?? 0 }
-		guard let deadline else { return 0 }
-		return max(deadline.timeIntervalSince(now), 0)
-	}
-	
-	private func timePaused(paused: Bool) {
-		
+	private func pause(_ paused: Bool) {
 		if paused {
-			guard let deadline else { return }
-			pausedRemaining = max(deadline.timeIntervalSince(Date()), 0)
+			pauseDate = Date()
 		} else {
-			deadline = Date().addingTimeInterval(pausedRemaining ?? 0)
-			pausedRemaining = nil
+			if let pauseDate {
+				let pauseDuration = Date().timeIntervalSince(pauseDate)
+				startDate = startDate.addingTimeInterval(pauseDuration)
+			}
+			self.pauseDate = nil
 		}
 	}
 }
