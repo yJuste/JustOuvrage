@@ -22,7 +22,7 @@ struct ProfileView: View {
 						//
 					} label: {
 						HStack(spacing: 12) {
-							Image(.profileMan)
+							Image(.anna)
 								.resizable()
 								.scaledToFill()
 								.frame(width: 58, height: 58)

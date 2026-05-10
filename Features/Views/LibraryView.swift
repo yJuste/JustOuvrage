@@ -133,7 +133,7 @@ fileprivate extension LibraryView {
 		}
 		ToolbarSpacer(.fixed, placement: .topBarTrailing)
 		ToolbarItem(placement: .topBarTrailing) {
-			Image(.profileMan)
+			Image(.anna)
 				.resizable()
 				.frame(width: 36, height: 36)
 				.clipShape(Circle())
@@ -151,10 +151,6 @@ fileprivate extension LibraryView {
 	context.insert(Deck(name: "Hello", image: "deck"))
 	context.insert(Deck(name: "Lucas", image: "deck"))
 	context.insert(Deck(name: "I love you", image: "deck"))
-	context.insert(Deck(name: "Hello", image: "deck"))
-	context.insert(Deck(name: "Hello", image: "deck"))
-	context.insert(Deck(name: "Hello", image: "deck"))
-	context.insert(Deck(name: "Hello", image: "deck"))
 	context.insert(Deck(name: "Hello", image: "deck"))
 	return LibraryView()
 		.modelContainer(container)

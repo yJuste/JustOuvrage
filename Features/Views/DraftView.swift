@@ -65,7 +65,7 @@ struct DraftView: View {
 					.presentationDetents([.fraction(Constants.heightOfANewCard), .large])
 					.presentationDragIndicator(.visible)
 					.onDisappear {
-						showAdded()
+						Task { await showAdded() }
 					}
 			}
 			.fullScreenCover(item: $destination) { destination in
@@ -75,7 +75,7 @@ struct DraftView: View {
 			.overlay(alignment: .top) {
 				if showAddedBanner {
 					HStack(spacing: 6) {
-						Text("Ajouté")
+						Text("Added")
 						Image(systemName: "checkmark.circle.fill")
 					}
 					.font(.subheadline.weight(.medium))
@@ -104,7 +104,7 @@ fileprivate extension DraftView {
 					Label("Add to Library", systemImage: "slider.horizontal.3")
 				}
 				Button {
-					showAdded()
+					Task { await showAdded() }
 					_ = openCard(entry: draft.entry)
 				} label: {
 					Label("Quick Add", systemImage: "plus.square.fill")
@@ -154,19 +154,13 @@ fileprivate extension DraftView {
 		return newCard
 	}
 	
-	private func showAdded() {
-		Task {
-			await MainActor.run {
-				withAnimation(.snappy) {
-					showAddedBanner.toggle()
-				}
-			}
-			try? await Task.sleep(for: .seconds(1.5))
-			await MainActor.run {
-				withAnimation(.snappy) {
-					showAddedBanner.toggle()
-				}
-			}
+	@MainActor private func showAdded() async {
+		withAnimation(.snappy) {
+			showAddedBanner.toggle()
+		}
+		try? await Task.sleep(for: .seconds(1.5))
+		withAnimation(.snappy) {
+			showAddedBanner.toggle()
 		}
 	}
 }

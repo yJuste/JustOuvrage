@@ -156,7 +156,8 @@ fileprivate extension DecksView {
 		} else {
 			editMode = .active
 		}
-		DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
+		Task {
+			try? await Task.sleep(for: .milliseconds(250))
 			showEditMode.toggle()
 		}
 	}

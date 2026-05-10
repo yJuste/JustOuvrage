@@ -112,7 +112,7 @@ struct NewCardView: View {
 			.overlay(alignment: .top) {
 				if showAddedBanner {
 					HStack(spacing: 6) {
-						Text("Ajouté")
+						Text("Added")
 						Image(systemName: "checkmark.circle.fill")
 					}
 					.font(.subheadline.weight(.medium))
@@ -146,19 +146,13 @@ struct NewCardView: View {
 /// Methods of NewCardView.
 fileprivate extension NewCardView {
 	
-	private func showAdded() {
-		Task {
-			await MainActor.run {
-				withAnimation(.snappy) {
-					showAddedBanner.toggle()
-				}
-			}
-			try? await Task.sleep(for: .seconds(1.5))
-			await MainActor.run {
-				withAnimation(.snappy) {
-					showAddedBanner.toggle()
-				}
-			}
+	@MainActor private func showAdded() async {
+		withAnimation(.snappy) {
+			showAddedBanner.toggle()
+		}
+		try? await Task.sleep(for: .seconds(1.5))
+		withAnimation(.snappy) {
+			showAddedBanner.toggle()
 		}
 	}
 	
@@ -174,7 +168,7 @@ fileprivate extension NewCardView {
 			frontEntry = ""
 			backEntry = ""
 			focusField = .front
-			showAdded()
+			Task { await showAdded() }
 			dismiss()
 		}
 	}

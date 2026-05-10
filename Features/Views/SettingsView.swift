@@ -13,9 +13,9 @@ struct SettingsView: View {
 	@Environment(\.modelContext) private var context
 	@Environment(\.dismiss) private var dismiss
 	
-	@State private var isCleaning = false
+	@Bindable private var preferences = Preferences.unique
 	@State private var state: CleaningState = .idle
-	@State private var preferences = Preferences.unique
+	@State private var isCleaning = false
 	
 	var body: some View {
 		
@@ -118,7 +118,10 @@ fileprivate extension SettingsView {
 			try await CardDuplicate(modelContainer: context.container).removeDuplicates()
 			state = .success
 			preferences.lastCleanDuplicate = Date()
-			DispatchQueue.main.asyncAfter(deadline: .now() + 2) { state = .idle }
+			Task {
+				try? await Task.sleep(for: .seconds(1.5))
+				state = .idle
+			}
 		} catch {
 			state = .failure
 			print(Errors.CardDuplicationError)

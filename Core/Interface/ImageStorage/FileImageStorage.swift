@@ -15,7 +15,12 @@ import SwiftUI
 @Observable final class FileImageStorage: ImageStorageService {
 	
 	private let folder = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0].appendingPathComponent("Images")
-	private let cache = NSCache<NSString, UIImage>()
+	private let cache: NSCache<NSString, UIImage> = {
+		let c = NSCache<NSString, UIImage>()
+		c.countLimit = 50
+		c.totalCostLimit = 100 * 1024 * 1024
+		return c
+	}()
 	
 	func save(image: UIImage) throws -> String {
 		
@@ -30,14 +35,62 @@ import SwiftUI
 		return file
 	}
 	
-	func load(image: String) throws -> UIImage {
+	func load(image name: String) throws -> UIImage {
 		
-		if let cached = cache.object(forKey: image as NSString) { return cached }
+		if let cached = cache.object(forKey: name as NSString) {
+			return cached
+		}
 		
-		let data = try Data(contentsOf: folder.appendingPathComponent(image))
-		guard let final = UIImage(data: data) else { throw Errors.ImageError }
+		let url = folder.appendingPathComponent(name)
 		
-		cache.setObject(final, forKey: image as NSString)
+		guard let source = CGImageSourceCreateWithURL(url as CFURL, nil) else {
+			throw Errors.ImageError
+		}
+		
+		let options: [CFString: Any] = [
+			kCGImageSourceCreateThumbnailFromImageAlways: true,
+			kCGImageSourceThumbnailMaxPixelSize: 1024,
+			kCGImageSourceCreateThumbnailWithTransform: true
+		]
+		
+		guard let cgImage = CGImageSourceCreateThumbnailAtIndex(source, 0, options as CFDictionary) else {
+			throw Errors.ImageError
+		}
+		
+		let final = UIImage(cgImage: cgImage)
+		
+		let cost = Int(final.size.width * final.size.height * 4)
+		cache.setObject(final, forKey: name as NSString, cost: cost)
+		
+		return final
+	}
+	
+	func load(image name: String, size: CGFloat) throws -> UIImage {
+		
+		if let cached = cache.object(forKey: name as NSString) {
+			return cached
+		}
+		
+		let url = folder.appendingPathComponent(name)
+		
+		guard let source = CGImageSourceCreateWithURL(url as CFURL, nil) else {
+			throw Errors.ImageError
+		}
+		
+		let options: [CFString: Any] = [
+			kCGImageSourceCreateThumbnailFromImageAlways: true,
+			kCGImageSourceThumbnailMaxPixelSize: size,
+			kCGImageSourceCreateThumbnailWithTransform: true
+		]
+		
+		guard let cgImage = CGImageSourceCreateThumbnailAtIndex(source, 0, options as CFDictionary) else {
+			throw Errors.ImageError
+		}
+		
+		let final = UIImage(cgImage: cgImage)
+		
+		let cost = Int(final.size.width * final.size.height * 4)
+		cache.setObject(final, forKey: name as NSString, cost: cost)
 		
 		return final
 	}
