@@ -11,4 +11,5 @@ enum Errors: Error {
 	case ImageError
 	case PasswordError
 	case SiteError
+	case CardDuplicationError
 }

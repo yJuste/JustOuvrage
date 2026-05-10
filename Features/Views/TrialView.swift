@@ -109,8 +109,8 @@ fileprivate extension TrialView {
 		}
 		ToolbarItem(placement: .principal) {
 			Text("Time Trial Mode")
-				.font(.title3)
-				.fontWeight(.semibold)
+				.font(.headline)
+				.foregroundStyle(.secondary)
 		}
 		ToolbarItem(placement: .topBarTrailing) {
 			Button {

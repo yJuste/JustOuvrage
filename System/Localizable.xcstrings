@@ -13,6 +13,9 @@
     "%@" : {
 
     },
+    "%@\n\nThis action scans all saved cards and removes duplicates.\n\nA duplicate is defined as identical front text, back text, and both languages.\n\nOnly the oldest version of each duplicate set is kept." : {
+
+    },
     "%@ : %@" : {
       "localizations" : {
         "en" : {
@@ -239,6 +242,9 @@
 
     },
     "Log out" : {
+
+    },
+    "Manage your app preferences, maintenance tools, and data-related settings." : {
 
     },
     "Missing Information" : {

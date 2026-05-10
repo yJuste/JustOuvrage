@@ -14,6 +14,7 @@ enum PreferencesKey: String {
 	case frontLanguage	/// for NewCardView
 	case backLanguage	///
 	case exactMatch		/// for SearchView match
+	case lastCleanDuplicate
 }
 
 /// A singleton that manages persisted user selections.
@@ -25,11 +26,13 @@ enum PreferencesKey: String {
 	private var frontLanguageRaw: String = ""
 	private var backLanguageRaw: String = ""
 	private var exactMatchRaw: String = ""
+	private var lastCleanDuplicateRaw: Double = 0
 	
 	private init() {
 		frontLanguageRaw = UserDefaults.standard.string(forKey: PreferencesKey.frontLanguage.rawValue) ?? Language.en_US.rawValue
 		backLanguageRaw = UserDefaults.standard.string(forKey: PreferencesKey.backLanguage.rawValue) ?? Language.en_US.rawValue
 		exactMatchRaw = UserDefaults.standard.string(forKey: PreferencesKey.exactMatch.rawValue) ?? Language.en_US.rawValue
+		lastCleanDuplicateRaw = UserDefaults.standard.double(forKey: PreferencesKey.lastCleanDuplicate.rawValue)
 	}
 }
 
@@ -56,6 +59,14 @@ extension Preferences {
 		set {
 			exactMatchRaw = newValue.rawValue
 			UserDefaults.standard.set(newValue.rawValue, forKey: PreferencesKey.exactMatch.rawValue)
+		}
+	}
+	
+	var lastCleanDuplicate: Date? {
+		get { lastCleanDuplicateRaw == 0 ? nil : Date(timeIntervalSince1970: lastCleanDuplicateRaw) }
+		set {
+			lastCleanDuplicateRaw = newValue?.timeIntervalSince1970 ?? 0
+			UserDefaults.standard.set(lastCleanDuplicateRaw, forKey: PreferencesKey.lastCleanDuplicate.rawValue)
 		}
 	}
 }

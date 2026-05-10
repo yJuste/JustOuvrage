@@ -172,8 +172,8 @@ fileprivate extension TimeTrialView {
 		}
 		ToolbarItem(placement: .principal) {
 			Text("[Deck Name]")
-				.font(.title3)
-				.fontWeight(.semibold)
+				.font(.headline)
+				.foregroundStyle(.secondary)
 		}
 		ToolbarItem(placement: .topBarTrailing) {
 			Button {

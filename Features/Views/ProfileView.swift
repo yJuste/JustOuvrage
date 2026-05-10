@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct ProfileView: View {
 	
@@ -45,11 +46,15 @@ struct ProfileView: View {
 					} label: {
 						Label("Settings", systemImage: "gear")
 					}
+				} footer: {
+					Text("Manage your app preferences, maintenance tools, and data-related settings.")
 				}
-				Button {
-					showLogOut.toggle()
-				} label: {
-					Text("Log out")
+				Section {
+					Button {
+						showLogOut.toggle()
+					} label: {
+						Text("Log out")
+					}
 				}
 			}
 			.toolbar { toolbar }
@@ -69,7 +74,7 @@ fileprivate extension ProfileView {
 	@ToolbarContentBuilder private var toolbar: some ToolbarContent {
 		ToolbarItem(placement: .topBarLeading) {
 			Button {
-				//
+				dismiss()
 			} label: {
 				Label("Close", systemImage: "xmark")
 			}
