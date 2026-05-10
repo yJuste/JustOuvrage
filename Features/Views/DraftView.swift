@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwiftData
 
 /// A view that displays a draft card.
 struct DraftView: View {
@@ -13,9 +14,16 @@ struct DraftView: View {
 	let draft: Draft
 	let site: Site.Sites = Site.unique
 	
+	@Environment(\.modelContext) private var context
+	
+	@Query(sort: \Card.createdAt, order: .reverse) private var cards: [Card]
+	
 	@Bindable private var preferences: Preferences = Preferences.unique
 	@State private var destination: Destination?
 	@State private var showLanguage: Bool = false
+	@State private var showNewCard: Bool = false
+	@State private var showAddedBanner: Bool = false
+	@State private var card: Card?
 	
 	var cleanEntry: [String] { cleanWords(expression: draft.entry) }
 	var selectedLanguage: Language {
@@ -52,11 +60,34 @@ struct DraftView: View {
 				.buttonStyle(.plain)
 				.padding(.horizontal)
 			}
-			.toolbar { toolbar }
-			.scrollIndicators(.hidden)
+			.sheet(item: $card) { card in
+				EditCardView(card: card)
+					.presentationDetents([.fraction(Constants.heightOfANewCard), .large])
+					.presentationDragIndicator(.visible)
+					.onDisappear {
+						showAdded()
+					}
+			}
 			.fullScreenCover(item: $destination) { destination in
 				SFSafariViewWrapper(url: destination.url)
 			}
+			.toolbar { toolbar }
+			.overlay(alignment: .top) {
+				if showAddedBanner {
+					HStack(spacing: 6) {
+						Text("Ajouté")
+						Image(systemName: "checkmark.circle.fill")
+					}
+					.font(.subheadline.weight(.medium))
+					.padding(.horizontal, 14)
+					.padding(.vertical, 10)
+					.background(.regularMaterial)
+					.clipShape(Capsule())
+					.offset(y: -55)
+					.transition(.move(edge: .top).combined(with: .opacity))
+				}
+			}
+			.scrollIndicators(.hidden)
 		}
 	}
 }
@@ -68,9 +99,15 @@ fileprivate extension DraftView {
 		ToolbarItem(placement: .topBarTrailing) {
 			Menu {
 				Button {
-					//
+					card = openCard(entry: draft.entry)
 				} label: {
 					Label("Add to Library", systemImage: "slider.horizontal.3")
+				}
+				Button {
+					showAdded()
+					_ = openCard(entry: draft.entry)
+				} label: {
+					Label("Quick Add", systemImage: "plus.square.fill")
 				}
 			} label: {
 				Image(systemName: "ellipsis")
@@ -109,6 +146,28 @@ fileprivate extension DraftView {
 					.trimmingCharacters(in: .whitespacesAndNewlines)
 			}
 			.filter { !$0.isEmpty }
+	}
+	
+	private func openCard(entry: String) -> Card {
+		let newCard = Card(frontEntry: entry, backEntry: entry, frontLanguage: selectedLanguage, backLanguage: selectedLanguage)
+		context.insert(newCard)
+		return newCard
+	}
+	
+	private func showAdded() {
+		Task {
+			await MainActor.run {
+				withAnimation(.snappy) {
+					showAddedBanner.toggle()
+				}
+			}
+			try? await Task.sleep(for: .seconds(1.5))
+			await MainActor.run {
+				withAnimation(.snappy) {
+					showAddedBanner.toggle()
+				}
+			}
+		}
 	}
 }
 

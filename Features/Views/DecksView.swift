@@ -172,6 +172,7 @@ fileprivate extension DecksView {
 					showSelectedDecks.toggle()
 				} label: {
 					Text("Delete (\(selection.count))")
+						.foregroundStyle(.red)
 				}
 			}
 		}

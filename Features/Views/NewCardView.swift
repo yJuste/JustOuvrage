@@ -118,9 +118,8 @@ struct NewCardView: View {
 					.font(.subheadline.weight(.medium))
 					.padding(.horizontal, 14)
 					.padding(.vertical, 10)
-					.background(.thinMaterial)
+					.background(.regularMaterial)
 					.clipShape(Capsule())
-					.padding(.top, 0)
 					.transition(.move(edge: .top).combined(with: .opacity))
 				}
 			}
@@ -148,10 +147,12 @@ struct NewCardView: View {
 fileprivate extension NewCardView {
 	
 	private func showAdded() {
-		withAnimation(.snappy) {
-			showAddedBanner.toggle()
-		}
 		Task {
+			await MainActor.run {
+				withAnimation(.snappy) {
+					showAddedBanner.toggle()
+				}
+			}
 			try? await Task.sleep(for: .seconds(1.5))
 			await MainActor.run {
 				withAnimation(.snappy) {

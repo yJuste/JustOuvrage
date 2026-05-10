@@ -14,6 +14,9 @@ import os /// `debug`
 struct SearchFocusView: View {
 	
 	let hasSearch: Bool
+	let onOpenCard: (Card) -> Void
+	let onOpenDeck: (Deck) -> Void
+	let onOpenDraft: (Draft) -> Void
 	
 	@Environment(\.isSearching) private var isSearching
 	@Environment(FileImageStorage.self) private var storage
@@ -24,12 +27,6 @@ struct SearchFocusView: View {
 	@Query(filter: #Predicate<Deck> { $0.lastViewedAt != nil }, sort: \Deck.lastViewedAt, order: .reverse) private var recentDecks: [Deck]
 	@Query private var recentDrafts: [Draft]
 	
-	@State private var selectedCard: Card?
-	@State private var showCard: Bool = false
-	@State private var selectedDeck: Deck?
-	@State private var showDeck: Bool = false
-	@State private var selectedDraft: Draft?
-	@State private var showDraft: Bool = false
 	@State private var showClearAllAlert: Bool = false
 	
 	private var recentItems: [Search] {
@@ -50,11 +47,7 @@ struct SearchFocusView: View {
 					case .card(let card, _):
 						Section {
 							Button {
-								selectedCard = card
-								card.lastViewedAt = .now
-								showDeck = false
-								showDraft = false
-								showCard = true
+								onOpenCard(card)
 								trimRecentsGlobal()
 							} label: {
 								VStack(alignment: .leading, spacing: 5) {
@@ -76,11 +69,7 @@ struct SearchFocusView: View {
 					case .deck(let deck):
 						Section {
 							Button {
-								selectedDeck = deck
-								deck.lastViewedAt = .now
-								showCard = false
-								showDraft = false
-								showDeck = true
+								onOpenDeck(deck)
 								trimRecentsGlobal()
 							} label: {
 								HStack(spacing: 12) {
@@ -109,11 +98,7 @@ struct SearchFocusView: View {
 					case .draft(let draft):
 						Section {
 							Button {
-								selectedDraft = draft
-								draft.lastViewedAt = .now
-								showCard = false
-								showDeck = false
-								showDraft = true
+								onOpenDraft(draft)
 								trimRecentsGlobal()
 							} label: {
 								Text("\(draft.entry)")
@@ -147,34 +132,6 @@ struct SearchFocusView: View {
 						Text("Clear All")
 					}
 					.disabled(recentItems.isEmpty)
-				}
-			}
-			.sheet(isPresented: $showCard) {
-				if let card = selectedCard {
-					CardView(card: card)
-						.presentationDetents([
-							.fraction(Constants.heightOfACard[0]),
-							.fraction(Constants.heightOfACard[1])
-						])
-						.presentationBackgroundInteraction(.enabled)
-				}
-			}
-			.sheet(isPresented: $showDeck) {
-				if let deck = selectedDeck {
-					DeckView(deck: deck, namespace: namespace)
-						.presentationDetents([.fraction(Constants.heightOfADeck[0]), .large])
-						.presentationBackgroundInteraction(.enabled)
-						.presentationDragIndicator(.visible)
-				}
-			}
-			.sheet(isPresented: $showDraft) {
-				if let draft = selectedDraft {
-					DraftView(draft: draft)
-						.presentationDetents([
-							.fraction(Constants.heightOfADraft[0]),
-							.fraction(Constants.heightOfADraft[1])
-						])
-						.presentationBackgroundInteraction(.enabled)
 				}
 			}
 			.alert("Clear Searches?", isPresented: $showClearAllAlert) {
@@ -214,11 +171,11 @@ fileprivate extension SearchFocusView {
 	}
 }
 
-#Preview {
-	
-	NavigationStack {
-		SearchFocusView(hasSearch: false)
-			.searchable(text: .constant(""))
-			.environment(FileImageStorage())
-	}
-}
+//#Preview {
+//	
+//	NavigationStack {
+//		SearchFocusView(hasSearch: false)
+//			.searchable(text: .constant(""))
+//			.environment(FileImageStorage())
+//	}
+//}

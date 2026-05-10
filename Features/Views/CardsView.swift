@@ -141,6 +141,7 @@ fileprivate extension CardsView {
 					showSelectedCards.toggle()
 				} label: {
 					Text("Delete (\(selection.count))")
+						.foregroundStyle(.red)
 				}
 			}
 		}

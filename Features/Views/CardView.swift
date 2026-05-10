@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwiftData
 
 /// A view that displays a Card.
 /// External Dependencies: Card, SFSafariViewWrapper, LabelTrailing, WordsLinkingToSite, ForvoSite
@@ -14,10 +15,12 @@ struct CardView: View {
 	let card: Card
 	let site: Site.Sites = Site.unique
 	
+	@Environment(\.modelContext) private var context
 	@Environment(\.dismiss) private var dismiss
 	
 	@State private var destination: Destination?
 	@State private var showEditCard: Bool = false
+	@State private var showDeleteCard: Bool = false
 	
 	var cleanFrontEntry: [String] { cleanWords(expression: card.frontEntry) }
 	var cleanBackEntry: [String] { cleanWords(expression: card.backEntry) }
@@ -92,6 +95,15 @@ struct CardView: View {
 			.fullScreenCover(item: $destination) {
 				SFSafariViewWrapper(url: $0.url)
 			}
+			.alert("Delete Card", isPresented: $showDeleteCard) {
+				Button("Remove", role: .destructive) {
+					context.delete(card)
+					dismiss()
+				}
+				Button("Cancel", role: .cancel) { }
+			} message: {
+				Text("Are you sure you want to delete this card from your library?")
+			}
 			// other fullScreenCovers
 		}
 	}
@@ -103,6 +115,11 @@ fileprivate extension CardView {
 	@ToolbarContentBuilder private var toolbar: some ToolbarContent {
 		ToolbarItem(placement: .topBarTrailing) {
 			Menu {
+				Button(role: .destructive) {
+					showDeleteCard.toggle()
+				} label: {
+					Label("Delete from Library", systemImage: "trash")
+				}
 				Button {
 					showEditCard.toggle()
 				} label: {
@@ -111,6 +128,19 @@ fileprivate extension CardView {
 			} label: {
 				Image(systemName: "ellipsis")
 			}
+		}
+		ToolbarItem(placement: .topBarLeading) {
+			Image(card.frontLanguage.flagAsset)
+				.resizable()
+				.frame(width: 36, height: 36)
+				.clipShape(Circle())
+		}
+		ToolbarSpacer(placement: .topBarLeading)
+		ToolbarItem(placement: .topBarLeading) {
+			Image(card.backLanguage.flagAsset)
+				.resizable()
+				.frame(width: 36, height: 36)
+				.clipShape(Circle())
 		}
 	}
 }

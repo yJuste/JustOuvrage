@@ -106,6 +106,14 @@ struct LibraryView: View {
 	}
 }
 
+/// Methods of LibraryView.
+fileprivate extension LibraryView {
+	
+	private func cleanDuplicates() {
+		//
+	}
+}
+
 /// Toolbar.
 fileprivate extension LibraryView {
 	

@@ -27,6 +27,8 @@ struct SearchView: View {
 	@State private var showCard: Bool = false
 	@State private var selectedDeck: Deck?
 	@State private var showDeck: Bool = false
+	@State private var selectedDraft: Draft?
+	@State private var showDraft: Bool = false
 	@State private var selectedMatch: Draft?
 	@State private var showMatch: Bool = false
 	
@@ -37,7 +39,31 @@ struct SearchView: View {
 	var body: some View {
 		NavigationStack {
 			List {
-				SearchFocusView(hasSearch: hasSearch)
+				SearchFocusView(
+					hasSearch: hasSearch,
+					onOpenCard: { card in
+						selectedCard = card
+						card.lastViewedAt = .now
+						showDeck = false
+						showMatch = false
+						showCard = true
+					},
+					onOpenDeck: { deck in
+						selectedDeck = deck
+						deck.lastViewedAt = .now
+						deck.lastOpenedAt = .now
+						showCard = false
+						showMatch = false
+						showDeck = true
+					},
+					onOpenDraft: { draft in
+						selectedMatch = draft
+						draft.lastViewedAt = .now
+						showCard = false
+						showDeck = false
+						showMatch = true
+					}
+				)
 				ForEach(filteredResults) { result in
 					switch result {
 					case .card(let card, let back):
@@ -165,9 +191,22 @@ struct SearchView: View {
 			.sheet(isPresented: $showDeck) {
 				if let deck = selectedDeck {
 					DeckView(deck: deck, namespace: nil)
-						.presentationDetents([.fraction(Constants.heightOfADeck[0]), .large])
+						.presentationDetents([
+							.fraction(Constants.heightOfADeck[0]),
+							.large
+						])
 						.presentationBackgroundInteraction(.enabled)
 						.presentationDragIndicator(.visible)
+				}
+			}
+			.sheet(isPresented: $showDraft) {
+				if let draft = selectedDraft {
+					DraftView(draft: draft)
+						.presentationDetents([
+							.fraction(Constants.heightOfADraft[0]),
+							.fraction(Constants.heightOfADraft[1])
+						])
+						.presentationBackgroundInteraction(.enabled)
 				}
 			}
 			.sheet(isPresented: $showMatch) {

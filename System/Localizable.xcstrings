@@ -178,6 +178,9 @@
     "Delete (%lld)" : {
 
     },
+    "Delete Card" : {
+
+    },
     "Delete from Library" : {
 
     },
@@ -278,6 +281,9 @@
 
     },
     "Please fill in both sides before saving." : {
+
+    },
+    "Quick Add" : {
 
     },
     "Quit" : {

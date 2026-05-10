@@ -53,7 +53,16 @@ struct EditCardView: View {
 									.padding(25)
 									.presentationCompactAdaptation(.none)
 							}
-							Image(systemName: "arrow.left.arrow.right")
+							Button {
+								withAnimation(.spring(response: 0.3)) {
+									(frontLanguage, backLanguage) = (backLanguage, frontLanguage)
+								}
+							} label: {
+								Image(systemName: "arrow.left.arrow.right")
+							}
+							.buttonStyle(.plain)
+							.padding()
+							.glassEffect(.regular.interactive())
 							Button {
 								showBackLanguage.toggle()
 							} label: {
