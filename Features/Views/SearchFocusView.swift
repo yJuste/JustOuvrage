@@ -20,20 +20,20 @@ struct SearchFocusView: View {
 	
 	@Environment(\.isSearching) private var isSearching
 	@Environment(FileImageStorage.self) private var storage
-	@Environment(\.modelContext) private var context
+	@Environment(\.modelContext) private var modelContext
 	@Namespace private var namespace
 	
-	@Query(filter: #Predicate<Card> { $0.lastViewedAt != nil }, sort: \Card.lastViewedAt, order: .reverse) private var recentCards: [Card]
-	@Query(filter: #Predicate<Deck> { $0.lastViewedAt != nil }, sort: \Deck.lastViewedAt, order: .reverse) private var recentDecks: [Deck]
-	@Query private var recentDrafts: [Draft]
+	@Query(filter: #Predicate<Card> { $0.lastViewedAt != nil }, sort: \Card.lastViewedAt, order: .reverse) private var cards: [Card]
+	@Query(filter: #Predicate<Deck> { $0.lastViewedAt != nil }, sort: \Deck.lastViewedAt, order: .reverse) private var decks: [Deck]
+	@Query private var drafts: [Draft]
 	
 	@State private var showClearAllAlert: Bool = false
 	
 	private var recentItems: [Search] {
 		
-		let cards = recentCards.map { Search.card($0, back: false) }
-		let decks = recentDecks.map(Search.deck)
-		let drafts = recentDrafts.map(Search.draft)
+		let cards = cards.map { Search.card($0, back: false) }
+		let decks = decks.map(Search.deck)
+		let drafts = drafts.map(Search.draft)
 		
 		return (cards + decks + drafts)
 			.sorted { $0.date > $1.date }
@@ -106,7 +106,7 @@ struct SearchFocusView: View {
 							}
 							.swipeActions {
 								Button {
-									context.delete(draft)
+									modelContext.delete(draft)
 								} label: {
 									Label("Clear", systemImage: "xmark.circle.fill")
 								}
@@ -136,9 +136,9 @@ struct SearchFocusView: View {
 			}
 			.alert("Clear Searches?", isPresented: $showClearAllAlert) {
 				Button("Clear All", role: .destructive) {
-					recentCards.forEach { $0.lastViewedAt = nil }
-					recentDecks.forEach { $0.lastViewedAt = nil }
-					recentDrafts.forEach { context.delete($0) }
+					cards.forEach { $0.lastViewedAt = nil }
+					decks.forEach { $0.lastViewedAt = nil }
+					drafts.forEach { modelContext.delete($0) }
 				}
 				Button("Cancel", role: .cancel) { }
 			} message: {
@@ -163,7 +163,7 @@ fileprivate extension SearchFocusView {
 			case .deck(let deck):
 				deck.lastViewedAt = nil
 			case .draft(let draft):
-				context.delete(draft)
+				modelContext.delete(draft)
 			case .match:
 				break
 			}
@@ -171,11 +171,54 @@ fileprivate extension SearchFocusView {
 	}
 }
 
-//#Preview {
-//	
-//	NavigationStack {
-//		SearchFocusView(hasSearch: false)
-//			.searchable(text: .constant(""))
-//			.environment(FileImageStorage())
-//	}
-//}
+#Preview {
+	
+	struct SearchFocusViewWrapper: View {
+		
+		let config = ModelConfiguration(isStoredInMemoryOnly: true)
+		let container: ModelContainer
+		
+		init() {
+			container = try! ModelContainer(
+				for: Card.self, Deck.self, Draft.self,
+				configurations: config
+			)
+			
+			let context = container.mainContext
+			
+			let card = Card(
+				frontEntry: "Hello",
+				backEntry: "World",
+				frontLanguage: .en_US,
+				backLanguage: .en_US
+			)
+			card.lastViewedAt = .now
+			
+			let deck = Deck(name: "Lol", image: "deck")
+			deck.lastViewedAt = .now
+			
+			let draft = Draft(entry: "Draft test", language: .en_US)
+			
+			context.insert(card)
+			context.insert(deck)
+			context.insert(draft)
+		}
+		
+		var body: some View {
+			NavigationStack {
+				SearchFocusView(
+					hasSearch: false,
+					onOpenCard: { _ in },
+					onOpenDeck: { _ in },
+					onOpenDraft: { _ in }
+				)
+				.environment(\.modelContext, container.mainContext)
+				.environment(FileImageStorage())
+				.searchable(text: .constant(""))
+			}
+			.modelContainer(container)
+		}
+	}
+	
+	return SearchFocusViewWrapper()
+}

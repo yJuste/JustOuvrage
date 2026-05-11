@@ -14,8 +14,7 @@ import os /// `debug`
 struct SearchView: View {
 	
 	@Environment(FileImageStorage.self) private var storage
-	@Environment(\.modelContext) private var context
-	@Namespace private var namespace
+	@Environment(\.modelContext) private var modelContext
 	
 	@Query(sort: \Card.createdAt, order: .reverse) private var cards: [Card]
 	@Query(sort: \Deck.createdAt, order: .reverse) private var decks: [Deck]
@@ -138,7 +137,7 @@ struct SearchView: View {
 									existingDraft.lastViewedAt = .now
 								} else {
 									let newDraft = Draft(entry: trimmed, language: .en_US)
-									context.insert(newDraft)
+									modelContext.insert(newDraft)
 									selectedMatch = newDraft
 									newDraft.lastViewedAt = .now
 								}

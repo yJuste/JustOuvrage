@@ -200,23 +200,22 @@ fileprivate extension TimeTrialView {
 		isSwiping = true
 		swipeResults.append(direction)
 		hasTimerPaused = true
-		let x: CGFloat = direction == .right ? 900 : -900
+		
 		withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
-			dragOffset.width = x
+			dragOffset.width = direction == .right ? 900 : -900
 			rotation = direction == .right ? 14 : -14
 		}
-		DispatchQueue.main.async {
-			isCardTapped = false
-			currentIndex += 1
-			dragOffset = .zero
-			rotation = 0
-			guard currentIndex < cards.count else {
-				return isSwiping = false
-			}
-			hasTimerReachedZero = false
-			hasTimerPaused = false
-			trigger = UUID()
-			isSwiping = false
+		
+		Task { @MainActor in
+			
+			self.currentIndex += 1
+			self.isCardTapped = false
+			self.dragOffset = .zero
+			self.rotation = 0
+			self.hasTimerReachedZero = false
+			self.hasTimerPaused = false
+			self.trigger = UUID()
+			self.isSwiping = false
 		}
 	}
 }

@@ -15,7 +15,7 @@ struct CardView: View {
 	let card: Card
 	let site: Site.Sites = Site.unique
 	
-	@Environment(\.modelContext) private var context
+	@Environment(\.modelContext) private var modelContext
 	@Environment(\.dismiss) private var dismiss
 	
 	@State private var destination: Destination?
@@ -97,7 +97,7 @@ struct CardView: View {
 			}
 			.alert("Delete Card", isPresented: $showDeleteCard) {
 				Button("Remove", role: .destructive) {
-					context.delete(card)
+					modelContext.delete(card)
 					dismiss()
 				}
 				Button("Cancel", role: .cancel) { }

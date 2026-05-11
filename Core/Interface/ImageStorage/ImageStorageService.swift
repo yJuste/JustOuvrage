@@ -13,7 +13,6 @@ import UIKit
 protocol ImageStorageService {
 	
 	func save(image: UIImage) throws -> String
-	func load(image: String) throws -> UIImage
 	func load(image: String, size: CGFloat) throws -> UIImage
 	func delete(image: String) throws
 }

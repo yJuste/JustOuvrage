@@ -14,7 +14,7 @@ import SwiftData
 /// External Dependencies: Deck, FileImageStorage, DeckView, NewCardView, NewDeckView
 struct DecksView: View {
 	
-	@Environment(\.modelContext) private var context
+	@Environment(\.modelContext) private var modelContext
 	@Environment(FileImageStorage.self) private var storage
 	@Environment(\.dismiss) private var dismiss
 	@Namespace private var namespace
@@ -122,7 +122,7 @@ struct DecksView: View {
 			.alert("Are you sure you want to delete this deck from your library?", isPresented: $showDeleteDeck) {
 				Button("Remove", role: .destructive) {
 					if let item {
-						context.delete(item)
+						modelContext.delete(item)
 					}
 				}
 				Button("Cancel", role: .cancel) { }
@@ -142,7 +142,7 @@ fileprivate extension DecksView {
 	
 	private func deleteSelection() {
 		for deck in selection {
-			context.delete(deck)
+			modelContext.delete(deck)
 		}
 		selection.removeAll()
 	}

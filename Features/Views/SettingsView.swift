@@ -10,7 +10,7 @@ import SwiftData
 
 struct SettingsView: View {
 	
-	@Environment(\.modelContext) private var context
+	@Environment(\.modelContext) private var modelContext
 	@Environment(\.dismiss) private var dismiss
 	
 	@Bindable private var preferences = Preferences.unique
@@ -24,7 +24,7 @@ struct SettingsView: View {
 				Section {
 					Button {
 						Task {
-							try? context.save()
+							try? modelContext.save()
 							await cleanDuplicate()
 						}
 					} label: {
@@ -61,7 +61,7 @@ fileprivate extension SettingsView {
 	}
 }
 
-/// Clean Duplicate of SettingsView..
+/// Clean Duplicate of SettingsView.
 fileprivate extension SettingsView {
 	
 	private enum CleaningState {
@@ -115,7 +115,7 @@ fileprivate extension SettingsView {
 		isCleaning = true; defer { isCleaning = false }
 		
 		do {
-			try await CardDuplicate(modelContainer: context.container).removeDuplicates()
+			try await CardDuplicate(modelContainer: modelContext.container).removeDuplicates()
 			state = .success
 			preferences.lastCleanDuplicate = Date()
 			Task {

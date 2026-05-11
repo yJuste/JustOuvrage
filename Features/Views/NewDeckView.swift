@@ -16,7 +16,7 @@ struct NewDeckView: View {
 	let rectangle: RoundedRectangle = RoundedRectangle(cornerRadius: 10, style: .continuous)
 	
 	@Environment(FileImageStorage.self) private var storage
-	@Environment(\.modelContext) private var context
+	@Environment(\.modelContext) private var modelContext
 	@Environment(\.dismiss) private var dismiss
 	
 	@State private var selectedPhotoItem: PhotosPickerItem?
@@ -130,7 +130,7 @@ fileprivate extension NewDeckView {
 						print(Errors.ImageError)
 					}
 				}
-				context.insert(Deck(name: newDeckName, image: image))
+				modelContext.insert(Deck(name: newDeckName, image: image))
 				dismiss()
 			} label: {
 				Label("Done", systemImage: "checkmark")

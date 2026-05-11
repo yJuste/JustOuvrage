@@ -13,7 +13,7 @@ import os /// `debug`
 /// External Dependencies: Card, Constants, CardView, NewCardView, NewDeckView
 struct CardsView: View {
 	
-	@Environment(\.modelContext) private var context
+	@Environment(\.modelContext) private var modelContext
 	@Environment(\.dismiss) private var dismiss
 	
 	@Query(sort: \Card.createdAt, order: .reverse) private var cards: [Card]
@@ -88,7 +88,7 @@ struct CardsView: View {
 			.alert("Are you sure you want to delete this card from your library?", isPresented: $showDeleteCard) {
 				Button("Remove", role: .destructive) {
 					if let item {
-						context.delete(item)
+						modelContext.delete(item)
 					}
 				}
 				Button("Cancel", role: .cancel) { }
@@ -111,7 +111,7 @@ fileprivate extension CardsView {
 	
 	private func deleteSelection() {
 		for card in selection {
-			context.delete(card)
+			modelContext.delete(card)
 		}
 		selection.removeAll()
 	}

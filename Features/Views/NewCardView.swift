@@ -12,7 +12,7 @@ import SwiftData
 /// External Dependencies: Card, FlagPicker, SplendidField, Preferences
 struct NewCardView: View {
 	
-	@Environment(\.modelContext) private var context
+	@Environment(\.modelContext) private var modelContext
 	@Environment(\.dismiss) private var dismiss
 	
 	@Query(sort: \Card.createdAt, order: .reverse) private var cards: [Card]
@@ -162,7 +162,7 @@ fileprivate extension NewCardView {
 		if newFrontEntry.isEmpty || newBackEntry.isEmpty {
 			showAddedCard.toggle()
 		} else {
-			context.insert(Card(frontEntry: newFrontEntry, backEntry: newBackEntry, frontLanguage: frontLanguage, backLanguage: backLanguage))
+			modelContext.insert(Card(frontEntry: newFrontEntry, backEntry: newBackEntry, frontLanguage: frontLanguage, backLanguage: backLanguage))
 			preferences.frontLanguage = frontLanguage
 			preferences.backLanguage = backLanguage
 			frontEntry = ""

@@ -14,7 +14,7 @@ struct DraftView: View {
 	let draft: Draft
 	let site: Site.Sites = Site.unique
 	
-	@Environment(\.modelContext) private var context
+	@Environment(\.modelContext) private var modelContext
 	
 	@Query(sort: \Card.createdAt, order: .reverse) private var cards: [Card]
 	
@@ -150,7 +150,7 @@ fileprivate extension DraftView {
 	
 	private func openCard(entry: String) -> Card {
 		let newCard = Card(frontEntry: entry, backEntry: entry, frontLanguage: selectedLanguage, backLanguage: selectedLanguage)
-		context.insert(newCard)
+		modelContext.insert(newCard)
 		return newCard
 	}
 	
