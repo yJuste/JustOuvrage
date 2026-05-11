@@ -15,6 +15,7 @@ struct DeckView: View {
 	let deck: Deck
 	var namespace: Namespace.ID?
 	
+	@Environment(\.modelContext) private var modelContext
 	@Environment(FileImageStorage.self) private var storage
 	@Environment(\.dismiss) private var dismiss
 	
@@ -23,6 +24,7 @@ struct DeckView: View {
 	@State private var showToolbar: Bool = false
 	@State private var showDepiction: Bool = false
 	@State private var showCardsToDeck: Bool = false
+	@State private var showDeleteDeck: Bool = false
 	
 	var body: some View {
 		NavigationStack {
@@ -156,6 +158,15 @@ struct DeckView: View {
 			.sheet(isPresented: $showCardsToDeck) {
 				CardsToDeck(deck: deck)
 			}
+			.alert("Delete Deck", isPresented: $showDeleteDeck) {
+				Button("Remove", role: .destructive) {
+					modelContext.delete(deck)
+					dismiss()
+				}
+				Button("Cancel", role: .cancel) { }
+			} message: {
+				Text("Are you sure you want to delete this deck from your library?")
+			}
 			.navigationBarBackButtonHidden(true)
 		}
 	}
@@ -178,6 +189,11 @@ fileprivate extension DeckView {
 					showCardsToDeck.toggle()
 				} label: {
 					Label("Add cards", systemImage: "plus.square.fill.on.square.fill")
+				}
+				Button(role: .destructive) {
+					showDeleteDeck.toggle()
+				} label: {
+					Label("Delete from Library", systemImage: "trash")
 				}
 			} label: {
 				Image(systemName: "ellipsis")

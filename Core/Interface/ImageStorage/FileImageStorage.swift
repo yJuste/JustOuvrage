@@ -37,6 +37,10 @@ import SwiftUI
 	
 	func load(image name: String) throws -> UIImage {
 		
+		if name == Constants.defaultDeckImage {
+			throw Errors.ImageError
+		}
+		
 		if let cached = cache.object(forKey: name as NSString) {
 			return cached
 		}
@@ -66,6 +70,10 @@ import SwiftUI
 	}
 	
 	func load(image name: String, size: CGFloat) throws -> UIImage {
+		
+		if name == Constants.defaultDeckImage {
+			throw Errors.ImageError
+		}
 		
 		if let cached = cache.object(forKey: name as NSString) {
 			return cached

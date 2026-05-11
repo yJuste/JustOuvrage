@@ -31,28 +31,3 @@ extension Image {
 		}
 	}
 }
-
-extension Image {
-	
-	/// Displays an image from ``ImageStorageService``.
-	///
-	/// - Parameters:
-	///   - image: The name of the image file to load.
-	///   - storage: The storage system used to retrieve the image.
-	///
-	/// - Returns: A `SwiftUI.Image` created from the stored file, or a default image if loading fails.
-	///
-	/// - Note: Requires `FileImageStorage` and `Constants` dependencies.
-	///
-	/// ## Example
-	/// ```swift
-	/// Image(image: "path/card_01.png", storage: fileImageStorage)
-	/// ```
-	init(systemImage: String, storage: ImageStorageService, size: CGFloat = 1024) {
-		if let uiImage = try? storage.load(image: systemImage, size: size) {
-			self = Image(uiImage: uiImage)
-		} else {
-			self = Image(Constants.defaultDeckImage)
-		}
-	}
-}

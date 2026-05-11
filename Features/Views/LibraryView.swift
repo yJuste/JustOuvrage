@@ -126,7 +126,6 @@ fileprivate extension LibraryView {
 				} label: {
 					Label("Add", systemImage: "square.fill.text.grid.1x2")
 				}
-				.compositingGroup()
 			} label: {
 				Image(systemName: "ellipsis")
 			}

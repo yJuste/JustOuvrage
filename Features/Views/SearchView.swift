@@ -16,8 +16,8 @@ struct SearchView: View {
 	@Environment(FileImageStorage.self) private var storage
 	@Environment(\.modelContext) private var modelContext
 	
-	@Query(sort: \Card.createdAt, order: .reverse) private var cards: [Card]
-	@Query(sort: \Deck.createdAt, order: .reverse) private var decks: [Deck]
+	@Query private var cards: [Card]
+	@Query private var decks: [Deck]
 	@Query private var drafts: [Draft]
 	
 	@State private var search: String = ""

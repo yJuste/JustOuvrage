@@ -89,13 +89,19 @@ struct NewDeckView: View {
 			}
 			.photosPicker(isPresented: $showPhotoPicker, selection: $selectedPhotoItem, matching: .images)
 			.alert("New Deck", isPresented: $showCancelAlert) {
-				Button("Discard Changes", role: .destructive) { dismiss() }
+				Button("Discard Changes", role: .destructive) {
+					dismiss()
+				}
 				Button("Keep Editing", role: .cancel) { }
 			} message: {
 				Text("Are you sure you want to discard this new deck?")
 			}
 			.scrollDismissesKeyboard(.interactively)
 			.scrollIndicators(.hidden)
+			.onDisappear {
+				selectedImageData = nil
+				selectedPhotoItem = nil
+			}
 		}
 	}
 }
@@ -107,8 +113,9 @@ fileprivate extension NewDeckView {
 		ToolbarItem(placement: .topBarLeading) {
 			Button {
 				if !deckName.isEmpty || selectedImageData != nil {
-					showCancelAlert.toggle()
+					return showCancelAlert.toggle()
 				}
+				dismiss()
 			} label: {
 				Text("Cancel")
 			}

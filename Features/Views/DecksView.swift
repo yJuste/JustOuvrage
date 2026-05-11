@@ -119,13 +119,15 @@ struct DecksView: View {
 					.presentationDetents([.fraction(Constants.heightOfANewDeck), .large])
 					.presentationDragIndicator(.visible)
 			}
-			.alert("Are you sure you want to delete this deck from your library?", isPresented: $showDeleteDeck) {
+			.alert("Delete Deck", isPresented: $showDeleteDeck) {
 				Button("Remove", role: .destructive) {
 					if let item {
 						modelContext.delete(item)
 					}
 				}
 				Button("Cancel", role: .cancel) { }
+			} message: {
+				Text("Are you sure you want to delete this deck from your library?")
 			}
 			.alert("Selected Decks", isPresented: $showSelectedDecks) {
 				Button("Delete", role: .destructive) { deleteSelection(); toggleEditMode() }

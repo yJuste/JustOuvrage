@@ -21,6 +21,7 @@ struct CardView: View {
 	@State private var destination: Destination?
 	@State private var showEditCard: Bool = false
 	@State private var showDeleteCard: Bool = false
+	@State private var showDecksToCard: Bool = false
 	
 	var cleanFrontEntry: [String] { cleanWords(expression: card.frontEntry) }
 	var cleanBackEntry: [String] { cleanWords(expression: card.backEntry) }
@@ -92,6 +93,9 @@ struct CardView: View {
 			.sheet(isPresented: $showEditCard) {
 				EditCardView(card: card)
 			}
+			.sheet(isPresented: $showDecksToCard) {
+				DecksToCard(card: card)
+			}
 			.fullScreenCover(item: $destination) {
 				SFSafariViewWrapper(url: $0.url)
 			}
@@ -119,6 +123,11 @@ fileprivate extension CardView {
 					showDeleteCard.toggle()
 				} label: {
 					Label("Delete from Library", systemImage: "trash")
+				}
+				Button {
+					showDecksToCard.toggle()
+				} label: {
+					Label("Add decks", systemImage: "rectangle.stack.badge.plus")
 				}
 				Button {
 					showEditCard.toggle()

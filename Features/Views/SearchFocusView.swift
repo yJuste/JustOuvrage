@@ -151,7 +151,7 @@ struct SearchFocusView: View {
 /// Methods of SearchFocusView.
 fileprivate extension SearchFocusView {
 	
-	func trimRecentsGlobal() {
+	private func trimRecentsGlobal() {
 		
 		let all = recentItems
 		guard all.count > Constants.maxRecentSearches else { return }
@@ -219,6 +219,5 @@ fileprivate extension SearchFocusView {
 			.modelContainer(container)
 		}
 	}
-	
 	return SearchFocusViewWrapper()
 }

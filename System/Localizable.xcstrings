@@ -88,6 +88,12 @@
     "Add Cards" : {
 
     },
+    "Add decks" : {
+
+    },
+    "Add Decks" : {
+
+    },
     "Add to Library" : {
 
     },
@@ -182,6 +188,9 @@
 
     },
     "Delete Card" : {
+
+    },
+    "Delete Deck" : {
 
     },
     "Delete from Library" : {
