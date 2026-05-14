@@ -1,8 +1,8 @@
 //
-//  NavigationTransitionModifier.swift
+//  NavigationTransitionExtension.swift
 //  JustOuvrage
 //
-//  Created by Jules Longin on 5/9/26.
+//  Created by Jules Longin on 5/13/26.
 //
 
 import SwiftUI

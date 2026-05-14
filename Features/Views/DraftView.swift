@@ -60,18 +60,6 @@ struct DraftView: View {
 				.buttonStyle(.plain)
 				.padding(.horizontal)
 			}
-			.sheet(item: $card) { card in
-				EditCardView(card: card)
-					.presentationDetents([.fraction(Constants.heightOfANewCard), .large])
-					.presentationDragIndicator(.visible)
-					.onDisappear {
-						Task { await showAdded() }
-					}
-			}
-			.fullScreenCover(item: $destination) { destination in
-				SFSafariViewWrapper(url: destination.url)
-			}
-			.toolbar { toolbar }
 			.overlay(alignment: .top) {
 				if showAddedBanner {
 					HStack(spacing: 6) {
@@ -87,6 +75,25 @@ struct DraftView: View {
 					.transition(.move(edge: .top).combined(with: .opacity))
 				}
 			}
+			.sheet(item: $card) { card in
+				EditCardView(
+					title: "Add Card To Library",
+					card: card,
+					onSave: { card in
+						Task { await showAdded() }
+						modelContext.insert(card)
+					}
+				)
+				.presentationDetents([
+					.fraction(Constants.heightOfANewCard),
+					.large
+				])
+				.presentationDragIndicator(.visible)
+			}
+			.fullScreenCover(item: $destination) { destination in
+				SFSafariViewWrapper(url: destination.url)
+			}
+			.toolbar { toolbar }
 			.scrollIndicators(.hidden)
 		}
 	}
@@ -99,13 +106,13 @@ fileprivate extension DraftView {
 		ToolbarItem(placement: .topBarTrailing) {
 			Menu {
 				Button {
-					card = openCard(entry: draft.entry)
+					card = Card(frontEntry: draft.entry, backEntry: "", frontLanguage: selectedLanguage, backLanguage: selectedLanguage)
 				} label: {
 					Label("Add to Library", systemImage: "slider.horizontal.3")
 				}
 				Button {
+					modelContext.insert(Card(frontEntry: draft.entry, backEntry: draft.entry, frontLanguage: selectedLanguage, backLanguage: selectedLanguage))
 					Task { await showAdded() }
-					_ = openCard(entry: draft.entry)
 				} label: {
 					Label("Quick Add", systemImage: "plus.square.fill")
 				}
@@ -146,12 +153,6 @@ fileprivate extension DraftView {
 					.trimmingCharacters(in: .whitespacesAndNewlines)
 			}
 			.filter { !$0.isEmpty }
-	}
-	
-	private func openCard(entry: String) -> Card {
-		let newCard = Card(frontEntry: entry, backEntry: entry, frontLanguage: selectedLanguage, backLanguage: selectedLanguage)
-		modelContext.insert(newCard)
-		return newCard
 	}
 	
 	@MainActor private func showAdded() async {

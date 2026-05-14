@@ -91,7 +91,7 @@ struct CardView: View {
 			.toolbar { toolbar }
 			.scrollIndicators(.hidden)
 			.sheet(isPresented: $showEditCard) {
-				EditCardView(card: card)
+				EditCardView(title: "Edit Card", card: card)
 			}
 			.sheet(isPresented: $showDecksToCard) {
 				DecksToCard(card: card)

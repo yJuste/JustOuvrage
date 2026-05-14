@@ -11,9 +11,6 @@ enum Site: CaseIterable {
 	case forvo
 	case wordReference
 	case google
-}
-
-extension Site {
 	
 	static let unique = Sites()
 	

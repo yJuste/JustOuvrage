@@ -1,0 +1,72 @@
+//
+//  Preferences.swift
+//  JustOuvrage
+//
+//  Created by Jules Longin on 4/19/26.
+//
+
+import SwiftUI
+import Observation
+
+/// A singleton that manages persisted user selections.
+/// External Dependencies: PreferencesKey
+@Observable final class Preferences {
+	
+	/// An Interface that lists all `persisted selections` with UserDefault.
+	private enum Key: String {
+		
+		case frontLanguage
+		case backLanguage
+		case exactMatch
+		case lastCleanDuplicate
+	}
+	
+	static let unique: Preferences = Preferences()
+	
+	private let userDefaults: UserDefaults = UserDefaults.standard
+	private var frontLanguageRaw: String = ""
+	private var backLanguageRaw: String = ""
+	private var exactMatchRaw: String = ""
+	private var lastCleanDuplicateRaw: Double = 0
+	
+	private init() {
+		
+		let defaultLanguage: String = Language.en_US.rawValue
+		
+		frontLanguageRaw = userDefaults.string(forKey: Key.frontLanguage.rawValue) ?? defaultLanguage
+		backLanguageRaw = userDefaults.string(forKey: Key.backLanguage.rawValue) ?? defaultLanguage
+		exactMatchRaw = userDefaults.string(forKey: Key.exactMatch.rawValue) ?? defaultLanguage
+		lastCleanDuplicateRaw = userDefaults.double(forKey: Key.lastCleanDuplicate.rawValue)
+	}
+	
+	var frontLanguage: Language {
+		get { Language(rawValue: frontLanguageRaw) ?? .en_US }
+		set {
+			frontLanguageRaw = newValue.rawValue
+			userDefaults.set(frontLanguageRaw, forKey: Key.frontLanguage.rawValue)
+		}
+	}
+	
+	var backLanguage: Language {
+		get { Language(rawValue: backLanguageRaw) ?? .en_US }
+		set {
+			backLanguageRaw = newValue.rawValue
+			userDefaults.set(backLanguageRaw, forKey: Key.backLanguage.rawValue)
+		}
+	}
+	
+	var exactMatch: Language {
+		get { Language(rawValue: exactMatchRaw) ?? .en_US }
+		set {
+			exactMatchRaw = newValue.rawValue
+			userDefaults.set(exactMatchRaw, forKey: Key.exactMatch.rawValue)
+		}
+	}
+	
+	var lastCleanDuplicate: Date? {
+		get { lastCleanDuplicateRaw == 0 ? nil : Date(timeIntervalSince1970: lastCleanDuplicateRaw) }
+		set {
+			lastCleanDuplicateRaw = newValue?.timeIntervalSince1970 ?? 0
+			userDefaults.set(lastCleanDuplicateRaw, forKey: Key.lastCleanDuplicate.rawValue) }
+	}
+}

@@ -1,8 +1,8 @@
 //
-//  ImageView.swift
+//  ImageExtension.swift
 //  JustOuvrage
 //
-//  Created by Jules Longin on 4/25/26.
+//  Created by Jules Longin on 5/13/26.
 //
 
 import SwiftUI

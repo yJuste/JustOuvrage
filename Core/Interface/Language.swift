@@ -14,12 +14,8 @@ enum Language: String, Codable, CaseIterable {
 	case es_ES
 	case fr_CA
 	case fr_FR
-}
-
-/// An extension that link a language code with its associated flag.
-/// An extension that link a language code with a language.
-extension Language {
 	
+	/// An extension that link a language code with a language.
 	var language: String {
 		switch self {
 		case .en_GB: return "English - United Kingdom"
@@ -30,6 +26,7 @@ extension Language {
 		}
 	}
 	
+	/// An extension that link a language code with its associated flag.
 	var flagAsset: String {
 		switch self {
 		case .en_GB: return "Flags/gb"

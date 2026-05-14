@@ -10,7 +10,7 @@ import SwiftUI
 /// An extension for HStack that can `wrap elements` for a better layout.
 struct WrapHStack: Layout {
 	
-	var spacing: CGFloat = 8
+	private var spacing: CGFloat = 8
 	
 	func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
 		return compute(subviews: subviews, maxWidth: proposal.width ?? .infinity).size

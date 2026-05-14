@@ -5,7 +5,9 @@
 //  Created by Jules Longin on 4/23/26.
 //
 
-import CoreFoundation
+import SwiftUI
+
+// MARK: Add Constants for Swiftui ( rectangle, font etc )
 
 /// An Interface defining every `constant`.
 /// `The constants has to be invariant, verify that every (⚠️ critical) value exists.`
@@ -16,10 +18,8 @@ enum Constants {
 	
 	// ⚠️ Assets catalog -> "deck" (image)
 	static let defaultDeckImage: String = "deck"
-}
-
-/// Height of Sheets.
-extension Constants {
+	
+	//	--- Height of Sheets --------------------------------------------
 	
 	// Height of the sheet of the new card view.
 	static let heightOfANewCard: CGFloat = 0.72
@@ -35,10 +35,8 @@ extension Constants {
 	
 	// Height of a sheet of the draft view.
 	static let heightOfADraft: [CGFloat] = [0.315, 0.38]
-}
-
-/// Icons.
-extension Constants {
+	
+	//	--- Icons -------------------------------------------------------
 	
 	// Icon for the new card view.
 	static let newCardIcon: String = "plus.square.fill.on.square.fill"

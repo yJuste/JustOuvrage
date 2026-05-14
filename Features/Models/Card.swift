@@ -12,7 +12,7 @@ import Foundation
 /// External Dependencies: Language, Deck
 @Model final class Card {
 	
-	var id: UUID
+	@Attribute(.unique) var id: UUID
 	var frontEntry: String
 	var backEntry: String
 	var frontLanguage: Language

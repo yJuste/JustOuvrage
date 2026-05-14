@@ -6,11 +6,15 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct EditCardView: View {
 	
+	let title: String
 	let card: Card
+	let onSave: (Card) -> Void
 	
+	@Environment(\.modelContext) private var modelContext
 	@Environment(\.dismiss) private var dismiss
 	
 	@FocusState private var focusField: FocusField?
@@ -23,8 +27,10 @@ struct EditCardView: View {
 	@State private var showBackLanguage: Bool = false
 	@State private var showCancelAlert: Bool = false
 	
-	init(card: Card) {
+	init(title: String, card: Card, onSave: @escaping (Card) -> Void = { _ in }) {
+		self.title = title
 		self.card = card
+		self.onSave = onSave
 		_frontEntry = State(initialValue: card.frontEntry)
 		_backEntry = State(initialValue: card.backEntry)
 		_frontLanguage = State(initialValue: card.frontLanguage)
@@ -112,7 +118,6 @@ struct EditCardView: View {
 					}
 				}
 			}
-			.toolbar { toolbar }
 			.onSubmit {
 				if focusField == .front {
 					focusField = .back
@@ -133,6 +138,7 @@ struct EditCardView: View {
 			} message: {
 				Text("Are you sure you want to discard changes to this card?")
 			}
+			.toolbar { toolbar }
 		}
 	}
 }
@@ -141,18 +147,19 @@ struct EditCardView: View {
 fileprivate extension EditCardView {
 	
 	private func editCard() {
-		let newFrontEntry = frontEntry.trimmingCharacters(in: .whitespacesAndNewlines)
-		let newBackEntry = backEntry.trimmingCharacters(in: .whitespacesAndNewlines)
-		if newFrontEntry == card.frontEntry && newBackEntry == card.backEntry && leitnerScore == card.leitnerScore && frontLanguage == card.frontLanguage && backLanguage == card.backLanguage {
-			dismiss()
-		} else {
-			card.frontEntry = newFrontEntry
-			card.backEntry = newBackEntry
-			card.frontLanguage = frontLanguage
-			card.backLanguage = backLanguage
-			card.leitnerScore = leitnerScore
-			dismiss()
+		card.frontEntry = frontEntry.trimmingCharacters(in: .whitespacesAndNewlines)
+		card.backEntry = backEntry.trimmingCharacters(in: .whitespacesAndNewlines)
+		card.frontLanguage = frontLanguage
+		card.backLanguage = backLanguage
+		card.leitnerScore = leitnerScore
+		
+		do {
+			onSave(card)
+			try modelContext.save()
+		} catch {
+			print(Errors.ModelContextError)
 		}
+		dismiss()
 	}
 }
 
@@ -172,9 +179,8 @@ fileprivate extension EditCardView {
 	@ToolbarContentBuilder private var toolbar: some ToolbarContent {
 		ToolbarItem(placement: .topBarLeading) {
 			Button {
-				let newFrontEntry = frontEntry.trimmingCharacters(in: .whitespacesAndNewlines)
-				let newBackEntry = backEntry.trimmingCharacters(in: .whitespacesAndNewlines)
-				if newFrontEntry == card.frontEntry && newBackEntry == card.backEntry {
+				if frontEntry.trimmingCharacters(in: .whitespacesAndNewlines) == card.frontEntry
+					&& backEntry.trimmingCharacters(in: .whitespacesAndNewlines) == card.backEntry {
 					dismiss()
 				} else {
 					showCancelAlert.toggle()
@@ -184,7 +190,7 @@ fileprivate extension EditCardView {
 			}
 		}
 		ToolbarItem(placement: .principal) {
-			Text("Edit Card")
+			Text("\(title)")
 				.font(.headline)
 		}
 		ToolbarItem(placement: .topBarTrailing) {
@@ -202,11 +208,13 @@ fileprivate extension EditCardView {
 #Preview {
 	
 	EditCardView(
+		title: "Edit Card",
 		card: Card(
 			frontEntry: "hello my na🇺🇸m on, l, l,",
 			backEntry: ",,,bonjour,,,,",
 			frontLanguage: .en_US,
 			backLanguage: .fr_CA
-		)
+		),
+		onSave: { _ in }
 	)
 }

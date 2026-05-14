@@ -23,10 +23,8 @@ struct SettingsView: View {
 			List {
 				Section {
 					Button {
-						Task {
-							try? modelContext.save()
-							await cleanDuplicate()
-						}
+						try? modelContext.save()
+						cleanDuplicate()
 					} label: {
 						Label(title, systemImage: icon)
 							.foregroundStyle(color)
@@ -103,22 +101,23 @@ fileprivate extension SettingsView {
 		
 		guard let date = preferences.lastCleanDuplicate else { return "Never cleaned" }
 		let formatter = DateFormatter()
+		
 		formatter.dateStyle = .medium
 		formatter.timeStyle = .short
 		return "Last clean: \(formatter.string(from: date))"
 	}
 	
-	private func cleanDuplicate() async {
+	private func cleanDuplicate() {
 		
 		guard !isCleaning else { return }
 		state = .running
 		isCleaning = true; defer { isCleaning = false }
 		
 		do {
-			try await CardDuplicate(modelContainer: modelContext.container).removeDuplicates()
+			try CardDuplication.removeDuplicates(in: modelContext)
 			state = .success
 			preferences.lastCleanDuplicate = Date()
-			Task {
+			Task { @MainActor in
 				try? await Task.sleep(for: .seconds(1.5))
 				state = .idle
 			}

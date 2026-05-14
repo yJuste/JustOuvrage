@@ -12,7 +12,7 @@ import Foundation
 /// External Dependencies: Card
 @Model final class Deck {
 	
-	var id: UUID
+	@Attribute(.unique) var id: UUID
 	var name: String
 	var image: String
 	var depiction: String

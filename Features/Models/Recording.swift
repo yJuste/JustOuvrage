@@ -13,7 +13,7 @@ import Foundation
 /// A built-in recorder.
 @Model final class Recording: Identifiable, Equatable {
 	
-	var id = UUID()
+	@Attribute(.unique) var id: UUID
 	var url: URL
 	var date: Date
 	var sequence: Int

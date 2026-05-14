@@ -1,8 +1,8 @@
 //
-//  HiddenModifier.swift
+//  HiddenExtension.swift
 //  JustOuvrage
 //
-//  Created by Jules Longin on 4/21/26.
+//  Created by Jules Longin on 5/13/26.
 //
 
 import SwiftUI

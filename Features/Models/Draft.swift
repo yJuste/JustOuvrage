@@ -12,7 +12,7 @@ import SwiftData
 /// External Dependencies: Language, Deck
 @Model final class Draft {
 	
-	var id: UUID
+	@Attribute(.unique) var id: UUID
 	var entry: String
 	var language: Language
 	var lastViewedAt: Date?

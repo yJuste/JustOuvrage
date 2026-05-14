@@ -12,4 +12,5 @@ enum Errors: Error {
 	case PasswordError
 	case SiteError
 	case CardDuplicationError
+	case ModelContextError
 }

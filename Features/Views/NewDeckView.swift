@@ -20,7 +20,7 @@ struct NewDeckView: View {
 	@Environment(\.dismiss) private var dismiss
 	
 	@State private var selectedPhotoItem: PhotosPickerItem?
-	@State private var selectedImageData: Data?
+	@State private var selectedUIImage: UIImage?
 	@State private var deckName: String = ""
 	@State private var showCancelAlert: Bool = false
 	@State private var showPhotoPicker: Bool = false
@@ -33,8 +33,8 @@ struct NewDeckView: View {
 						rectangle
 							.fill(.ultraThinMaterial)
 							.overlay {
-								if let data = selectedImageData, let uiImage = UIImage(data: data) {
-									Image(uiImage: uiImage)
+								if let uiimage = selectedUIImage {
+									Image(uiImage: uiimage)
 										.resizable()
 										.scaledToFill()
 								}
@@ -78,12 +78,11 @@ struct NewDeckView: View {
 				}
 				.frame(maxWidth: .infinity, alignment: .bottom)
 			}
-			.toolbar { toolbar }
 			.onChange(of: selectedPhotoItem) { _, newItem in
 				guard let newItem else { return }
 				Task {
 					if let data = try? await newItem.loadTransferable(type: Data.self) {
-						selectedImageData = data
+						selectedUIImage = UIImage(data: data)
 					}
 				}
 			}
@@ -96,12 +95,13 @@ struct NewDeckView: View {
 			} message: {
 				Text("Are you sure you want to discard this new deck?")
 			}
-			.scrollDismissesKeyboard(.interactively)
-			.scrollIndicators(.hidden)
 			.onDisappear {
-				selectedImageData = nil
+				selectedUIImage = nil
 				selectedPhotoItem = nil
 			}
+			.toolbar { toolbar }
+			.scrollDismissesKeyboard(.interactively)
+			.scrollIndicators(.hidden)
 		}
 	}
 }
@@ -112,7 +112,7 @@ fileprivate extension NewDeckView {
 	@ToolbarContentBuilder private var toolbar: some ToolbarContent {
 		ToolbarItem(placement: .topBarLeading) {
 			Button {
-				if !deckName.isEmpty || selectedImageData != nil {
+				if !deckName.isEmpty || selectedUIImage != nil {
 					return showCancelAlert.toggle()
 				}
 				dismiss()
@@ -130,9 +130,9 @@ fileprivate extension NewDeckView {
 					return showCancelAlert.toggle()
 				}
 				var image = "deck"
-				if let data = selectedImageData, let uiImage = UIImage(data: data) {
+				if let uiimage = selectedUIImage {
 					do {
-						image = try storage.save(image: uiImage)
+						image = try storage.save(image: uiimage)
 					} catch {
 						print(Errors.ImageError)
 					}
