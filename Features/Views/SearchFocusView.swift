@@ -25,7 +25,7 @@ struct SearchFocusView: View {
 	
 	@Query(filter: #Predicate<Card> { $0.lastViewedAt != nil }, sort: \Card.lastViewedAt, order: .reverse) private var cards: [Card]
 	@Query(filter: #Predicate<Deck> { $0.lastViewedAt != nil }, sort: \Deck.lastViewedAt, order: .reverse) private var decks: [Deck]
-	@Query private var drafts: [Draft]
+	@Query(sort: \Draft.createdAt, order: .reverse) private var drafts: [Draft]
 	
 	@State private var showClearAllAlert: Bool = false
 	

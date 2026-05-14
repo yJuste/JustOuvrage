@@ -69,6 +69,9 @@
         }
       }
     },
+    "%lld sec" : {
+
+    },
     "%lld/%lld" : {
       "localizations" : {
         "en" : {
@@ -170,6 +173,9 @@
 
     },
     "Date" : {
+
+    },
+    "Death" : {
 
     },
     "Deck" : {
@@ -344,6 +350,9 @@
 
     },
     "Spanish" : {
+
+    },
+    "Standard" : {
 
     },
     "Take Photo" : {

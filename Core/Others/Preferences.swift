@@ -19,6 +19,10 @@ import Observation
 		case backLanguage
 		case exactMatch
 		case lastCleanDuplicate
+		case trialTimeInterval
+		case trialDeck
+		case trialNumberOfCards
+		case trialMode
 	}
 	
 	static let unique: Preferences = Preferences()
@@ -28,6 +32,10 @@ import Observation
 	private var backLanguageRaw: String = ""
 	private var exactMatchRaw: String = ""
 	private var lastCleanDuplicateRaw: Double = 0
+	private var trialTimeIntervalRaw: TimeInterval = 5.0
+	private var trialDeckRaw: String = ""
+	private var trialNumberOfCardsRaw: Int = 0
+	private var trialModeRaw: Int = 0
 	
 	private init() {
 		
@@ -37,6 +45,10 @@ import Observation
 		backLanguageRaw = userDefaults.string(forKey: Key.backLanguage.rawValue) ?? defaultLanguage
 		exactMatchRaw = userDefaults.string(forKey: Key.exactMatch.rawValue) ?? defaultLanguage
 		lastCleanDuplicateRaw = userDefaults.double(forKey: Key.lastCleanDuplicate.rawValue)
+		trialTimeIntervalRaw = userDefaults.object(forKey: Key.trialTimeInterval.rawValue) as? Double ?? 5.0
+		trialDeckRaw = userDefaults.string(forKey: Key.trialDeck.rawValue) ?? ""
+		trialNumberOfCardsRaw = userDefaults.integer(forKey: Key.trialNumberOfCards.rawValue)
+		trialModeRaw = userDefaults.integer(forKey: Key.trialMode.rawValue)
 	}
 	
 	var frontLanguage: Language {
@@ -68,5 +80,39 @@ import Observation
 		set {
 			lastCleanDuplicateRaw = newValue?.timeIntervalSince1970 ?? 0
 			userDefaults.set(lastCleanDuplicateRaw, forKey: Key.lastCleanDuplicate.rawValue) }
+	}
+	
+	// Trial Preferences
+	
+	var trialTimeInterval: TimeInterval {
+		get { trialTimeIntervalRaw }
+		set {
+			trialTimeIntervalRaw = newValue
+			userDefaults.set(trialTimeIntervalRaw, forKey: Key.trialTimeInterval.rawValue)
+		}
+	}
+	
+	var trialDeck: UUID? {
+		get { UUID(uuidString: trialDeckRaw) }
+		set {
+			trialDeckRaw = newValue?.uuidString ?? ""
+			userDefaults.set(trialDeckRaw, forKey: Key.trialDeck.rawValue)
+		}
+	}
+	
+	var trialNumberOfCards: Int {
+		get { trialNumberOfCardsRaw }
+		set {
+			trialNumberOfCardsRaw = newValue
+			userDefaults.set(newValue, forKey: Key.trialNumberOfCards.rawValue)
+		}
+	}
+	
+	var trialMode: Int {
+		get { trialModeRaw }
+		set {
+			trialModeRaw = newValue
+			userDefaults.set(newValue, forKey: Key.trialMode.rawValue)
+		}
 	}
 }

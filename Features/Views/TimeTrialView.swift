@@ -10,7 +10,10 @@ import SwiftUI
 struct TimeTrialView: View {
 	
 	let cards: [Card]
-	let timeInterval: TimeInterval = 3
+	let timeInterval: TimeInterval
+	let deck: Deck?
+	let numberOfCards: Int
+	let mode: Int
 	
 	@Environment(\.dismiss) private var dismiss
 	
@@ -33,7 +36,7 @@ struct TimeTrialView: View {
 	var body: some View {
 		NavigationStack {
 			GeometryReader { geo in
-				let isPortrait = geo.size.height > geo.size.width
+				let isPortrait: Bool = geo.size.height > geo.size.width
 				ZStack {
 					backgroundGradient
 					VStack(spacing: isPortrait ? geo.size.height * 0.05 : geo.size.height * 1.0) {
@@ -207,7 +210,6 @@ fileprivate extension TimeTrialView {
 		}
 		
 		Task { @MainActor in
-			
 			self.currentIndex += 1
 			self.isCardTapped = false
 			self.dragOffset = .zero
@@ -247,5 +249,8 @@ fileprivate extension TimeTrialView {
 			backLanguage: .fr_CA
 		)
 	}
-	return TimeTrialView(cards: cards)
+	
+	let deck: Deck = Deck(name: "Hello", image: "deck")
+	
+	return TimeTrialView(cards: cards, timeInterval: 3, deck: deck, numberOfCards: 10, mode: 0)
 }

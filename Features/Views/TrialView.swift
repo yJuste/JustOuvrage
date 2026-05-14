@@ -13,23 +13,29 @@ struct TrialView: View {
 	@Environment(\.dismiss) private var dismiss
 	
 	@Query(sort: \Card.createdAt, order: .reverse) private var cards: [Card]
-	@Query private var decks: [Deck]
+	@Query(sort: \Deck.createdAt, order: .reverse) private var decks: [Deck]
 	
-	@State private var selectedTime: Int = 0
-	@State private var optionsOfTimer: [String] = ["1 sec", "2 sec", "3 sec", "4 sec", "5 sec"]
-	@State private var selectedDeck: Deck? = nil
-	@State private var selectedNumberOfCards: Int = 0
-	@State private var optionsOfNumberOfCards: [String] = ["All", "10", "20", "30", "40", "50", "60", "70", "80", "90", "100", "110", "120", "130", "140", "150", "160", "170", "180", "190", "200"]
-	@State private var selectedMode: Int = 0
-	@State private var optionsOfMode: [String] = ["Standard", "Death"]
-	
+	@Bindable private var preferences: Preferences = Preferences.unique
 	@State private var showTimeTrial: Bool = false
 	
-	var filteredCards: [Card] {
-		if let deck = selectedDeck {
+	private let optionsOfTimer: [TimeInterval] = [1.0, 2.0, 3.0, 4.0, 5.0]
+	private let optionsOfNumberOfCards: [Int] = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160, 170, 180, 190, 200]
+	private let optionsOfMode: [Int] = [0, 1]
+	
+	private var filteredCards: [Card] {
+		if let deck = selectedDeck.wrappedValue {
 			return cards.filter { $0.decks.contains(deck) }
 		} else {
 			return cards
+		}
+	}
+	
+	private var selectedDeck: Binding<Deck?> {
+		Binding {
+			guard let id = preferences.trialDeck else { return nil }
+			return decks.first(where: { $0.id == id })
+		} set: { newDeck in
+			preferences.trialDeck = newDeck?.id
 		}
 	}
 	
@@ -37,9 +43,10 @@ struct TrialView: View {
 		NavigationStack {
 			Form {
 				Section {
-					Picker(selection: $selectedTime) {
-						ForEach(optionsOfTimer.indices, id: \.self) {
-							Text(self.optionsOfTimer[$0])
+					Picker(selection: $preferences.trialTimeInterval) {
+						ForEach(optionsOfTimer, id: \.self) { time in
+							Text("\(Int(time)) sec")
+								.tag(time)
 						}
 					} label: {
 						Text("Timer")
@@ -48,9 +55,10 @@ struct TrialView: View {
 					Text("Set the maximum time to swipe for each cards.")
 				}
 				Section {
-					Picker(selection: $selectedDeck) {
+					Picker(selection: selectedDeck) {
 						Text("Every Card")
 							.tag(Optional<Deck>.none)
+						
 						ForEach(decks) { deck in
 							Text(deck.name)
 								.tag(Optional(deck))
@@ -65,9 +73,10 @@ struct TrialView: View {
 					Text("Choose the deck you are going to work on.")
 				}
 				Section {
-					Picker(selection: $selectedNumberOfCards) {
-						ForEach(optionsOfNumberOfCards.indices, id: \.self) {
-							Text(self.optionsOfNumberOfCards[$0])
+					Picker(selection: $preferences.trialNumberOfCards) {
+						ForEach(optionsOfNumberOfCards, id: \.self) { count in
+							Text(count == 0 ? "All" : "\(count)")
+								.tag(count as Int)
 						}
 					} label: {
 						Text("Cards")
@@ -76,9 +85,10 @@ struct TrialView: View {
 					Text("How many cards")
 				}
 				Section {
-					Picker(selection: $selectedMode) {
-						ForEach(optionsOfMode.indices, id: \.self) {
-							Text(self.optionsOfMode[$0])
+					Picker(selection: $preferences.trialMode) {
+						ForEach(optionsOfMode, id: \.self) { mode in
+							Text(mode == 0 ? "Standard" : "Death")
+								.tag(mode)
 						}
 					} label: {
 						Text("Mode")
@@ -87,11 +97,17 @@ struct TrialView: View {
 					Text("Choose the difficulty")
 				}
 			}
-			.toolbar { toolbar }
 			.navigationDestination(isPresented: $showTimeTrial) {
-				TimeTrialView(cards: filteredCards)
-					.navigationBarBackButtonHidden(true)
+				TimeTrialView(
+					cards: filteredCards,
+					timeInterval: preferences.trialTimeInterval,
+					deck: selectedDeck.wrappedValue,
+					numberOfCards: preferences.trialNumberOfCards,
+					mode: preferences.trialMode
+				)
+				.navigationBarBackButtonHidden(true)
 			}
+			.toolbar { toolbar }
 		}
 	}
 }
