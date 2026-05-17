@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Combine
 
 struct TimeTrialView: View {
 	
@@ -17,20 +18,32 @@ struct TimeTrialView: View {
 	
 	@Environment(\.dismiss) private var dismiss
 	
+	@Bindable private var preferences: Preferences = Preferences.unique
 	@State private var currentIndex: Int = 0
 	@State private var hasTimerReachedZero: Bool = false
 	@State private var hasTimerPaused: Bool = false
 	@State private var dragOffset: CGSize = .zero
 	@State private var rotation: Double = 0
-	@State private var trigger: UUID = UUID()
 	@State private var swipeResults: [SwipeDirection] = []
 	@State private var showPause: Bool = false
 	@State private var isSwiping: Bool = false
 	@State private var isCardTapped: Bool = false
+	@State private var remainingTime: TimeInterval
 	
 	var currentCard: Card? {
 		guard currentIndex < cards.count else { return nil }
 		return cards[currentIndex]
+	}
+	
+	private let timer = Timer.publish(every: Preferences.unique.trialRefreshTimer, on: .main, in: .common).autoconnect()
+	
+	init(cards: [Card], timeInterval: TimeInterval, deck: Deck?, numberOfCards: Int, mode: Int) {
+		self.cards = cards
+		self.timeInterval = timeInterval
+		self.deck = deck
+		self.numberOfCards = numberOfCards
+		self.mode = mode
+		_remainingTime = State(initialValue: timeInterval)
 	}
 	
 	var body: some View {
@@ -81,6 +94,16 @@ struct TimeTrialView: View {
 				guard reached else { return }
 				swipe(.left)
 			}
+			.onReceive(timer) { _ in
+				guard !hasTimerPaused else { return }
+				guard currentCard != nil else { return }
+				
+				if remainingTime > 0 {
+					remainingTime = max(remainingTime - preferences.trialRefreshTimer, 0)
+				} else {
+					hasTimerReachedZero = true
+				}
+			}
 			.toolbar { toolbar }
 			.toolbar(.hidden, for: .tabBar)
 			.alert("Quit Time Trial ?", isPresented: $showPause) {
@@ -127,7 +150,7 @@ struct TimeTrialView: View {
 			RoundedRectangle(cornerRadius: 35, style: .continuous)
 				.fill(LinearGradient(colors: [.green.opacity(Double(dragOffset.width / 200)), .green.opacity(0.0)], startPoint: .trailing, endPoint: .leading))
 				.opacity(dragOffset.width > 0 ? 1 : 0)
-			TimerView(size: (isPortrait ? 70 : 20), duration: timeInterval, color: UIColor.label, isPaused: $hasTimerPaused, isFinished: $hasTimerReachedZero, restartTrigger: trigger)
+			TimerView(size: (isPortrait ? 70 : 20), duration: timeInterval, remainingTime: remainingTime, color: UIColor.label)
 				.offset(y: geo.size.height * 0.25)
 		}
 		.frame(width: geo.size.width * (isPortrait ? 0.9 : 0.9), height: geo.size.height * (isPortrait ? 0.85 : 1.0))
@@ -135,16 +158,16 @@ struct TimeTrialView: View {
 		.rotationEffect(.degrees(rotation))
 		.gesture(
 			isSwiping ? nil :
-			DragGesture()
+				DragGesture()
 				.onChanged { value in
 					dragOffset = value.translation
 					rotation = value.translation.width / 30
 				}
 				.onEnded { value in
 					let horizontal = value.translation.width
-					if horizontal > 80 {
+					if horizontal > 50 {
 						swipe(.right)
-					} else if horizontal < -80 {
+					} else if horizontal < -50 {
 						swipe(.left)
 					} else {
 						withAnimation(.spring(response: 0.4)) {
@@ -216,7 +239,7 @@ fileprivate extension TimeTrialView {
 			self.rotation = 0
 			self.hasTimerReachedZero = false
 			self.hasTimerPaused = false
-			self.trigger = UUID()
+			self.remainingTime = timeInterval
 			self.isSwiping = false
 		}
 	}
@@ -234,7 +257,7 @@ fileprivate extension TimeTrialView {
 			)
 	}
 	
-	var backgroundGradient: some View {
+	private var backgroundGradient: some View {
 		VStack {}
 	}
 }

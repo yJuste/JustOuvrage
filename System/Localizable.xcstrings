@@ -82,6 +82,9 @@
         }
       }
     },
+    "~ %.0f FPS" : {
+
+    },
     "Add" : {
 
     },
@@ -170,6 +173,9 @@
 
     },
     "Continue" : {
+
+    },
+    "Controls refresh speed of the trial system.\n\n60 FPS = fastest updates, smoother behavior.\n10 FPS = slower but lighter on CPU." : {
 
     },
     "Date" : {
@@ -323,6 +329,9 @@
 
     },
     "Record" : {
+
+    },
+    "Refresh Timer" : {
 
     },
     "Remove" : {

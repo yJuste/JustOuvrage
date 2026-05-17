@@ -23,6 +23,7 @@ import Observation
 		case trialDeck
 		case trialNumberOfCards
 		case trialMode
+		case trialRefreshTimer
 	}
 	
 	static let unique: Preferences = Preferences()
@@ -36,6 +37,7 @@ import Observation
 	private var trialDeckRaw: String = ""
 	private var trialNumberOfCardsRaw: Int = 0
 	private var trialModeRaw: Int = 0
+	private var trialRefreshTimerRaw: Double = 1.0/60.0
 	
 	private init() {
 		
@@ -49,6 +51,7 @@ import Observation
 		trialDeckRaw = userDefaults.string(forKey: Key.trialDeck.rawValue) ?? ""
 		trialNumberOfCardsRaw = userDefaults.integer(forKey: Key.trialNumberOfCards.rawValue)
 		trialModeRaw = userDefaults.integer(forKey: Key.trialMode.rawValue)
+		trialRefreshTimerRaw = userDefaults.object(forKey: Key.trialRefreshTimer.rawValue) as? Double ?? (1.0 / 60.0)
 	}
 	
 	var frontLanguage: Language {
@@ -113,6 +116,14 @@ import Observation
 		set {
 			trialModeRaw = newValue
 			userDefaults.set(newValue, forKey: Key.trialMode.rawValue)
+		}
+	}
+	
+	var trialRefreshTimer: Double {
+		get { trialRefreshTimerRaw }
+		set {
+			trialRefreshTimerRaw = newValue
+			userDefaults.set(newValue, forKey: Key.trialRefreshTimer.rawValue)
 		}
 	}
 }

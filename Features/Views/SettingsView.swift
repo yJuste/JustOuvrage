@@ -41,6 +41,34 @@ struct SettingsView: View {
   Only the oldest version of each duplicate set is kept.
   """)
 				}
+				Section {
+					VStack(alignment: .trailing) {
+						HStack {
+							Text("Refresh Timer")
+							Spacer()
+							Text("~ \(1.0 / preferences.trialRefreshTimer, specifier: "%.0f") FPS")
+								.font(.caption)
+								.foregroundStyle(.secondary)
+						}
+						Slider(value: Binding(
+							get: {
+								1.0 / preferences.trialRefreshTimer
+							},
+							set: { newFPS in
+								preferences.trialRefreshTimer = 1.0 / newFPS
+							}
+						), in: 10...60, step: 1)
+						.font(.footnote)
+						.foregroundStyle(.secondary)
+					}
+				} footer: {
+					Text("""
+Controls refresh speed of the trial system.
+
+60 FPS = fastest updates, smoother behavior.
+10 FPS = slower but lighter on CPU.
+""")
+				}
 			}
 			.toolbar { toolbar }
 		}
