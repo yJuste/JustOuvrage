@@ -5,6 +5,8 @@
 //  Created by Jules Longin on 5/8/26.
 //
 
+// MARK: Worst function I ever made.
+
 import SwiftUI
 
 /// Minimum size = 100
@@ -16,7 +18,6 @@ import SwiftUI
 	@Binding var isPaused: Bool
 	@Binding var isFinished: Bool
 	var restartTrigger: UUID
-	var onFinished: (() -> Void)?
 	
 	@State private var startDate: Date = Date()
 	@State private var pauseDate: Date?
@@ -32,7 +33,7 @@ import SwiftUI
 					return context.date.timeIntervalSince(startDate)
 				}
 			}()
-			let remaining = max(duration - elapsed, 0)
+			let remaining = duration - elapsed
 			let length = max(size, 70)
 			
 			ZStack {
@@ -51,20 +52,19 @@ import SwiftUI
 				}
 				.padding(8)
 			}
-			.frame(width: length, height: length)
-			.onChange(of: restartTrigger) {
-				start()
+			.onChange(of: remaining) {
+				if $1 <= 0 {
+					isFinished = true
+					isPaused = true
+				}
 			}
 			.onChange(of: isPaused) {
 				pause($1)
 			}
-			.onChange(of: remaining) {
-				if $1 <= 0, !isFinished {
-					isFinished = true
-					isPaused = true
-					onFinished?()
-				}
+			.onChange(of: restartTrigger) {
+				start()
 			}
+			.frame(width: length, height: length)
 		}
 	}
 }
@@ -84,7 +84,7 @@ fileprivate extension TimerView {
 			pauseDate = Date()
 		} else {
 			if let pauseDate {
-				startDate = startDate.addingTimeInterval(Date().timeIntervalSince(pauseDate))
+				startDate += Date().timeIntervalSince(pauseDate)
 			}
 			self.pauseDate = nil
 		}
@@ -103,12 +103,11 @@ fileprivate extension TimerView {
 			VStack(spacing: 20) {
 				TimerView(
 					size: 70,
-					duration: 10,
+					duration: 9,
 					color: .accent,
 					isPaused: $isPaused,
 					isFinished: $isFinished,
-					restartTrigger: istimer,
-					onFinished: nil
+					restartTrigger: istimer
 				)
 				Button(isPaused ? "Resume" : "Stop") {
 					isPaused.toggle()
