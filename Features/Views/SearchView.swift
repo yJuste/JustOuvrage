@@ -118,7 +118,7 @@ struct SearchView: View {
 								}
 							}
 							.buttonStyle(.plain)
-							.listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
+							.listRowInsets(EdgeInsets(top: 6, leading: 15, bottom: 6, trailing: 15))
 						} /// ``Search for a Deck``
 					case .draft( _ ):
 						Section {

@@ -15,14 +15,20 @@ import Observation
 	/// An Interface that lists all `persisted selections` with UserDefault.
 	private enum Key: String {
 		
+		// In New Card
 		case frontLanguage
 		case backLanguage
 		case exactMatch
-		case lastCleanDuplicate
+		
+		// In Trial
 		case trialTimeInterval
 		case trialDeck
 		case trialNumberOfCards
+		case trialOrder
 		case trialMode
+		
+		// In Settings
+		case lastCleanDuplicate
 		case trialRefreshTimer
 	}
 	
@@ -32,11 +38,12 @@ import Observation
 	private var frontLanguageRaw: String = ""
 	private var backLanguageRaw: String = ""
 	private var exactMatchRaw: String = ""
-	private var lastCleanDuplicateRaw: Double = 0
-	private var trialTimeIntervalRaw: TimeInterval = 5.0
+	private var trialTimeIntervalRaw: TimeInterval = 4.0
 	private var trialDeckRaw: String = ""
 	private var trialNumberOfCardsRaw: Int = 0
+	private var trialOrderRaw: Int = 0
 	private var trialModeRaw: Int = 0
+	private var lastCleanDuplicateRaw: Double = 0
 	private var trialRefreshTimerRaw: Double = 1.0/60.0
 	
 	private init() {
@@ -46,11 +53,12 @@ import Observation
 		frontLanguageRaw = userDefaults.string(forKey: Key.frontLanguage.rawValue) ?? defaultLanguage
 		backLanguageRaw = userDefaults.string(forKey: Key.backLanguage.rawValue) ?? defaultLanguage
 		exactMatchRaw = userDefaults.string(forKey: Key.exactMatch.rawValue) ?? defaultLanguage
-		lastCleanDuplicateRaw = userDefaults.double(forKey: Key.lastCleanDuplicate.rawValue)
-		trialTimeIntervalRaw = userDefaults.object(forKey: Key.trialTimeInterval.rawValue) as? Double ?? 5.0
+		trialTimeIntervalRaw = userDefaults.object(forKey: Key.trialTimeInterval.rawValue) as? Double ?? 4.0
 		trialDeckRaw = userDefaults.string(forKey: Key.trialDeck.rawValue) ?? ""
 		trialNumberOfCardsRaw = userDefaults.integer(forKey: Key.trialNumberOfCards.rawValue)
+		trialOrderRaw = userDefaults.integer(forKey: Key.trialOrder.rawValue)
 		trialModeRaw = userDefaults.integer(forKey: Key.trialMode.rawValue)
+		lastCleanDuplicateRaw = userDefaults.double(forKey: Key.lastCleanDuplicate.rawValue)
 		trialRefreshTimerRaw = userDefaults.object(forKey: Key.trialRefreshTimer.rawValue) as? Double ?? (1.0 / 60.0)
 	}
 	
@@ -78,15 +86,6 @@ import Observation
 		}
 	}
 	
-	var lastCleanDuplicate: Date? {
-		get { lastCleanDuplicateRaw == 0 ? nil : Date(timeIntervalSince1970: lastCleanDuplicateRaw) }
-		set {
-			lastCleanDuplicateRaw = newValue?.timeIntervalSince1970 ?? 0
-			userDefaults.set(lastCleanDuplicateRaw, forKey: Key.lastCleanDuplicate.rawValue) }
-	}
-	
-	// Trial Preferences
-	
 	var trialTimeInterval: TimeInterval {
 		get { trialTimeIntervalRaw }
 		set {
@@ -111,12 +110,27 @@ import Observation
 		}
 	}
 	
+	var trialOrder: Int {
+		get { trialOrderRaw }
+		set {
+			trialOrderRaw = newValue
+			userDefaults.set(newValue, forKey: Key.trialOrder.rawValue)
+		}
+	}
+	
 	var trialMode: Int {
 		get { trialModeRaw }
 		set {
 			trialModeRaw = newValue
 			userDefaults.set(newValue, forKey: Key.trialMode.rawValue)
 		}
+	}
+	
+	var lastCleanDuplicate: Date? {
+		get { lastCleanDuplicateRaw == 0 ? nil : Date(timeIntervalSince1970: lastCleanDuplicateRaw) }
+		set {
+			lastCleanDuplicateRaw = newValue?.timeIntervalSince1970 ?? 0
+			userDefaults.set(lastCleanDuplicateRaw, forKey: Key.lastCleanDuplicate.rawValue) }
 	}
 	
 	var trialRefreshTimer: Double {

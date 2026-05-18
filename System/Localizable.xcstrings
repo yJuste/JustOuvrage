@@ -7,7 +7,16 @@
     "\"%@\"" : {
 
     },
+    "[created at]" : {
+
+    },
     "[Deck Name]" : {
+
+    },
+    "[Unknown mode]" : {
+
+    },
+    "[Unknown order]" : {
 
     },
     "%@" : {
@@ -25,6 +34,9 @@
           }
         }
       }
+    },
+    "%@ sec" : {
+
     },
     "%lld" : {
 
@@ -68,9 +80,6 @@
           }
         }
       }
-    },
-    "%lld sec" : {
-
     },
     "%lld/%lld" : {
       "localizations" : {
@@ -148,15 +157,6 @@
     "Choose Photo" : {
 
     },
-    "Choose the deck" : {
-
-    },
-    "Choose the deck you are going to work on." : {
-
-    },
-    "Choose the difficulty" : {
-
-    },
     "Clear" : {
 
     },
@@ -178,6 +178,9 @@
     "Controls refresh speed of the trial system.\n\n60 FPS = fastest updates, smoother behavior.\n10 FPS = slower but lighter on CPU." : {
 
     },
+    "Custom" : {
+
+    },
     "Date" : {
 
     },
@@ -185,6 +188,9 @@
 
     },
     "Deck" : {
+
+    },
+    "Deck chosen" : {
 
     },
     "Deck Name" : {
@@ -206,6 +212,9 @@
 
     },
     "Delete from Library" : {
+
+    },
+    "Difficulty" : {
 
     },
     "Discard Changes" : {
@@ -244,7 +253,7 @@
     "Hide" : {
 
     },
-    "How many cards" : {
+    "How many cards to include in this session." : {
 
     },
     "Just Account" : {
@@ -268,7 +277,13 @@
     "Manage your app preferences, maintenance tools, and data-related settings." : {
 
     },
+    "Maximum time per card." : {
+
+    },
     "Missing Information" : {
+
+    },
+    "mode" : {
 
     },
     "Mode" : {
@@ -292,6 +307,12 @@
     "Newest to Oldest" : {
 
     },
+    "No session will be saved." : {
+
+    },
+    "Oldest to Newest" : {
+
+    },
     "Only Cards" : {
 
     },
@@ -302,6 +323,12 @@
 
     },
     "Options" : {
+
+    },
+    "Order by" : {
+
+    },
+    "Order in which cards are shown." : {
 
     },
     "Play" : {
@@ -317,6 +344,12 @@
 
     },
     "Quit Time Trial ?" : {
+
+    },
+    "Quit without saving ?" : {
+
+    },
+    "Random (default)" : {
 
     },
     "Recent searches" : {
@@ -337,7 +370,10 @@
     "Remove" : {
 
     },
-    "results" : {
+    "Results" : {
+
+    },
+    "Save" : {
 
     },
     "Search" : {
@@ -346,13 +382,13 @@
     "Select" : {
 
     },
+    "Select a deck to study." : {
+
+    },
     "Selected Cards" : {
 
     },
     "Selected Decks" : {
-
-    },
-    "Set the maximum time to swipe for each cards." : {
 
     },
     "Settings" : {
@@ -365,6 +401,9 @@
 
     },
     "Take Photo" : {
+
+    },
+    "The selected mode applies to the session.\n\nStandard:\n- definitions may be shown.\n- 4s swipe timer.\n- random order.\n\nDeath:\n- no definitions.\n- 1.5s swipe timer.\n- random order.\n\nCustom = fully configurable settings." : {
 
     },
     "The timer is currently paused." : {

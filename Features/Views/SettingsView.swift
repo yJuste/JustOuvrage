@@ -54,8 +54,8 @@ struct SettingsView: View {
 							get: {
 								1.0 / preferences.trialRefreshTimer
 							},
-							set: { newFPS in
-								preferences.trialRefreshTimer = 1.0 / newFPS
+							set: { fps in
+								preferences.trialRefreshTimer = 1.0 / fps
 							}
 						), in: 10...60, step: 1)
 						.font(.footnote)

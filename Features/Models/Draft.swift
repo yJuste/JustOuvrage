@@ -5,8 +5,8 @@
 //  Created by Jules Longin on 5/2/26.
 //
 
-import SwiftUI
 import SwiftData
+import Foundation
 
 /// A Model for a ``Draft``.
 /// External Dependencies: Language, Deck

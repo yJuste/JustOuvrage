@@ -12,9 +12,6 @@ struct TimeTrialView: View {
 	
 	let cards: [Card]
 	let timeInterval: TimeInterval
-	let deck: Deck?
-	let numberOfCards: Int
-	let mode: Int
 	
 	@Environment(\.dismiss) private var dismiss
 	
@@ -29,6 +26,7 @@ struct TimeTrialView: View {
 	@State private var isSwiping: Bool = false
 	@State private var isCardTapped: Bool = false
 	@State private var remainingTime: TimeInterval
+	@State private var showTimeTrialResult: Bool = false
 	
 	var currentCard: Card? {
 		guard currentIndex < cards.count else { return nil }
@@ -37,12 +35,9 @@ struct TimeTrialView: View {
 	
 	private let timer = Timer.publish(every: Preferences.unique.trialRefreshTimer, on: .main, in: .common).autoconnect()
 	
-	init(cards: [Card], timeInterval: TimeInterval, deck: Deck?, numberOfCards: Int, mode: Int) {
+	init(cards: [Card], timeInterval: TimeInterval) {
 		self.cards = cards
 		self.timeInterval = timeInterval
-		self.deck = deck
-		self.numberOfCards = numberOfCards
-		self.mode = mode
 		_remainingTime = State(initialValue: timeInterval)
 	}
 	
@@ -83,8 +78,6 @@ struct TimeTrialView: View {
 								}
 							}
 							.disabled(isSwiping)
-						} else {
-							TimeTrialResultView()
 						}
 					}
 					.frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -103,6 +96,9 @@ struct TimeTrialView: View {
 				} else {
 					hasTimerReachedZero = true
 				}
+			}
+			.navigationDestination(isPresented: $showTimeTrialResult) {
+				TimeTrialResultView(cards: cards, results: swipeResults)
 			}
 			.toolbar { toolbar }
 			.toolbar(.hidden, for: .tabBar)
@@ -132,7 +128,7 @@ struct TimeTrialView: View {
 				Text("\(card.frontEntry)")
 					.font(.system(size: geo.size.width * (isPortrait ? 0.06 : 0.04), weight: .semibold))
 					.foregroundStyle(.primary)
-				if isCardTapped {
+				if isCardTapped && preferences.trialMode != 1 {
 					Text("\(card.backEntry)")
 						.font(.system(size: geo.size.width * (isPortrait ? 0.05 : 0.03), weight: .semibold))
 						.foregroundStyle(.secondary)
@@ -214,12 +210,6 @@ fileprivate extension TimeTrialView {
 /// SwipeDirection
 fileprivate extension TimeTrialView {
 	
-	private enum SwipeDirection {
-		
-		case left
-		case right
-	}
-	
 	private func swipe(_ direction: SwipeDirection) {
 		
 		guard !isSwiping else { return }
@@ -234,6 +224,9 @@ fileprivate extension TimeTrialView {
 		
 		Task { @MainActor in
 			self.currentIndex += 1
+			if self.currentIndex >= cards.count {
+				showTimeTrialResult.toggle()
+			}
 			self.isCardTapped = false
 			self.dragOffset = .zero
 			self.rotation = 0
@@ -264,7 +257,7 @@ fileprivate extension TimeTrialView {
 
 #Preview {
 
-	let cards: [Card] = (1...100).map { index in
+	let cards: [Card] = (1...3).map { index in
 		Card(
 			frontEntry: "Sample Front \(index)",
 			backEntry: "Exemple Dos \(index)",
@@ -273,7 +266,5 @@ fileprivate extension TimeTrialView {
 		)
 	}
 	
-	let deck: Deck = Deck(name: "Hello", image: "deck")
-	
-	return TimeTrialView(cards: cards, timeInterval: 3, deck: deck, numberOfCards: 10, mode: 0)
+	return TimeTrialView(cards: cards, timeInterval: 1.5)
 }
