@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwiftData
 import Combine
 
 struct TimeTrialView: View {
@@ -14,6 +15,8 @@ struct TimeTrialView: View {
 	let timeInterval: TimeInterval
 	
 	@Environment(\.dismiss) private var dismiss
+	
+	@Query(sort: \Deck.createdAt, order: .reverse) private var decks: [Deck]
 	
 	@Bindable private var preferences: Preferences = Preferences.unique
 	@State private var currentIndex: Int = 0
@@ -28,12 +31,16 @@ struct TimeTrialView: View {
 	@State private var remainingTime: TimeInterval
 	@State private var showTimeTrialResult: Bool = false
 	
-	var currentCard: Card? {
+	private var currentCard: Card? {
 		guard currentIndex < cards.count else { return nil }
 		return cards[currentIndex]
 	}
 	
 	private let timer = Timer.publish(every: Preferences.unique.trialRefreshTimer, on: .main, in: .common).autoconnect()
+	
+	private var selectedDeck: Deck? {
+		decks.first { $0.id == preferences.trialDeck }
+	}
 	
 	init(cards: [Card], timeInterval: TimeInterval) {
 		self.cards = cards
@@ -128,7 +135,7 @@ struct TimeTrialView: View {
 				Text("\(card.frontEntry)")
 					.font(.system(size: geo.size.width * (isPortrait ? 0.06 : 0.04), weight: .semibold))
 					.foregroundStyle(.primary)
-				if isCardTapped && preferences.trialMode != 1 {
+				if isCardTapped && preferences.trialMode != .death {
 					Text("\(card.backEntry)")
 						.font(.system(size: geo.size.width * (isPortrait ? 0.05 : 0.03), weight: .semibold))
 						.foregroundStyle(.secondary)
@@ -193,9 +200,8 @@ fileprivate extension TimeTrialView {
 			}
 		}
 		ToolbarItem(placement: .principal) {
-			Text("[Deck Name]")
+			Text("\(selectedDeck?.name ?? "Every Card")")
 				.font(.headline)
-				.foregroundStyle(.secondary)
 		}
 		ToolbarItem(placement: .topBarTrailing) {
 			Button {

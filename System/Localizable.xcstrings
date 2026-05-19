@@ -7,15 +7,6 @@
     "\"%@\"" : {
 
     },
-    "[created at]" : {
-
-    },
-    "[Deck Name]" : {
-
-    },
-    "[Unknown mode]" : {
-
-    },
     "[Unknown order]" : {
 
     },
@@ -36,6 +27,9 @@
       }
     },
     "%@ sec" : {
+
+    },
+    "%@ success" : {
 
     },
     "%lld" : {
@@ -190,9 +184,6 @@
     "Deck" : {
 
     },
-    "Deck chosen" : {
-
-    },
     "Deck Name" : {
 
     },
@@ -283,9 +274,6 @@
     "Missing Information" : {
 
     },
-    "mode" : {
-
-    },
     "Mode" : {
 
     },
@@ -305,9 +293,6 @@
 
     },
     "Newest to Oldest" : {
-
-    },
-    "No session will be saved." : {
 
     },
     "Oldest to Newest" : {
@@ -346,9 +331,6 @@
     "Quit Time Trial ?" : {
 
     },
-    "Quit without saving ?" : {
-
-    },
     "Random (default)" : {
 
     },
@@ -373,9 +355,6 @@
     "Results" : {
 
     },
-    "Save" : {
-
-    },
     "Search" : {
 
     },
@@ -389,6 +368,9 @@
 
     },
     "Selected Decks" : {
+
+    },
+    "Session" : {
 
     },
     "Settings" : {

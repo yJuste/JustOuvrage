@@ -110,19 +110,19 @@ import Observation
 		}
 	}
 	
-	var trialOrder: Int {
-		get { trialOrderRaw }
+	var trialOrder: SortTrial {
+		get { SortTrial(rawValue: trialOrderRaw) ?? .random }
 		set {
-			trialOrderRaw = newValue
-			userDefaults.set(newValue, forKey: Key.trialOrder.rawValue)
+			trialOrderRaw = newValue.rawValue
+			userDefaults.set(trialOrderRaw, forKey: Key.trialOrder.rawValue)
 		}
 	}
 	
-	var trialMode: Int {
-		get { trialModeRaw }
+	var trialMode: Mode {
+		get { Mode(rawValue: trialModeRaw) ?? .standard }
 		set {
-			trialModeRaw = newValue
-			userDefaults.set(newValue, forKey: Key.trialMode.rawValue)
+			trialModeRaw = newValue.rawValue
+			userDefaults.set(trialModeRaw, forKey: Key.trialMode.rawValue)
 		}
 	}
 	

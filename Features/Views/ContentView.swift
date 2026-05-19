@@ -34,7 +34,7 @@ fileprivate extension ContentView {
 				TrialView()
 			}
 			Tab("Record", systemImage: "rectangle.dashed.badge.record") {
-				EmptyView()
+				RecordView()
 			}
 			Tab("Library", systemImage: "rectangle.stack.fill") {
 				LibraryView()

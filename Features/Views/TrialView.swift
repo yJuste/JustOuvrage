@@ -9,6 +9,7 @@ import SwiftUI
 import SwiftData
 
 // MARK: Can create a new enum for every variable in TrialView
+// MARK: Case name missing for optionsOfOrder
 
 struct TrialView: View {
 	
@@ -23,8 +24,8 @@ struct TrialView: View {
 	
 	private let optionsOfTimer: [TimeInterval] = [1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0]
 	private let optionsOfNumberOfCards: [Int] = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160, 170, 180, 190, 200]
-	private let optionsOfOrder: [Int] = [0, 1, 2]
-	private let optionsOfMode: [Int] = [0, 1, 2]
+	private let optionsOfOrder: [SortTrial] = SortTrial.allCases
+	private let optionsOfMode: [Mode] = Mode.allCases
 	
 	private var selectedDeck: Binding<Deck?> {
 		Binding {
@@ -70,11 +71,9 @@ struct TrialView: View {
 					Picker(selection: $preferences.trialNumberOfCards) {
 						ForEach(optionsOfNumberOfCards, id: \.self) { count in
 							switch count {
-							case 0:
-								Text("All")
+							case 0: Text("All")
 									.tag(count as Int)
-							default:
-								Text("\(count)")
+							default: Text("\(count)")
 									.tag(count as Int)
 							}
 						}
@@ -88,17 +87,13 @@ struct TrialView: View {
 					Picker(selection: $preferences.trialOrder) {
 						ForEach(optionsOfOrder, id: \.self) { order in
 							switch order {
-							case 0:
-								Text("Random (default)")
+							case .random: Text("Random (default)")
 									.tag(order)
-							case 1:
-								Text("Newest to Oldest")
+							case .newestToOldest: Text("Newest to Oldest")
 									.tag(order)
-							case 2:
-								Text("Oldest to Newest")
+							case .oldestToNewest: Text("Oldest to Newest")
 									.tag(order)
-							default:
-								Text("[Unknown order]")
+							default: Text("[Unknown order]")
 									.tag(order)
 							}
 						}
@@ -112,17 +107,11 @@ struct TrialView: View {
 					Picker(selection: $preferences.trialMode) {
 						ForEach(optionsOfMode, id: \.self) { mode in
 							switch mode {
-							case 0:
-								Text("Standard")
+							case .standard: Text("Standard")
 									.tag(mode)
-							case 1:
-								Text("Death")
+							case .death: Text("Death")
 									.tag(mode)
-							case 2:
-								Text("Custom")
-									.tag(mode)
-							default:
-								Text("[Unknown mode]")
+							case .custom: Text("Custom")
 									.tag(mode)
 							}
 						}
@@ -182,8 +171,9 @@ fileprivate extension TrialView {
 			res = res.filter { $0.decks.contains(deck) }
 		}
 		switch preferences.trialOrder {
-		case 0: res.shuffle()
-		case 2: res = res.sorted { $0.createdAt < $1.createdAt }
+		case .random: res.shuffle()
+		case .newestToOldest: break
+		case .oldestToNewest: res = res.sorted { $0.createdAt < $1.createdAt }
 		default: break
 		}
 		let limit = preferences.trialNumberOfCards
@@ -193,9 +183,9 @@ fileprivate extension TrialView {
 		let mode = preferences.trialMode
 		var interval = preferences.trialTimeInterval
 		switch mode {
-		case 0: res.shuffle(); interval = 4.0
-		case 1: res.shuffle(); interval = 1.5
-		default: break
+		case .standard: res.shuffle(); interval = 4.0
+		case .death: res.shuffle(); interval = 1.5
+		case .custom: break
 		}
 		return Argument(cards: res, timeInterval: interval)
 	}
@@ -215,7 +205,6 @@ fileprivate extension TrialView {
 		ToolbarItem(placement: .principal) {
 			Text("Time Trial Mode")
 				.font(.headline)
-				.foregroundStyle(.secondary)
 		}
 		ToolbarItem(placement: .topBarTrailing) {
 			Button {
