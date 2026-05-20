@@ -19,7 +19,7 @@ struct TimeTrialResultView: View {
 	@Query(sort: \Deck.createdAt, order: .reverse) private var decks: [Deck]
 	
 	@Bindable private var preferences: Preferences = Preferences.unique
-	@State private var session: Session?
+	@State private var timeTrial: TimeTrial?
 	@State private var showSave: Bool = false
 	
 	private var selectedDeck: Deck? {
@@ -70,12 +70,12 @@ struct TimeTrialResultView: View {
 				.listRowInsets(EdgeInsets(top: 6, leading: 15, bottom: 6, trailing: 15))
 				Section { /// ``metadata``
 					VStack(alignment: .leading) {
-						Text("\(session?.createdAt ?? .now, format: .dateTime.year().month().day())")
-						Text("\(session?.deck?.name ?? "Every Card")")
-						if let mode = session?.mode {
+						Text("\(timeTrial?.createdAt ?? .now, format: .dateTime.year().month().day())")
+						Text("\(timeTrial?.deck?.name ?? "Every Card")")
+						if let mode = timeTrial?.mode {
 							Text(mode.mode)
 						}
-						Text("\((session?.success ?? 0), format: .percent.precision(.fractionLength(0...1))) success")
+						Text("\((timeTrial?.success ?? 0), format: .percent.precision(.fractionLength(0...1))) success")
 					}
 					.foregroundStyle(.secondary)
 					.frame(maxWidth: .infinity, alignment: .leading)
@@ -83,9 +83,9 @@ struct TimeTrialResultView: View {
 				.listRowSeparator(.hidden)
 			}
 			.onAppear {
-				let newSession = Session(in: selectedDeck, using: preferences.trialMode, with: calculateSuccesRate(results))
-				modelContext.insert(newSession)
-				session = newSession
+				let newTimeTrial = TimeTrial(in: selectedDeck, using: preferences.trialMode, with: calculateSuccesRate(results))
+				modelContext.insert(newTimeTrial)
+				timeTrial = newTimeTrial
 			}
 			.toolbar { toolbar }
 			.listStyle(.plain)

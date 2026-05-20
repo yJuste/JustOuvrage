@@ -1,8 +1,8 @@
 //
-//  Session.swift
+//  TimeTrial.swift
 //  JustOuvrage
 //
-//  Created by Jules Longin on 5/18/26.
+//  Created by Jules Longin on 5/19/26.
 //
 
 import SwiftData
@@ -10,7 +10,7 @@ import Foundation
 
 /// A Model for a  ``Session``.
 /// External Dependencies: Deck, Mode
-@Model final class Session {
+@Model final class TimeTrial {
 	
 	@Attribute(.unique) var id: UUID
 	var deck: Deck?

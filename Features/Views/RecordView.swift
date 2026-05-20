@@ -19,7 +19,7 @@ struct RecordView: View {
 	
 	@Namespace private var namespace
 	
-	@Query(sort: \Session.createdAt, order: .reverse) private var sessions: [Session]
+	@Query(sort: \TimeTrial.createdAt, order: .reverse) private var sessions: [TimeTrial]
 	
 	@State private var selectedSession: SessionRoute?
 	
@@ -52,7 +52,7 @@ struct RecordView: View {
 #Preview {
 	
 	let config = ModelConfiguration(isStoredInMemoryOnly: true)
-	let container = try! ModelContainer(for: Deck.self, Session.self, configurations: config)
+	let container = try! ModelContainer(for: Deck.self, TimeTrial.self, configurations: config)
 	let context = container.mainContext
 	let deck1 = Deck(name: "Hello", image: "deck")
 	let deck2 = Deck(name: "Lucas", image: "deck")
@@ -60,9 +60,9 @@ struct RecordView: View {
 	context.insert(deck1)
 	context.insert(deck2)
 	context.insert(deck3)
-	context.insert(Session(in: deck1, using: .standard, with: 0.8))
-	context.insert(Session(in: deck1, using: .standard, with: 0.4))
-	context.insert(Session(in: deck2, using: .standard, with: 0.9))
+	context.insert(TimeTrial(in: deck1, using: .standard, with: 0.8))
+	context.insert(TimeTrial(in: deck1, using: .standard, with: 0.4))
+	context.insert(TimeTrial(in: deck2, using: .standard, with: 0.9))
 	return RecordView()
 		.modelContainer(container)
 		.environment(FileImageStorage())

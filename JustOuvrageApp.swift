@@ -21,6 +21,6 @@ struct JustOuvrageApp: App {
 			ContentView()
 				.environment(FileImageStorage())
 		}
-		.modelContainer(for: [Card.self, Deck.self, Draft.self, Session.self])
+		.modelContainer(for: [Card.self, Deck.self, Draft.self, TimeTrial.self])
 	}
 }
