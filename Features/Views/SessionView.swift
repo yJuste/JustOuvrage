@@ -1,8 +1,8 @@
 //
-//  RecordView.swift
+//  SessionView.swift
 //  JustOuvrage
 //
-//  Created by Jules Longin on 5/19/26.
+//  Created by Jules Longin on 5/20/26.
 //
 
 import SwiftUI
@@ -15,7 +15,7 @@ enum SessionRoute: Hashable {
 	case audio(UUID)
 }
 
-struct RecordView: View {
+struct SessionView: View {
 	
 	@Namespace private var namespace
 	
@@ -44,6 +44,7 @@ struct RecordView: View {
 				}
 			}
 			.navigationTitle("Session")
+			.toolbarTitleDisplayMode(.inlineLarge)
 			.listStyle(.plain)
 		}
 	}
@@ -63,7 +64,7 @@ struct RecordView: View {
 	context.insert(TimeTrial(in: deck1, using: .standard, with: 0.8))
 	context.insert(TimeTrial(in: deck1, using: .standard, with: 0.4))
 	context.insert(TimeTrial(in: deck2, using: .standard, with: 0.9))
-	return RecordView()
+	return SessionView()
 		.modelContainer(container)
 		.environment(FileImageStorage())
 }

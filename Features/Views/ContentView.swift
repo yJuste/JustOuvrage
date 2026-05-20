@@ -33,8 +33,8 @@ fileprivate extension ContentView {
 			Tab("Trial", systemImage: "flag.pattern.checkered.2.crossed") {
 				TrialView()
 			}
-			Tab("Record", systemImage: "rectangle.dashed.badge.record") {
-				RecordView()
+			Tab("Session", systemImage: "rectangle.dashed.badge.record") {
+				SessionView()
 			}
 			Tab("Library", systemImage: "rectangle.stack.fill") {
 				LibraryView()

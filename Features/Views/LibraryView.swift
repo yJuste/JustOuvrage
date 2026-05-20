@@ -33,7 +33,7 @@ struct LibraryView: View {
 					NavigationLink {
 						CardsView()
 					} label: {
-						Label("Cards", systemImage: "text.pad.header")
+						Label("Cards", systemImage: "plus.rectangle.portrait")
 					}
 					NavigationLink {
 						DecksView()

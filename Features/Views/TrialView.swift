@@ -148,6 +148,8 @@ struct TrialView: View {
 				}
 			}
 			.toolbar { toolbar }
+			.navigationTitle("Time Trial")
+			.toolbarTitleDisplayMode(.inlineLarge)
 		}
 	}
 }
@@ -195,17 +197,6 @@ fileprivate extension TrialView {
 fileprivate extension TrialView {
 	
 	@ToolbarContentBuilder private var toolbar: some ToolbarContent {
-		ToolbarItem(placement: .topBarLeading) {
-			Button {
-				dismiss()
-			} label: {
-				Label("Close", systemImage: "xmark")
-			}
-		}
-		ToolbarItem(placement: .principal) {
-			Text("Time Trial Mode")
-				.font(.headline)
-		}
 		ToolbarItem(placement: .topBarTrailing) {
 			Button {
 				argument = argument(from: cards)
