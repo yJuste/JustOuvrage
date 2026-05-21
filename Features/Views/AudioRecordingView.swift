@@ -176,11 +176,42 @@ struct AudioRecordingView: View {
 				}
 				.padding(.horizontal)
 				.sheet(isPresented: $showDepiction) {
-					ScrollView {
-						Text(session.depiction)
-							.foregroundStyle(Color(.label))
-							.padding(.vertical, 20)
-							.padding(.horizontal, 20)
+					NavigationStack {
+						ScrollView {
+							Text(session.title)
+								.font(.title)
+								.bold()
+								.foregroundStyle(.accent)
+								.padding(.horizontal, 20)
+							Text(session.subtitle)
+								.font(.title3)
+								.bold()
+								.foregroundStyle(Color(.label).opacity(0.7))
+								.padding(.horizontal, 20)
+								.padding(.bottom, 20)
+							Text(session.depiction)
+								.foregroundStyle(Color(.label))
+								.padding(.horizontal, 20)
+							session.recordingExample
+							Text(session.depiction2)
+								.foregroundStyle(Color(.label))
+								.padding(.horizontal, 20)
+							session.cardExample
+							Text(session.depiction3)
+								.foregroundStyle(Color(.label))
+								.padding(.horizontal, 20)
+						}
+						.toolbar {
+							ToolbarItem(placement: .topBarLeading) {
+								Button {
+									dismiss()
+								} label: {
+									Label("Close", systemImage: "xmark")
+								}
+							}
+						}
+						.navigationTitle("Description")
+						.navigationBarTitleDisplayMode(.inline)
 					}
 				}
 		}

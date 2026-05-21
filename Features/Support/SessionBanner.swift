@@ -26,12 +26,12 @@ struct SessionBanner: View {
 					.frame(height: 120)
 					.frame(maxWidth: .infinity)
 					.matchedTransitionSource(id: id, in: namespace)
+				
 				Text(title)
 					.bold()
-					.padding(10)
-					.background(.regularMaterial.opacity(0.8))
-					.clipShape(RoundedRectangle(cornerRadius: 8))
-					.foregroundStyle(Color.primary)
+					.padding(.horizontal, 12)
+					.padding(.vertical, 8)
+					.glassEffect(.clear.interactive())
 			}
 			.clipShape(RoundedRectangle(cornerRadius: 8))
 		}

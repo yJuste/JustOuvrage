@@ -135,7 +135,7 @@ fileprivate extension LibraryView {
 		}
 		ToolbarSpacer(.fixed, placement: .topBarTrailing)
 		ToolbarItem(placement: .topBarTrailing) {
-			Image(.pissenlit)
+			Image(.yellowflower)
 				.resizable()
 				.frame(width: 36, height: 36)
 				.clipShape(Circle())
