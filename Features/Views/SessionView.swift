@@ -10,16 +10,14 @@ import SwiftData
 
 // MARK: In future updates, add Session for creating record audio, site session, language session, trial mode session
 
-enum SessionRoute: Hashable {
-	
-	case audio(UUID)
-}
-
 struct SessionView: View {
 	
-	@Namespace private var namespace
+	enum SessionRoute: Hashable {
+		
+		case audio(UUID)
+	}
 	
-	@Query(sort: \TimeTrial.createdAt, order: .reverse) private var sessions: [TimeTrial]
+	@Namespace private var namespace
 	
 	@State private var selectedSession: SessionRoute?
 	
@@ -30,7 +28,7 @@ struct SessionView: View {
 			ScrollView {
 				Section {
 					LazyVStack(spacing: 10) {
-						SessionBanner(id: audio, namespace: namespace, title: "Audio Recording", image: .yellowflower) {
+						SessionBanner(id: audio, namespace: namespace, title: "Audio Recording", image: .audioRecording) {
 							selectedSession = .audio(audio)
 						}
 					}
@@ -40,7 +38,7 @@ struct SessionView: View {
 			.navigationDestination(item: $selectedSession) { session in
 				switch session {
 				case .audio(let id):
-					AudioRecordingSession(id: id, namespace: namespace)
+					AudioRecordingView(id: id, namespace: namespace)
 				}
 			}
 			.navigationTitle("Session")

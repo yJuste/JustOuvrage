@@ -33,7 +33,7 @@ struct LibraryView: View {
 					NavigationLink {
 						CardsView()
 					} label: {
-						Label("Cards", systemImage: "plus.rectangle.portrait")
+						Label("Cards", systemImage: "rectangle.portrait.on.rectangle.portrait.fill")
 					}
 					NavigationLink {
 						DecksView()
@@ -135,7 +135,7 @@ fileprivate extension LibraryView {
 		}
 		ToolbarSpacer(.fixed, placement: .topBarTrailing)
 		ToolbarItem(placement: .topBarTrailing) {
-			Image(.anna)
+			Image(.pissenlit)
 				.resizable()
 				.frame(width: 36, height: 36)
 				.clipShape(Circle())

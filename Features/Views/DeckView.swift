@@ -59,7 +59,7 @@ struct DeckView: View {
 									} label: {
 										Image(systemName: "shuffle")
 											.frame(width: 50, height: 50)
-											.glassEffect(.regular.tint(.secondary.opacity(0.2)).interactive())
+											.glassEffect(.clear.interactive())
 									}
 									Button {
 										//
@@ -73,7 +73,7 @@ struct DeckView: View {
 									} label: {
 										Image(systemName: "arrow.down")
 											.frame(width: 50, height: 50)
-											.glassEffect(.regular.tint(.secondary.opacity(0.2)).interactive())
+											.glassEffect(.clear.interactive())
 									}
 								}
 								.font(.system(size: 20, weight: .semibold))

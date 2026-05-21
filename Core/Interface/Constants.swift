@@ -36,6 +36,9 @@ enum Constants {
 	// Height of a sheet of the draft view.
 	static let heightOfADraft: [CGFloat] = [0.315, 0.38]
 	
+	// Height of the sheet of the recording view.
+	static let heightOfARecording: [CGFloat] = [0.25, 0.5]
+	
 	//	--- Icons -------------------------------------------------------
 	
 	// Icon for the new card view.

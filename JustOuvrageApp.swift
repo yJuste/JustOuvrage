@@ -14,12 +14,15 @@ import SwiftData
 @main
 struct JustOuvrageApp: App {
 	
-	init() { Appearance.configurePicker() }
+	init() {
+		Appearance.configurePicker()
+	}
 	
 	var body: some Scene {
 		WindowGroup {
 			ContentView()
 				.environment(FileImageStorage())
+				.environment(Recording())
 		}
 		.modelContainer(for: [Card.self, Deck.self, Draft.self, TimeTrial.self])
 	}

@@ -88,6 +88,9 @@
     "~ %.0f FPS" : {
 
     },
+    "10 left ⋅ 68%" : {
+
+    },
     "Add" : {
 
     },
@@ -139,6 +142,9 @@
     "Ascending" : {
 
     },
+    "Audio Recording" : {
+
+    },
     "Cancel" : {
 
     },
@@ -164,9 +170,6 @@
 
     },
     "Close" : {
-
-    },
-    "Content" : {
 
     },
     "Continue" : {
@@ -325,9 +328,6 @@
     "Please fill in both sides before saving." : {
 
     },
-    "Pop star Camila Cabello performs songs from her new album, C, XOXO, and some of her biggest hits at Rock in Rio Lisboa." : {
-
-    },
     "Quick Add" : {
 
     },
@@ -350,6 +350,9 @@
 
     },
     "Record" : {
+
+    },
+    "Recording" : {
 
     },
     "Refresh Timer" : {
@@ -382,9 +385,6 @@
     "Settings" : {
 
     },
-    "Show subtitle" : {
-
-    },
     "Spanish" : {
 
     },
@@ -403,13 +403,7 @@
     "Time Trial" : {
 
     },
-    "Time Trial Mode" : {
-
-    },
     "Timer" : {
-
-    },
-    "Title" : {
 
     },
     "Trial" : {

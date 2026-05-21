@@ -5,7 +5,7 @@
 //  Created by Jules Longin on 4/23/26.
 //
 
-import SwiftUI
+import UIKit
 
 // MARK: When VIewModel will be added, Use Data over UIImage
 
@@ -14,7 +14,11 @@ import SwiftUI
 /// External Dependencies: Constants, Errors
 @Observable final class FileImageStorage: ImageStorageService {
 	
-	private let folder = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0].appendingPathComponent("Images")
+	private let folder: URL = {
+		let url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0].appendingPathComponent("Images", isDirectory: true)
+		try? FileManager.default.createDirectory(at: url, withIntermediateDirectories: true)
+		return url
+	}()
 	
 	private let cache: NSCache<NSString, UIImage> = { return NSCache<NSString, UIImage>() }()
 	
