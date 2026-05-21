@@ -115,6 +115,9 @@
     "All" : {
 
     },
+    "Are you sure you want to clear this audio?" : {
+
+    },
     "Are you sure you want to delete all the selection?" : {
 
     },
@@ -161,6 +164,15 @@
 
     },
     "Clear All" : {
+
+    },
+    "Clear Audio" : {
+
+    },
+    "Clear Back Audio" : {
+
+    },
+    "Clear Front Audio" : {
 
     },
     "Clear Searches?" : {
@@ -389,6 +401,9 @@
 
     },
     "Standard" : {
+
+    },
+    "Stop" : {
 
     },
     "Take Photo" : {

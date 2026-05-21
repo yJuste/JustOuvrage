@@ -53,4 +53,16 @@ import AVFoundation
 		guard let url else { return false }
 		return FileManager.default.fileExists(atPath: url.path)
 	}
+	
+	func delete(_ url: URL?) {
+		guard let url else { return }
+		stop()
+		do {
+			if FileManager.default.fileExists(atPath: url.path) {
+				try FileManager.default.removeItem(at: url)
+			}
+		} catch {
+			print("Failed to delete audio:", error)
+		}
+	}
 }

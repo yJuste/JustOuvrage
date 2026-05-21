@@ -51,7 +51,7 @@ struct AudioRecordingView: View {
 							}
 						LazyVStack(alignment: .leading, spacing: 15) {
 							ForEach(cards) { card in
-								HStack(spacing: 12) {
+								HStack(spacing: 8) {
 									VStack(alignment: .leading, spacing: 5) {
 										Text(card.frontEntry)
 											.font(.subheadline)
@@ -60,17 +60,29 @@ struct AudioRecordingView: View {
 											.foregroundStyle(.secondary)
 									}
 									Spacer()
-									Button {
-										selectedCard = card
-										showCard = false
-										showRecording = true
-									} label: {
-										Image(systemName: "waveform")
-											.font(.system(size: 28))
-											.padding(12)
-											.background(Circle().glassEffect(.clear.interactive()))
+									ZStack(alignment: .bottom) {
+										Button {
+											selectedCard = card
+											showCard = false
+											showRecording = true
+										} label: {
+											Image(systemName: "waveform")
+												.font(.system(size: 28))
+												.padding(12)
+												.background(Circle().glassEffect(.clear.tint(card.frontRecording != nil && card.backRecording != nil ? .green : card.frontRecording != nil || card.backRecording != nil ? .orange : .clear).interactive()))
+										}
+										.buttonStyle(.plain)
+										HStack(spacing: 0) {
+											if card.frontRecording != nil {
+												Image(systemName: "circle.fill")
+											}
+											if card.backRecording != nil {
+												Image(systemName: "circle.fill")
+											}
+										}
+										.font(.caption2)
+										.offset(y: 5)
 									}
-									.buttonStyle(.plain)
 								}
 								.padding()
 								.background(RoundedRectangle(cornerRadius: 18).fill(.secondary.opacity(0.2)))
