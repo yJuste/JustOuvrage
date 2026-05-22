@@ -159,7 +159,6 @@ fileprivate extension EditCardView {
 		} catch {
 			print(Errors.ModelContextError)
 		}
-		dismiss()
 	}
 }
 
@@ -196,6 +195,7 @@ fileprivate extension EditCardView {
 		ToolbarItem(placement: .topBarTrailing) {
 			Button {
 				editCard()
+				dismiss()
 			} label: {
 				Label("Done", systemImage: "checkmark")
 			}

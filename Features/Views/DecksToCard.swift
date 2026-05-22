@@ -20,7 +20,7 @@ struct DecksToCard: View {
 	@State private var search: String = ""
 	@State private var selectedDecks: Set<Deck.ID> = []
 	
-	var filteredDecks: [Deck] {
+	private var filteredDecks: [Deck] {
 		guard !search.isEmpty else { return decks }
 		return decks.filter {
 			$0.name.localizedCaseInsensitiveContains(search)

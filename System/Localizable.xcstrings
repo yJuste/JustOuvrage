@@ -7,9 +7,6 @@
     "\"%@\"" : {
 
     },
-    "[Unknown order]" : {
-
-    },
     "%@" : {
 
     },
@@ -96,6 +93,9 @@
       }
     },
     "~ %.0f FPS" : {
+
+    },
+    "A → Z Ascending" : {
 
     },
     "Add" : {
@@ -230,6 +230,9 @@
     "Delete from Library" : {
 
     },
+    "Description" : {
+
+    },
     "Difficulty" : {
 
     },
@@ -240,6 +243,9 @@
 
     },
     "Edit Card" : {
+
+    },
+    "Edit Deck" : {
 
     },
     "English" : {
@@ -320,6 +326,12 @@
     "Newest to Oldest" : {
 
     },
+    "No cards selected" : {
+
+    },
+    "OK" : {
+
+    },
     "Oldest to Newest" : {
 
     },
@@ -369,6 +381,9 @@
 
     },
     "Record" : {
+
+    },
+    "Record audio" : {
 
     },
     "Recording" : {
@@ -434,7 +449,13 @@
     "Visible" : {
 
     },
+    "You can't start the Time Trial because there are no cards in the deck." : {
+
+    },
     "Your Just Account provides a unique identifier that connects you across all Just Anthology productions." : {
+
+    },
+    "Z → A Descending" : {
 
     }
   },

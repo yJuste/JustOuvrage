@@ -25,6 +25,7 @@ struct DeckView: View {
 	@State private var showDepiction: Bool = false
 	@State private var showCardsToDeck: Bool = false
 	@State private var showDeleteDeck: Bool = false
+	@State private var showEditDeck: Bool = false
 	
 	var body: some View {
 		NavigationStack {
@@ -155,6 +156,10 @@ struct DeckView: View {
 				.padding(.top, 17)
 			}
 			.toolbar { toolbar }
+			.sheet(isPresented: $showEditDeck) {
+				EditDeckView(title: "Edit Deck", deck: deck)
+					.environment(storage)
+			}
 			.sheet(isPresented: $showCardsToDeck) {
 				CardsToDeck(deck: deck)
 			}
@@ -185,6 +190,11 @@ fileprivate extension DeckView {
 		}
 		ToolbarItem(placement: .topBarTrailing) {
 			Menu {
+				Button {
+					showEditDeck.toggle()
+				} label: {
+					Label("Edit Deck", systemImage: "slider.horizontal.3")
+				}
 				Button {
 					showCardsToDeck.toggle()
 				} label: {

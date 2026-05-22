@@ -21,6 +21,7 @@ struct TrialView: View {
 	@Bindable private var preferences: Preferences = Preferences.unique
 	@State private var argument: Argument?
 	@State private var showTimeTrial: Bool = false
+	@State private var showNoCards: Bool = false
 	
 	private let optionsOfTimer: [TimeInterval] = [1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0]
 	private let optionsOfNumberOfCards: [Int] = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160, 170, 180, 190, 200]
@@ -93,7 +94,11 @@ struct TrialView: View {
 									.tag(order)
 							case .oldestToNewest: Text("Oldest to Newest")
 									.tag(order)
-							default: Text("[Unknown order]")
+							case .alphabeticalAscending:
+								Text("A → Z Ascending")
+									.tag(order)
+							case .alphabeticalDescending:
+								Text("Z → A Descending")
 									.tag(order)
 							}
 						}
@@ -150,6 +155,12 @@ struct TrialView: View {
 			.toolbar { toolbar }
 			.navigationTitle("Time Trial")
 			.toolbarTitleDisplayMode(.inlineLarge)
+			.scrollIndicators(.hidden)
+			.alert("No cards selected", isPresented: $showNoCards) {
+				Button("OK", role: .cancel) { }
+			} message: {
+				Text("You can't start the Time Trial because there are no cards in the deck.")
+			}
 		}
 	}
 }
@@ -176,7 +187,16 @@ fileprivate extension TrialView {
 		case .random: res.shuffle()
 		case .newestToOldest: break
 		case .oldestToNewest: res = res.sorted { $0.createdAt < $1.createdAt }
-		default: break
+		case .alphabeticalAscending:
+			res = res.sorted {
+				if $0.frontEntry == $1.frontEntry { return $0.backEntry.localizedCaseInsensitiveCompare($1.backEntry) == .orderedAscending }
+				return $0.frontEntry.localizedCaseInsensitiveCompare($1.frontEntry) == .orderedAscending
+			}
+		case .alphabeticalDescending:
+			res = res.sorted {
+				if $0.frontEntry == $1.frontEntry { return $0.backEntry.localizedCaseInsensitiveCompare($1.backEntry) == .orderedDescending }
+				return $0.frontEntry.localizedCaseInsensitiveCompare($1.frontEntry) == .orderedDescending
+			}
 		}
 		let limit = preferences.trialNumberOfCards
 		if limit > 0 {
@@ -199,7 +219,9 @@ fileprivate extension TrialView {
 	@ToolbarContentBuilder private var toolbar: some ToolbarContent {
 		ToolbarItem(placement: .topBarTrailing) {
 			Button {
-				argument = argument(from: cards)
+				let arg = argument(from: cards)
+				guard !arg.cards.isEmpty else { return showNoCards.toggle() }
+				argument = arg
 				showTimeTrial.toggle()
 			} label: {
 				Text("Go!")

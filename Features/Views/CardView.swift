@@ -26,6 +26,7 @@ struct CardView: View {
 	@State private var showEditCard: Bool = false
 	@State private var showDeleteCard: Bool = false
 	@State private var showDecksToCard: Bool = false
+	@State private var showRecording: Bool = false
 	@State private var player: AVAudioPlayer?
 	@State private var activePlaying: String?
 	@State private var playerDelegate = PlayerDelegate()
@@ -109,6 +110,14 @@ struct CardView: View {
 			.fullScreenCover(item: $destination) {
 				SFSafariViewWrapper(url: $0.url)
 			}
+			.sheet(isPresented: $showRecording) {
+				RecordingView(card: card)
+					.presentationDetents([
+						.fraction(Constants.heightOfARecording[0]),
+						.fraction(Constants.heightOfARecording[1])
+					])
+					.presentationBackgroundInteraction(.enabled)
+			}
 			.alert("Delete Card", isPresented: $showDeleteCard) {
 				Button("Remove", role: .destructive) {
 					modelContext.delete(card)
@@ -174,6 +183,11 @@ fileprivate extension CardView {
 					showDeleteCard.toggle()
 				} label: {
 					Label("Delete from Library", systemImage: "trash")
+				}
+				Button {
+					showRecording.toggle()
+				} label: {
+					Label("Record audio", systemImage: "microphone.fill")
 				}
 				Button {
 					showDecksToCard.toggle()

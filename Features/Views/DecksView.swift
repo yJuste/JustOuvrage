@@ -54,6 +54,7 @@ struct DecksView: View {
 									Text(deck.depiction)
 										.font(.system(size: 15, weight: .regular, design: .default))
 										.foregroundStyle(.secondary)
+										.lineLimit(2)
 								}
 								Spacer()
 								Button {
