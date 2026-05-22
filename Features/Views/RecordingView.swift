@@ -20,45 +20,40 @@ struct RecordingView: View {
 	@State private var deleteSide: DeleteSide?
 	@State private var player: AVAudioPlayer?
 	@State private var playerDelegate = PlayerDelegate()
-	@State private var showDeleteFrontAudio: Bool = false
-	@State private var showDeleteBackAudio: Bool = false
 	@State private var durations: [Side: String] = [:]
 	
 	var body: some View {
 		NavigationStack {
 			ScrollView {
 				VStack(spacing: 20) {
-					recordSection(title: card.frontEntry, url: card.frontRecording, side: .front)
-					recordSection(title: card.backEntry, url: card.backRecording, side: .back)
+					recordSection(title: card.frontEntry, filename: card.frontRecording, side: .front)
+					recordSection(title: card.backEntry, filename: card.backRecording, side: .back)
 				}
 				.padding(.horizontal, 20)
-			}
-			.toolbar { toolbar }
-			.onDisappear {
-				stopRecording()
-				stopPlaying()
 			}
 			.onAppear {
 				duration(for: card.frontRecording, side: .front)
 				duration(for: card.backRecording, side: .back)
 			}
+			.onDisappear {
+				stopRecording()
+				stopPlaying()
+			}
+			.toolbar { toolbar }
 			.navigationTitle("Recording")
 			.navigationBarTitleDisplayMode(.inline)
-			.alert("Clear Audio", isPresented: Binding(
-				get: { deleteSide != nil },
-				set: { if !$0 { deleteSide = nil } }
-			)) {
+			.alert("Clear Audio", isPresented: Binding(get: { deleteSide != nil }, set: { if !$0 { deleteSide = nil } })
+			) {
 				Button("Clear", role: .destructive) {
-					if let target = deleteSide {
-						switch target {
-						case .front:
-							deleteAudio(for: .front)
-						case .back:
-							deleteAudio(for: .back)
-						case .all:
-							deleteAudio(for: .front)
-							deleteAudio(for: .back)
-						}
+					guard let target = deleteSide else { return }
+					switch target {
+					case .front:
+						deleteAudio(for: .front)
+					case .back:
+						deleteAudio(for: .back)
+					case .all:
+						deleteAudio(for: .front)
+						deleteAudio(for: .back)
 					}
 					deleteSide = nil
 				}
@@ -71,7 +66,7 @@ struct RecordingView: View {
 		}
 	}
 	
-	@ViewBuilder private func recordSection(title: String, url: URL?, side: Side) -> some View {
+	@ViewBuilder private func recordSection(title: String, filename: String?, side: Side) -> some View {
 		VStack(alignment: .trailing) {
 			HStack(spacing: 20) {
 				Text(title)
@@ -81,27 +76,27 @@ struct RecordingView: View {
 					toggleRecording(side)
 				} label: {
 					Image(systemName: activeRecording == side ? "stop.circle.fill" : "mic.circle.fill")
-						.font(.system(size: 40))
-						.foregroundStyle(activeRecording == side ? .red : .primary)
-						.padding(3)
-						.background(Circle().glassEffect(.clear.interactive()))
+					.font(.system(size: 40))
+					.foregroundStyle(activeRecording == side ? .red : .primary)
+					.padding(3)
+					.background(Circle().glassEffect(.clear.interactive()))
 				}
 				Button {
-					play(url, side: side)
+					play(filename, side: side)
 				} label: {
 					VStack(spacing: 4) {
 						Label(activePlaying == side ? "Stop" : "Play", systemImage: activePlaying == side ? "stop.fill" : "play.fill")
-							.bold()
-						Label("\(durations[side] ?? "time")", systemImage: "timer")
-							.font(.caption2)
-							.foregroundStyle(.secondary)
+						.bold()
+						Label(durations[side] ?? "time", systemImage: "timer")
+						.font(.caption2)
+						.foregroundStyle(.secondary)
 					}
 					.lineLimit(1)
 					.minimumScaleFactor(0.01)
 					.frame(minWidth: 70)
 					.padding(.horizontal, 20)
 					.padding(.vertical, 7)
-					.background(Capsule().glassEffect(.clear.tint(url != nil ? .green.opacity(0.4) : .clear).interactive()))
+					.background(Capsule().glassEffect(.clear.tint(filename != nil ? .green.opacity(0.4) : .clear).interactive()))
 				}
 			}
 			.buttonStyle(.plain)
@@ -132,12 +127,20 @@ fileprivate extension RecordingView {
 		}
 		stopRecording()
 		do {
-			let url = try storage.start(id: card.id, tag: side == .front ? "front" : "back")
+			
+			let filename = try storage.start()
+			let previous: String?
+			
 			switch side {
 			case .front:
-				card.frontRecording = url
+				previous = card.frontRecording
+				card.frontRecording = filename
 			case .back:
-				card.backRecording = url
+				previous = card.backRecording
+				card.backRecording = filename
+			}
+			if let previous {
+				storage.delete(previous)
 			}
 			activeRecording = side
 		} catch {
@@ -148,8 +151,8 @@ fileprivate extension RecordingView {
 	private func stopRecording() {
 		storage.stop()
 		if let side = activeRecording {
-			let url = (side == .front) ? card.frontRecording : card.backRecording
-			duration(for: url, side: side)
+			let filename = side == .front ? card.frontRecording : card.backRecording
+			duration(for: filename, side: side)
 		}
 		activeRecording = nil
 	}
@@ -160,17 +163,15 @@ fileprivate extension RecordingView {
 		activePlaying = nil
 	}
 	
-	private func play(_ url: URL?, side: Side) {
+	private func play(_ filename: String?, side: Side) {
 		
 		stopRecording()
-		if activePlaying == side {
-			return stopPlaying()
-		}
+		if activePlaying == side { return stopPlaying() }
 		stopPlaying()
-		guard let url else { return }
+		guard let filename else { return }
+		let url = storage.url(for: filename)
 		do {
 			let player = try AVAudioPlayer(contentsOf: url)
-			
 			playerDelegate.onFinish = {
 				Task {
 					self.activePlaying = nil
@@ -188,33 +189,33 @@ fileprivate extension RecordingView {
 	
 	private func deleteAudio(for side: Side) {
 		
-		let url: URL?
+		let filename: String?
 		
 		stopRecording()
 		stopPlaying()
+		
 		switch side {
 		case .front:
-			url = card.frontRecording
+			filename = card.frontRecording
 			durations[side] = nil
 		case .back:
-			url = card.backRecording
+			filename = card.backRecording
 			durations[side] = nil
 		}
-		storage.delete(url)
+		storage.delete(filename)
 		switch side {
 		case .front: card.frontRecording = nil
 		case .back: card.backRecording = nil
 		}
 	}
 	
-	private func duration(for url: URL?, side: Side) {
+	private func duration(for filename: String?, side: Side) {
 		
-		guard let url else { return durations[side] = nil }
-		
+		guard let filename else { return durations[side] = nil }
+		let url = storage.url(for: filename)
 		do {
 			let player = try AVAudioPlayer(contentsOf: url)
 			let duration = player.duration
-			
 			if duration < 60 {
 				durations[side] = String(format: "%.2fs", duration)
 			} else {
@@ -225,12 +226,12 @@ fileprivate extension RecordingView {
 		}
 	}
 	
-	private final class PlayerDelegate: NSObject, AVAudioPlayerDelegate {
+	final class PlayerDelegate: NSObject, AVAudioPlayerDelegate {
+		
 		var onFinish: (() -> Void)?
 		
-		func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
-			onFinish?()
-		}
+		func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool
+		) { onFinish?() }
 	}
 }
 

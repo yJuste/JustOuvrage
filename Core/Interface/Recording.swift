@@ -18,13 +18,14 @@ import AVFoundation
 		return url
 	}()
 	
-	func url(id: UUID, tag: String) -> URL {
-		folder.appendingPathComponent("\(id.uuidString)-\(tag).m4a")
+	func url(for filename: String) -> URL {
+		folder.appendingPathComponent(filename)
 	}
 	
-	func start(id: UUID, tag: String) throws -> URL {
+	func start() throws -> String {
 		
-		let url = url(id: id, tag: tag)
+		let filename = "\(UUID().uuidString).m4a"
+		let url = url(for: filename)
 		let session = AVAudioSession.sharedInstance()
 		
 		try session.setCategory(.playAndRecord, mode: .default, options: [.defaultToSpeaker, .allowBluetoothHFP])
@@ -41,7 +42,7 @@ import AVFoundation
 		recorder?.prepareToRecord()
 		recorder?.record()
 		
-		return url
+		return filename
 	}
 	
 	func stop() {
@@ -49,20 +50,24 @@ import AVFoundation
 		recorder = nil
 	}
 	
-	func exists(_ url: URL?) -> Bool {
-		guard let url else { return false }
-		return FileManager.default.fileExists(atPath: url.path)
+	func exists(_ filename: String?) -> Bool {
+		
+		guard let filename else { return false }
+		
+		return FileManager.default.fileExists(atPath: url(for: filename).path)
 	}
 	
-	func delete(_ url: URL?) {
-		guard let url else { return }
-		stop()
+	func delete(_ filename: String?) {
+		
+		guard let filename else { return }
+		
+		let fileURL = url(for: filename)
 		do {
-			if FileManager.default.fileExists(atPath: url.path) {
-				try FileManager.default.removeItem(at: url)
+			if FileManager.default.fileExists(atPath: fileURL.path) {
+				try FileManager.default.removeItem(at: fileURL)
 			}
 		} catch {
-			print("Failed to delete audio:", error)
+			print(Errors.AudioRecorder)
 		}
 	}
 }

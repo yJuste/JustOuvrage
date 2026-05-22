@@ -7,6 +7,9 @@
 
 import SwiftUI
 import SwiftData
+import AVFoundation
+
+// MARK: Have to create an Audio Player for not repetiting yourself.
 
 /// A view that displays a Card.
 /// External Dependencies: Card, SFSafariViewWrapper, LabelTrailing, WordsLinkingToSite, ForvoSite
@@ -15,6 +18,7 @@ struct CardView: View {
 	let card: Card
 	let site: Site.Sites = Site.unique
 	
+	@Environment(Recording.self) private var storage
 	@Environment(\.modelContext) private var modelContext
 	@Environment(\.dismiss) private var dismiss
 	
@@ -22,9 +26,12 @@ struct CardView: View {
 	@State private var showEditCard: Bool = false
 	@State private var showDeleteCard: Bool = false
 	@State private var showDecksToCard: Bool = false
+	@State private var player: AVAudioPlayer?
+	@State private var activePlaying: String?
+	@State private var playerDelegate = PlayerDelegate()
 	
-	var cleanFrontEntry: [String] { cleanWords(expression: card.frontEntry) }
-	var cleanBackEntry: [String] { cleanWords(expression: card.backEntry) }
+	private var cleanFrontEntry: [String] { cleanWords(expression: card.frontEntry) }
+	private var cleanBackEntry: [String] { cleanWords(expression: card.backEntry) }
 	
 	var body: some View {
 		NavigationStack {
@@ -88,6 +95,9 @@ struct CardView: View {
 				.buttonStyle(.plain)
 				.padding(.horizontal)
 			}
+			.onDisappear {
+				stopPlaying()
+			}
 			.toolbar { toolbar }
 			.scrollIndicators(.hidden)
 			.sheet(isPresented: $showEditCard) {
@@ -109,6 +119,47 @@ struct CardView: View {
 				Text("Are you sure you want to delete this card from your library?")
 			}
 			// other fullScreenCovers
+		}
+	}
+}
+
+/// Methods of CardView.
+private extension CardView {
+	
+	func stopPlaying() {
+		player?.stop()
+		player = nil
+		activePlaying = nil
+	}
+	
+	func play(_ filename: String?) {
+		
+		stopPlaying()
+		guard let filename else { return }
+		let url = storage.url(for: filename)
+		do {
+			let player = try AVAudioPlayer(contentsOf: url)
+			playerDelegate.onFinish = {
+				Task { @MainActor in
+					self.activePlaying = nil
+					self.player = nil
+				}
+			}
+			player.delegate = playerDelegate
+			self.player = player
+			self.activePlaying = filename
+			player.play()
+		} catch {
+			activePlaying = nil
+		}
+	}
+	
+	final class PlayerDelegate: NSObject, AVAudioPlayerDelegate {
+		
+		var onFinish: (() -> Void)?
+		
+		func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
+			onFinish?()
 		}
 	}
 }
@@ -143,6 +194,9 @@ fileprivate extension CardView {
 				.resizable()
 				.frame(width: 36, height: 36)
 				.clipShape(Circle())
+				.onTapGesture {
+					play(card.frontRecording)
+				}
 		}
 		ToolbarSpacer(placement: .topBarLeading)
 		ToolbarItem(placement: .topBarLeading) {
@@ -150,6 +204,9 @@ fileprivate extension CardView {
 				.resizable()
 				.frame(width: 36, height: 36)
 				.clipShape(Circle())
+				.onTapGesture {
+					play(card.backRecording)
+				}
 		}
 	}
 }
@@ -179,3 +236,4 @@ fileprivate extension CardView {
 		)
 	)
 }
+

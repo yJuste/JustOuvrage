@@ -25,6 +25,26 @@ struct AudioRecordingView: View {
 	
 	private let session: AudioRecordingSession = Session.unique.audioRecording
 	
+	private var audioLeft: Int {
+		cards.reduce(0) { result, card in
+			result + (card.frontRecording == nil ? 1 : 0) + (card.backRecording == nil ? 1 : 0)
+		}
+	}
+	
+	private var percentageLeft: Int {
+		let total = cards.count * 2
+		guard total > 0 else { return 0 }
+		let completed = cards.reduce(into: 0) { result, card in
+			if card.frontRecording != nil {
+				result += 1
+			}
+			if card.backRecording != nil {
+				result += 1
+			}
+		}
+		return Int((Double(completed) / Double(total)) * 100)
+	}
+	
 	var body: some View {
 		NavigationStack {
 			GeometryReader { geo in
@@ -99,35 +119,35 @@ struct AudioRecordingView: View {
 				.scrollIndicators(.hidden)
 				.scrollContentBackground(.hidden)
 				.ignoresSafeArea(.container, edges: [.horizontal, .top])
-				.sheet(isPresented: $showCard) {
-					if let card = selectedCard {
-						CardView(card: card)
-							.presentationDetents([
-								.fraction(Constants.heightOfACard[0]),
-								.fraction(Constants.heightOfACard[1])
-							])
-							.presentationBackgroundInteraction(.enabled)
+				.onScrollGeometryChange(
+					for: CGFloat.self,
+					of: { $0.contentOffset.y + $0.contentInsets.top },
+					action: { _, newValue in
+						verticalOffset = -newValue
 					}
-				}
-				.sheet(isPresented: $showRecording) {
-					if let card = selectedCard {
-						RecordingView(card: card)
-							.presentationDetents([
-								.fraction(Constants.heightOfARecording[0]),
-								.fraction(Constants.heightOfARecording[1])
-							])
-							.presentationBackgroundInteraction(.enabled)
-					}
-				}
+				)
 			}
 			.toolbar { toolbar }
-			.onScrollGeometryChange(
-				for: CGFloat.self,
-				of: { $0.contentOffset.y + $0.contentInsets.top },
-				action: { _, newValue in
-					verticalOffset = -newValue
+			.sheet(isPresented: $showCard) {
+				if let card = selectedCard {
+					CardView(card: card)
+						.presentationDetents([
+							.fraction(Constants.heightOfACard[0]),
+							.fraction(Constants.heightOfACard[1])
+						])
+						.presentationBackgroundInteraction(.enabled)
 				}
-			)
+			}
+			.sheet(isPresented: $showRecording) {
+				if let card = selectedCard {
+					RecordingView(card: card)
+						.presentationDetents([
+							.fraction(Constants.heightOfARecording[0]),
+							.fraction(Constants.heightOfARecording[1])
+						])
+						.presentationBackgroundInteraction(.enabled)
+				}
+			}
 		}
 	}
 	
@@ -139,9 +159,9 @@ struct AudioRecordingView: View {
 			Text(session.subtitle)
 				.font(.system(size: 20, weight: .semibold))
 				.foregroundStyle(Color(.label))
-			Text("10 left ⋅ 68%")
+			Text("\(audioLeft) left ⋅ \(percentageLeft)%")
 				.font(.callout)
-				.fontWeight(.medium)
+				.fontWeight(.semibold)
 				.padding(.top, 10)
 				.foregroundStyle(Color(.label))
 			GlassEffectContainer {

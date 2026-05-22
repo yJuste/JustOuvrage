@@ -17,8 +17,8 @@ import Foundation
 	var backEntry: String
 	var frontLanguage: Language
 	var backLanguage: Language
-	var frontRecording: URL?
-	var backRecording: URL?
+	var frontRecording: String?
+	var backRecording: String?
 	var leitnerScore: Int
 	var author: String
 	var lastViewedAt: Date?

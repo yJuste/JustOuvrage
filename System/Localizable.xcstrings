@@ -75,6 +75,16 @@
         }
       }
     },
+    "%lld left ⋅ %lld%%" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$lld left ⋅ %2$lld%%"
+          }
+        }
+      }
+    },
     "%lld/%lld" : {
       "localizations" : {
         "en" : {
@@ -86,9 +96,6 @@
       }
     },
     "~ %.0f FPS" : {
-
-    },
-    "10 left ⋅ 68%" : {
 
     },
     "Add" : {

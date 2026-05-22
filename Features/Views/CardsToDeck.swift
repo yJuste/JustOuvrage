@@ -21,7 +21,7 @@ struct CardsToDeck: View {
 	@State private var search: String = ""
 	@State private var selectedCards: Set<Card.ID> = []
 	
-	var filteredCards: [Card] {
+	private var filteredCards: [Card] {
 		guard !search.isEmpty else { return cards }
 		return cards.filter {
 			$0.frontEntry.localizedCaseInsensitiveContains(search)
