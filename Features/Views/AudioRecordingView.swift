@@ -183,6 +183,7 @@ struct AudioRecordingView: View {
 								.bold()
 								.foregroundStyle(.accent)
 								.padding(.horizontal, 20)
+								.padding(.top, 20)
 							Text(session.subtitle)
 								.font(.title3)
 								.bold()
@@ -201,17 +202,6 @@ struct AudioRecordingView: View {
 								.foregroundStyle(Color(.label))
 								.padding(.horizontal, 20)
 						}
-						.toolbar {
-							ToolbarItem(placement: .topBarLeading) {
-								Button {
-									dismiss()
-								} label: {
-									Label("Close", systemImage: "xmark")
-								}
-							}
-						}
-						.navigationTitle("Description")
-						.navigationBarTitleDisplayMode(.inline)
 					}
 				}
 		}
