@@ -125,6 +125,9 @@
     "Are you sure you want to clear this audio?" : {
 
     },
+    "Are you sure you want to clear your image?" : {
+
+    },
     "Are you sure you want to delete all the selection?" : {
 
     },
@@ -152,6 +155,9 @@
     "Ascending" : {
 
     },
+    "Audio Quality" : {
+
+    },
     "Audio Recording" : {
 
     },
@@ -165,6 +171,9 @@
 
     },
     "Choose Photo" : {
+
+    },
+    "Choose the audio quality of recordings.\n\nVery Low: smallest files, lowest CPU usage\nLow: lightweight, reduced clarity\nMedium: balanced quality and size\nHigh: clear audio for everyday use\nUltra: high fidelity, larger files\nMax: stereo, highest quality, highest resource usage\n\nStorage estimate (100 Mo, 3-second recordings):\n\nVery Low ≈ 11,300 recordings\nLow ≈ 8,500 recordings\nMedium ≈ 5,700 recordings\nHigh ≈ 4,200 recordings\nUltra ≈ 2,800 recordings\nMax ≈ 1,500 recordings\n\nTip: lower quality improves battery life and storage usage." : {
 
     },
     "Clear" : {
@@ -182,6 +191,9 @@
     "Clear Front Audio" : {
 
     },
+    "Clear Image" : {
+
+    },
     "Clear Searches?" : {
 
     },
@@ -194,7 +206,7 @@
     "Continue" : {
 
     },
-    "Controls refresh speed of the trial system.\n\n60 FPS = fastest updates, smoother behavior.\n10 FPS = slower but lighter on CPU." : {
+    "Controls refresh speed of the trial system.\n\n60 FPS = fastest updates, smoother behavior\n10 FPS = slower but lighter on CPU" : {
 
     },
     "Custom" : {
@@ -275,6 +287,9 @@
     "Hide" : {
 
     },
+    "High" : {
+
+    },
     "How many cards to include in this session." : {
 
     },
@@ -296,10 +311,19 @@
     "Log out" : {
 
     },
+    "Low" : {
+
+    },
     "Manage your app preferences, maintenance tools, and data-related settings." : {
 
     },
+    "Max" : {
+
+    },
     "Maximum time per card." : {
+
+    },
+    "Medium" : {
 
     },
     "Missing Information" : {
@@ -444,6 +468,12 @@
 
     },
     "Trial" : {
+
+    },
+    "Ultra" : {
+
+    },
+    "Very Low" : {
 
     },
     "Visible" : {

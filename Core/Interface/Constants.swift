@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import AVFoundation
 
 // MARK: Add Constants for Swiftui ( rectangle, font etc )
 
@@ -28,16 +29,16 @@ enum Constants {
 	static let heightOfANewDeck: CGFloat = 0.55
 	
 	// Height of the sheet of the card view.
-	static let heightOfACard: [CGFloat] = [0.31, 0.38]
+	static let heightOfACard: [CGFloat] = [0.31, 0.4]
 	
 	// Height of the sheet of the deck view.
 	static let heightOfADeck: [CGFloat] = [0.47, 1.0]
 	
 	// Height of a sheet of the draft view.
-	static let heightOfADraft: [CGFloat] = [0.315, 0.38]
+	static let heightOfADraft: [CGFloat] = [0.315, 0.4]
 	
 	// Height of the sheet of the recording view.
-	static let heightOfARecording: [CGFloat] = [0.25, 0.5]
+	static let heightOfARecording: [CGFloat] = [0.25, 0.4]
 	
 	//	--- Icons -------------------------------------------------------
 	

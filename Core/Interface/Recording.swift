@@ -11,6 +11,7 @@ import AVFoundation
 @Observable final class Recording {
 	
 	private var recorder: AVAudioRecorder?
+	private let preferences: Preferences = Preferences.unique
 	
 	private let folder: URL = {
 		let url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0].appendingPathComponent("Audio", isDirectory: true)
@@ -28,15 +29,10 @@ import AVFoundation
 		let url = url(for: filename)
 		let session = AVAudioSession.sharedInstance()
 		
-		try session.setCategory(.playAndRecord, mode: .default, options: [.defaultToSpeaker, .allowBluetoothHFP])
+		try session.setCategory(.playAndRecord, mode: .spokenAudio, options: [.defaultToSpeaker, .allowBluetoothHFP])
 		try session.setActive(true)
 		
-		let settings: [String: Any] = [
-			AVFormatIDKey: kAudioFormatMPEG4AAC,
-			AVSampleRateKey: 44_100,
-			AVNumberOfChannelsKey: 1,
-			AVEncoderAudioQualityKey: AVAudioQuality.high.rawValue
-		]
+		let settings: [String: Any] = preferences.audioQuality.settings
 		
 		recorder = try AVAudioRecorder(url: url, settings: settings)
 		recorder?.prepareToRecord()

@@ -147,12 +147,17 @@ struct EditCardView: View {
 fileprivate extension EditCardView {
 	
 	private func editCard() {
-		card.frontEntry = frontEntry.trimmingCharacters(in: .whitespacesAndNewlines)
-		card.backEntry = backEntry.trimmingCharacters(in: .whitespacesAndNewlines)
+		
+		let front = frontEntry.trimmingCharacters(in: .whitespacesAndNewlines)
+		let back = backEntry.trimmingCharacters(in: .whitespacesAndNewlines)
+		
+		guard !front.isEmpty, !back.isEmpty else { return }
+		
+		card.frontEntry = front
+		card.backEntry = back
 		card.frontLanguage = frontLanguage
 		card.backLanguage = backLanguage
 		card.leitnerScore = leitnerScore
-		
 		do {
 			onSave(card)
 			try modelContext.save()
@@ -200,7 +205,8 @@ fileprivate extension EditCardView {
 				Label("Done", systemImage: "checkmark")
 			}
 			.buttonStyle(.borderedProminent)
-			.disabled(frontEntry.isEmpty || backEntry.isEmpty)
+			.disabled(frontEntry.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || backEntry.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+			)
 		}
 	}
 }

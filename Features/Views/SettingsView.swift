@@ -65,9 +65,48 @@ struct SettingsView: View {
 					Text("""
 Controls refresh speed of the trial system.
 
-60 FPS = fastest updates, smoother behavior.
-10 FPS = slower but lighter on CPU.
+60 FPS = fastest updates, smoother behavior
+10 FPS = slower but lighter on CPU
 """)
+				}
+				Section {
+					Picker("Audio Quality", selection: $preferences.audioQuality) {
+						Text("Very Low")
+							.tag(AudioQuality.veryLow)
+						Text("Low")
+							.tag(AudioQuality.low)
+						Text("Medium")
+							.tag(AudioQuality.medium)
+						Text("High")
+							.tag(AudioQuality.high)
+						Text("Ultra")
+							.tag(AudioQuality.ultra)
+						Text("Max")
+							.tag(AudioQuality.max)
+					}
+					.pickerStyle(.menu)
+				} footer: {
+					Text("""
+  Choose the audio quality of recordings.
+  
+  Very Low: smallest files, lowest CPU usage
+  Low: lightweight, reduced clarity
+  Medium: balanced quality and size
+  High: clear audio for everyday use
+  Ultra: high fidelity, larger files
+  Max: stereo, highest quality, highest resource usage
+  
+  Storage estimate (100 Mo, 3-second recordings):
+  
+  Very Low ≈ 11,300 recordings
+  Low ≈ 8,500 recordings
+  Medium ≈ 5,700 recordings
+  High ≈ 4,200 recordings
+  Ultra ≈ 2,800 recordings
+  Max ≈ 1,500 recordings
+  
+  Tip: lower quality improves battery life and storage usage.
+  """)
 				}
 			}
 			.toolbar { toolbar }

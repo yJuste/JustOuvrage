@@ -30,6 +30,7 @@ import Observation
 		// In Settings
 		case lastCleanDuplicate
 		case trialRefreshTimer
+		case audioQuality
 	}
 	
 	static let unique: Preferences = Preferences()
@@ -45,6 +46,7 @@ import Observation
 	private var trialModeRaw: Int = 0
 	private var lastCleanDuplicateRaw: Double = 0
 	private var trialRefreshTimerRaw: Double = 1.0/60.0
+	private var audioQualityRaw: String = ""
 	
 	private init() {
 		
@@ -60,6 +62,7 @@ import Observation
 		trialModeRaw = userDefaults.integer(forKey: Key.trialMode.rawValue)
 		lastCleanDuplicateRaw = userDefaults.double(forKey: Key.lastCleanDuplicate.rawValue)
 		trialRefreshTimerRaw = userDefaults.object(forKey: Key.trialRefreshTimer.rawValue) as? Double ?? (1.0 / 60.0)
+		audioQualityRaw = userDefaults.string(forKey: Key.audioQuality.rawValue) ?? AudioQuality.high.rawValue
 	}
 	
 	var frontLanguage: Language {
@@ -106,7 +109,7 @@ import Observation
 		get { trialNumberOfCardsRaw }
 		set {
 			trialNumberOfCardsRaw = newValue
-			userDefaults.set(newValue, forKey: Key.trialNumberOfCards.rawValue)
+			userDefaults.set(trialNumberOfCardsRaw, forKey: Key.trialNumberOfCards.rawValue)
 		}
 	}
 	
@@ -137,7 +140,15 @@ import Observation
 		get { trialRefreshTimerRaw }
 		set {
 			trialRefreshTimerRaw = newValue
-			userDefaults.set(newValue, forKey: Key.trialRefreshTimer.rawValue)
+			userDefaults.set(trialRefreshTimerRaw, forKey: Key.trialRefreshTimer.rawValue)
+		}
+	}
+	
+	var audioQuality: AudioQuality {
+		get { AudioQuality(rawValue: audioQualityRaw) ?? .high }
+		set {
+			audioQualityRaw = newValue.rawValue
+			userDefaults.set(audioQualityRaw, forKey: Key.audioQuality.rawValue)
 		}
 	}
 }

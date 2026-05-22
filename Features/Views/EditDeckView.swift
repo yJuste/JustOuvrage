@@ -27,6 +27,7 @@ struct EditDeckView: View {
 	@State private var selectedUIImage: UIImage?
 	@State private var showCancelAlert: Bool = false
 	@State private var showPhotoPicker: Bool = false
+	@State private var showClearImage: Bool = false
 	@State private var isChangedImage: Bool = false
 	@State private var isInitialImage: Bool = false
 	
@@ -84,6 +85,7 @@ struct EditDeckView: View {
 					}
 					VStack(spacing: 20) {
 						TextField("Deck Name", text: $name)
+							.bold()
 							.padding(12)
 							.multilineTextAlignment(.center)
 							.background(Capsule().fill(.thinMaterial))
@@ -92,17 +94,28 @@ struct EditDeckView: View {
 								.scrollContentBackground(.hidden)
 								.padding(.horizontal, 10)
 								.padding(.vertical, 5)
-								.frame(minHeight: 80)
+								.frame(minHeight: 120)
 								.background(.thinMaterial)
 								.clipShape(RoundedRectangle(cornerRadius: 16))
 							if depiction.isEmpty {
 								Text("Description")
+									.bold()
 									.foregroundColor(.secondary.opacity(0.5))
 									.padding(.vertical, 25)
 							}
 						}
+						HStack {
+							Spacer()
+							Button {
+								showClearImage.toggle()
+							} label: {
+								Label("Clear Image", systemImage: "trash")
+									.foregroundStyle(Color(.label))
+									.frame(width: 170, height: 55)
+									.glassEffect(.clear.interactive())
+							}
+						}
 					}
-					.bold()
 					.padding(.horizontal)
 				}
 				.frame(maxWidth: .infinity, alignment: .bottom)
@@ -128,6 +141,10 @@ struct EditDeckView: View {
 					}
 				}
 			}
+			.onDisappear {
+				selectedUIImage = nil
+				selectedPhotoItem = nil
+			}
 			.photosPicker(isPresented: $showPhotoPicker, selection: $selectedPhotoItem, matching: .images)
 			.alert("New Deck", isPresented: $showCancelAlert) {
 				Button("Discard Changes", role: .destructive) {
@@ -137,9 +154,15 @@ struct EditDeckView: View {
 			} message: {
 				Text("Are you sure you want to discard this new deck?")
 			}
-			.onDisappear {
-				selectedUIImage = nil
-				selectedPhotoItem = nil
+			.alert("Clear Image", isPresented: $showClearImage) {
+				Button("Clear", role: .destructive) {
+					selectedUIImage = nil
+					selectedPhotoItem = nil
+					isChangedImage = true
+				}
+				Button("Cancel", role: .cancel) { }
+			} message: {
+				Text("Are you sure you want to clear your image?")
 			}
 			.toolbar { toolbar }
 			.scrollDismissesKeyboard(.interactively)
@@ -153,15 +176,28 @@ fileprivate extension EditDeckView {
 	
 	private func editDeck() {
 		
-		deck.name = name.trimmingCharacters(in: .whitespacesAndNewlines)
+		let name = name.trimmingCharacters(in: .whitespacesAndNewlines)
+		
+		guard !name.isEmpty else { return }
+		
+		deck.name = name
+		let oldImage = deck.image
 		deck.depiction = depiction.trimmingCharacters(in: .whitespacesAndNewlines)
 		
-		if isChangedImage, let uiimage = selectedUIImage {
+		if selectedUIImage == nil {
+			deck.image = "deck"
+			if !isInitialImage && oldImage != "deck" {
+				do {
+					try storage.delete(image: oldImage)
+				} catch {
+					print(Errors.ImageError)
+				}
+			}
+		} else if isChangedImage, let uiimage = selectedUIImage {
 			do {
-				let oldName = deck.image
 				deck.image = try storage.save(image: uiimage)
-				if !isInitialImage && oldName != "deck" {
-					try storage.delete(image: oldName)
+				if !isInitialImage && oldImage != "deck" {
+					try storage.delete(image: oldImage)
 				}
 			} catch {
 				print(Errors.ImageError)
@@ -210,6 +246,7 @@ fileprivate extension EditDeckView {
 				Label("Done", systemImage: "checkmark")
 			}
 			.buttonStyle(.borderedProminent)
+			.disabled(name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
 		}
 	}
 }
