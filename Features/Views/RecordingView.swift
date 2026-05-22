@@ -81,9 +81,9 @@ struct RecordingView: View {
 					toggleRecording(side)
 				} label: {
 					Image(systemName: activeRecording == side ? "stop.circle.fill" : "mic.circle.fill")
-						.font(.system(size: 35))
+						.font(.system(size: 40))
 						.foregroundStyle(activeRecording == side ? .red : .primary)
-						.padding(6)
+						.padding(3)
 						.background(Circle().glassEffect(.clear.interactive()))
 				}
 				Button {
@@ -209,12 +209,17 @@ fileprivate extension RecordingView {
 	
 	private func duration(for url: URL?, side: Side) {
 		
-		guard let url, FileManager.default.fileExists(atPath: url.path) else { return durations[side] = nil }
+		guard let url else { return durations[side] = nil }
 		
 		do {
 			let player = try AVAudioPlayer(contentsOf: url)
-			let seconds = Int(player.duration)
-			durations[side] = String(format: "%02d:%02d", seconds / 60, seconds % 60)
+			let duration = player.duration
+			
+			if duration < 60 {
+				durations[side] = String(format: "%.2fs", duration)
+			} else {
+				durations[side] = String(format: "%02d:%02d", Int(duration) / 60, Int(duration) % 60)
+			}
 		} catch {
 			durations[side] = nil
 		}
