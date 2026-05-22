@@ -160,19 +160,15 @@ fileprivate extension CardsView {
 		ToolbarSpacer(.fixed, placement: .topBarTrailing)
 		ToolbarItem(placement: .topBarTrailing) {
 			Menu {
-				Menu {
-					Button {
-						showNewCard.toggle()
-					} label: {
-						Label("New Card", systemImage: "plus.square.fill.on.square.fill")
-					}
-					Button {
-						showNewDeck.toggle()
-					} label: {
-						Label("New Deck", systemImage: "rectangle.stack.badge.play")
-					}
+				Button {
+					showNewCard.toggle()
 				} label: {
-					Label("Add", systemImage: "square.fill.text.grid.1x2")
+					Label("New Card", systemImage: "plus.square.fill.on.square.fill")
+				}
+				Button {
+					showNewDeck.toggle()
+				} label: {
+					Label("New Deck", systemImage: "rectangle.stack.badge.play")
 				}
 				Section {
 					Button {
