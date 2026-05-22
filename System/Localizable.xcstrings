@@ -95,6 +95,9 @@
     "~ %.0f FPS" : {
 
     },
+    "∞" : {
+
+    },
     "A → Z Ascending" : {
 
     },
@@ -165,6 +168,9 @@
 
     },
     "Cards" : {
+
+    },
+    "Chill" : {
 
     },
     "Choose File" : {
@@ -252,6 +258,9 @@
 
     },
     "Done" : {
+
+    },
+    "Downloading is not implemented yet." : {
 
     },
     "Edit Card" : {
@@ -350,6 +359,9 @@
     "Newest to Oldest" : {
 
     },
+    "No cards" : {
+
+    },
     "No cards selected" : {
 
     },
@@ -425,10 +437,16 @@
     "Search" : {
 
     },
+    "Search a deck" : {
+
+    },
     "Select" : {
 
     },
     "Select a deck to study." : {
+
+    },
+    "Select Deck" : {
 
     },
     "Selected Cards" : {
@@ -455,7 +473,7 @@
     "Take Photo" : {
 
     },
-    "The selected mode applies to the session.\n\nStandard:\n- definitions may be shown.\n- 4s swipe timer.\n- random order.\n\nDeath:\n- no definitions.\n- 1.5s swipe timer.\n- random order.\n\nCustom = fully configurable settings." : {
+    "The selected mode applies to the session.\n\nChill:\n- definitions may be shown.\n- ∞ swipe timer.\n- newest to oldest.\n\nStandard:\n- definitions may be shown.\n- 4s swipe timer.\n- random order.\n\nDeath:\n- no definitions.\n- 1.5s swipe timer.\n- random order.\n\nCustom = fully configurable settings." : {
 
     },
     "The timer is currently paused." : {

@@ -22,6 +22,7 @@ struct AudioRecordingView: View {
 	@State private var showDepiction: Bool = false
 	@State private var showCard: Bool = false
 	@State private var showRecording: Bool = false
+	@State private var showDownload: Bool = false
 	
 	private let session: AudioRecordingSession = Session.unique.audioRecording
 	
@@ -148,6 +149,9 @@ struct AudioRecordingView: View {
 						.presentationBackgroundInteraction(.enabled)
 				}
 			}
+			.alert("Downloading is not implemented yet.", isPresented: $showDownload) {
+				Button("OK", role: .cancel) { }
+			}
 		}
 	}
 	
@@ -174,7 +178,7 @@ struct AudioRecordingView: View {
 							.glassEffect(.regular.tint(.accentColor).interactive())
 					}
 					Button {
-						//
+						showDownload.toggle()
 					} label: {
 						Image(systemName: "arrow.down")
 							.frame(width: 50, height: 50)

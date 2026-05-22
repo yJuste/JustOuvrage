@@ -19,6 +19,9 @@ struct DeckView: View {
 	@Environment(FileImageStorage.self) private var storage
 	@Environment(\.dismiss) private var dismiss
 	
+	@Query(sort: \Card.createdAt, order: .reverse) private var cards: [Card]
+	
+	@Bindable private var preferences: Preferences = Preferences.unique
 	@State private var selectedCard: Card?
 	@State private var showCard: Bool = false
 	@State private var showToolbar: Bool = false
@@ -26,6 +29,14 @@ struct DeckView: View {
 	@State private var showCardsToDeck: Bool = false
 	@State private var showDeleteDeck: Bool = false
 	@State private var showEditDeck: Bool = false
+	@State private var argument: Argument?
+	@State private var showTimeTrial: Bool = false
+	@State private var showNoCards: Bool = false
+	@State private var showDownload: Bool = false
+	
+	var cardsFromDeck: [Card] {
+		deck.cards.sorted { $0.createdAt > $1.createdAt }
+	}
 	
 	var body: some View {
 		NavigationStack {
@@ -56,21 +67,27 @@ struct DeckView: View {
 							GlassEffectContainer {
 								HStack(alignment: .center, spacing: 15) {
 									Button {
-										//
+										let arg = Trial.make(cards: cards, deck: deck, mode: .standard, preferences: preferences)
+										guard !arg.cards.isEmpty else { return showNoCards.toggle() }
+										argument = arg
+										showTimeTrial.toggle()
 									} label: {
 										Image(systemName: "shuffle")
 											.frame(width: 50, height: 50)
 											.glassEffect(.clear.interactive())
 									}
 									Button {
-										//
+										let arg = Trial.make(cards: cards, deck: deck, mode: .chill, preferences: preferences)
+										guard !arg.cards.isEmpty else { return showNoCards.toggle() }
+										argument = arg
+										showTimeTrial.toggle()
 									} label: {
 										Label("Play", systemImage: "arrowtriangle.forward.fill")
 											.frame(width: 160, height: 50)
 											.glassEffect(.regular.tint(.accentColor).interactive())
 									}
 									Button {
-										//
+										showDownload.toggle()
 									} label: {
 										Image(systemName: "arrow.down")
 											.frame(width: 50, height: 50)
@@ -103,8 +120,7 @@ struct DeckView: View {
 						Divider()
 							.padding(.horizontal)
 						LazyVStack(alignment: .leading) {
-							ForEach(deck.cards.indices, id: \.self) { index in
-								let card = deck.cards[index]
+							ForEach(Array(cardsFromDeck.enumerated()), id: \.element.id) { index, card in
 								Button {
 									selectedCard = card
 									showCard = true
@@ -158,10 +174,19 @@ struct DeckView: View {
 			.toolbar { toolbar }
 			.sheet(isPresented: $showEditDeck) {
 				EditDeckView(title: "Edit Deck", deck: deck)
-					.environment(storage)
 			}
 			.sheet(isPresented: $showCardsToDeck) {
 				CardsToDeck(deck: deck)
+			}
+			.navigationDestination(isPresented: $showTimeTrial) {
+				if let argument = argument {
+					TimeTrialView(
+						cards: argument.cards,
+						timeInterval: argument.timeInterval
+					)
+					.navigationBarBackButtonHidden(true)
+					.navigationAllowDismissalGestures(.none)
+				}
 			}
 			.alert("Delete Deck", isPresented: $showDeleteDeck) {
 				Button("Remove", role: .destructive) {
@@ -171,6 +196,14 @@ struct DeckView: View {
 				Button("Cancel", role: .cancel) { }
 			} message: {
 				Text("Are you sure you want to delete this deck from your library?")
+			}
+			.alert("No cards", isPresented: $showNoCards) {
+				Button("OK", role: .cancel) { }
+			} message: {
+				Text("You can't start the Time Trial because there are no cards in the deck.")
+			}
+			.alert("Downloading is not implemented yet.", isPresented: $showDownload) {
+				Button("OK", role: .cancel) { }
 			}
 			.navigationBarBackButtonHidden(true)
 		}

@@ -37,6 +37,11 @@ struct TrialView: View {
 		}
 	}
 	
+	private var deckName: String {
+		guard let id = preferences.trialDeck, let deck = decks.first(where: { $0.id == id }) else { return "Every Card" }
+		return deck.name
+	}
+	
 	var body: some View {
 		
 		NavigationStack {
@@ -54,17 +59,25 @@ struct TrialView: View {
 					Text("Maximum time per card.")
 				}
 				Section {
-					Picker(selection: selectedDeck) {
-						Text("Every Card")
-							.tag(Optional<Deck>.none)
-						ForEach(decks) { deck in
-							Text(deck.name)
-								.tag(Optional(deck))
-						}
+					NavigationLink {
+						TimeTrialDeckSelectionView(
+							selectedDeck: Binding(
+								get: {
+									guard let id = preferences.trialDeck else { return nil }
+									return decks.first(where: { $0.id == id })
+								},
+								set: { preferences.trialDeck = $0?.id }
+							),
+							decks: decks
+						)
 					} label: {
-						Text("Deck")
+						HStack {
+							Text("Deck")
+							Spacer()
+							Text("\(deckName)")
+								.foregroundStyle(.secondary)
+						}
 					}
-					.pickerStyle(.navigationLink)
 				} footer: {
 					Text("Select a deck to study.")
 				}
@@ -112,6 +125,8 @@ struct TrialView: View {
 					Picker(selection: $preferences.trialMode) {
 						ForEach(optionsOfMode, id: \.self) { mode in
 							switch mode {
+							case .chill: Text("Chill")
+									.tag(mode)
 							case .standard: Text("Standard")
 									.tag(mode)
 							case .death: Text("Death")
@@ -128,6 +143,11 @@ struct TrialView: View {
 				} footer: {
 					Text("""
   The selected mode applies to the session.
+  
+  Chill:
+  - definitions may be shown.
+  - ∞ swipe timer.
+  - newest to oldest.
   
   Standard:
   - definitions may be shown.
@@ -165,61 +185,13 @@ struct TrialView: View {
 	}
 }
 
-// Default deck is Every card.
-// Default order is Newest to Oldest.
-// Default limit is All.
-fileprivate extension TrialView {
-	
-	private struct Argument {
-		
-		let cards: [Card]
-		let timeInterval: TimeInterval
-	}
-	
-	private func argument(from cards: [Card]) -> Argument {
-		
-		var res = cards
-		
-		if let deck = selectedDeck.wrappedValue {
-			res = res.filter { $0.decks.contains(deck) }
-		}
-		switch preferences.trialOrder {
-		case .random: res.shuffle()
-		case .newestToOldest: break
-		case .oldestToNewest: res = res.sorted { $0.createdAt < $1.createdAt }
-		case .alphabeticalAscending:
-			res = res.sorted {
-				if $0.frontEntry == $1.frontEntry { return $0.backEntry.localizedCaseInsensitiveCompare($1.backEntry) == .orderedAscending }
-				return $0.frontEntry.localizedCaseInsensitiveCompare($1.frontEntry) == .orderedAscending
-			}
-		case .alphabeticalDescending:
-			res = res.sorted {
-				if $0.frontEntry == $1.frontEntry { return $0.backEntry.localizedCaseInsensitiveCompare($1.backEntry) == .orderedDescending }
-				return $0.frontEntry.localizedCaseInsensitiveCompare($1.frontEntry) == .orderedDescending
-			}
-		}
-		let limit = preferences.trialNumberOfCards
-		if limit > 0 {
-			res = Array(res.prefix(limit))
-		}
-		let mode = preferences.trialMode
-		var interval = preferences.trialTimeInterval
-		switch mode {
-		case .standard: res.shuffle(); interval = 4.0
-		case .death: res.shuffle(); interval = 1.5
-		case .custom: break
-		}
-		return Argument(cards: res, timeInterval: interval)
-	}
-}
-
 /// Toolbar.
 fileprivate extension TrialView {
 	
 	@ToolbarContentBuilder private var toolbar: some ToolbarContent {
 		ToolbarItem(placement: .topBarTrailing) {
 			Button {
-				let arg = argument(from: cards)
+				let arg = Trial.make(cards: cards, deck: selectedDeck.wrappedValue, mode: nil, preferences: preferences)
 				guard !arg.cards.isEmpty else { return showNoCards.toggle() }
 				argument = arg
 				showTimeTrial.toggle()
