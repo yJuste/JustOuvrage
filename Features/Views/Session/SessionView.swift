@@ -38,7 +38,7 @@ struct SessionView: View {
 			.navigationDestination(item: $selectedSession) { session in
 				switch session {
 				case .audio(let id):
-					AudioRecordingView(id: id, namespace: namespace)
+					SessionRecordingView(id: id, namespace: namespace)
 				}
 			}
 			.navigationTitle("Session")

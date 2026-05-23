@@ -1,14 +1,14 @@
 //
-//  AudioRecordingView.swift
+//  SessionRecordingView.swift
 //  JustOuvrage
 //
-//  Created by Jules Longin on 5/20/26.
+//  Created by Jules Longin on 5/23/26.
 //
 
 import SwiftUI
 import SwiftData
 
-struct AudioRecordingView: View {
+struct SessionRecordingView: View {
 	
 	let id: UUID
 	let namespace: Namespace.ID
@@ -235,7 +235,7 @@ struct AudioRecordingView: View {
 }
 
 /// Toolbar.
-fileprivate extension AudioRecordingView {
+fileprivate extension SessionRecordingView {
 	
 	@ToolbarContentBuilder private var toolbar: some ToolbarContent {
 		ToolbarItem(placement: .principal) {
@@ -285,6 +285,6 @@ fileprivate extension AudioRecordingView {
 		backLanguage: .fr_FR
 	))
 
-	return AudioRecordingView(id: UUID(), namespace: namespace)
+	return SessionRecordingView(id: UUID(), namespace: namespace)
 		.modelContainer(container)
 }

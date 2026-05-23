@@ -22,7 +22,7 @@ struct Trial {
 		switch mode {
 		case .chill:
 			res = res.sorted { $0.createdAt > $1.createdAt }
-			finalInterval = 31_536_000
+			finalInterval = Constants.infinityYear
 		case .standard:
 			res.shuffle()
 			finalInterval = 4.0

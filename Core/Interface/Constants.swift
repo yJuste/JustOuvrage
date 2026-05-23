@@ -20,6 +20,12 @@ enum Constants {
 	// ⚠️ Assets catalog -> "deck" (image)
 	static let defaultDeckImage: String = "deck"
 	
+	// The time in seconds that represents a year.
+	static let infinityYear: Double = 31_536_000.0
+	
+	// The time in seconds that represents a day.
+	static let infinityDay: Double = 86_400.0
+	
 	//	--- Height of Sheets --------------------------------------------
 	
 	// Height of the sheet of the new card view.

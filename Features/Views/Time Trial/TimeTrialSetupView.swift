@@ -1,8 +1,8 @@
 //
-//  TrialView.swift
+//  TimeTrialSetupView.swift
 //  JustOuvrage
 //
-//  Created by Jules Longin on 5/7/26.
+//  Created by Jules Longin on 5/23/26.
 //
 
 import SwiftUI
@@ -11,7 +11,7 @@ import SwiftData
 // MARK: Can create a new enum for every variable in TrialView
 // MARK: Case name missing for optionsOfOrder
 
-struct TrialView: View {
+struct TimeTrialSetupView: View {
 	
 	@Environment(\.dismiss) private var dismiss
 	
@@ -23,7 +23,7 @@ struct TrialView: View {
 	@State private var showTimeTrial: Bool = false
 	@State private var showNoCards: Bool = false
 	
-	private let optionsOfTimer: [TimeInterval] = [1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0]
+	private let optionsOfTimer: [TimeInterval] = [1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0, Constants.infinityYear]
 	private let optionsOfNumberOfCards: [Int] = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160, 170, 180, 190, 200]
 	private let optionsOfOrder: [SortTrial] = SortTrial.allCases
 	private let optionsOfMode: [Mode] = Mode.allCases
@@ -131,8 +131,12 @@ struct TrialView: View {
 						Section {
 							Picker(selection: $preferences.trialTimeInterval) {
 								ForEach(optionsOfTimer, id: \.self) { time in
-									Text("\(time, format: .number.precision(.fractionLength(0...1))) sec")
-										.tag(time)
+									switch time {
+									case Constants.infinityYear: Text("Infinity")
+											.tag(time as TimeInterval)
+									default: Text("\(time, format: .number.precision(.fractionLength(0...1))) sec")
+											.tag(time as TimeInterval)
+									}
 								}
 							} label: {
 								Text("Timer")
@@ -189,7 +193,7 @@ struct TrialView: View {
 }
 
 /// Toolbar.
-fileprivate extension TrialView {
+fileprivate extension TimeTrialSetupView {
 	
 	@ToolbarContentBuilder private var toolbar: some ToolbarContent {
 		ToolbarItem(placement: .topBarTrailing) {
@@ -207,5 +211,5 @@ fileprivate extension TrialView {
 }
 
 #Preview {
-	TrialView()
+	TimeTrialSetupView()
 }

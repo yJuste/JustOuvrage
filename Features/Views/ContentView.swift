@@ -31,7 +31,7 @@ fileprivate extension ContentView {
 				NewCardView()
 			}
 			Tab("Trial", systemImage: "flag.pattern.checkered.2.crossed") {
-				TrialView()
+				TimeTrialSetupView()
 			}
 			Tab("Session", systemImage: "rectangle.dashed.badge.record") {
 				SessionView()

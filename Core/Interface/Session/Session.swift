@@ -9,6 +9,7 @@
 enum Session: CaseIterable {
 	
 	case audioRecording
+	case timeTrial
 	
 	static let unique = Sessions()
 	
@@ -17,11 +18,13 @@ enum Session: CaseIterable {
 		fileprivate init() {}
 		
 		lazy var audioRecording = AudioRecordingSession()
+		lazy var timeTrial = TimeTrialSession()
 	}
 	
 	var session: SessionService {
 		switch self {
 		case .audioRecording: return Session.unique.audioRecording
+		case .timeTrial: return Session.unique.timeTrial
 		}
 	}
 }

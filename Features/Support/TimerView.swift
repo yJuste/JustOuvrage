@@ -33,7 +33,7 @@ struct TimerView: View {
 					.trim(from: 0, to: max(remainingTime / duration, 0))
 					.stroke(Color(uiColor: color), style: StrokeStyle(lineWidth: stroke, lineCap: .round))
 					.rotationEffect(.degrees(-90))
-				Text(remainingTime < 86_400 ? "\(Int(ceil(remainingTime)))" : "∞")
+				Text(remainingTime < Constants.infinityDay ? "\(Int(ceil(remainingTime)))" : "∞")
 				.font(.system(size: side * 0.5, weight: .bold, design: .rounded))
 				.minimumScaleFactor(0.01)
 				.lineLimit(1)

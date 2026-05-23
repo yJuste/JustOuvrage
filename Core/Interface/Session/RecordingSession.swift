@@ -1,13 +1,13 @@
 //
-//  AudioRecordingSession.swift
+//  RecordingSession.swift
 //  JustOuvrage
 //
-//  Created by Jules Longin on 5/20/26.
+//  Created by Jules Longin on 5/23/26.
 //
 
 import SwiftUI
 
-struct AudioRecordingSession: SessionService {
+struct RecordingSession: SessionService {
 	
 	var title: String = "Audio Recording"
 	var subtitle: String = "Record your own pronunciation"
