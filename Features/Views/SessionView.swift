@@ -53,15 +53,19 @@ struct SessionView: View {
 	let config = ModelConfiguration(isStoredInMemoryOnly: true)
 	let container = try! ModelContainer(for: Deck.self, TimeTrial.self, configurations: config)
 	let context = container.mainContext
+	let cards: [Card] = [Card(frontEntry: "FrontEntry", backEntry: "BackEntry", frontLanguage: .fr_CA, backLanguage: .en_GB)]
 	let deck1 = Deck(name: "Hello", image: "deck")
 	let deck2 = Deck(name: "Lucas", image: "deck")
 	let deck3 = Deck(name: "All", image: "deck")
+	
+	let argument = Trial.make(cards: cards, deck: deck1, mode: .chill, order: .alphabeticalAscending, numberOfCards: 30, interval: 5.0)
 	context.insert(deck1)
 	context.insert(deck2)
 	context.insert(deck3)
-	context.insert(TimeTrial(in: deck1, using: .standard, with: 0.8))
-	context.insert(TimeTrial(in: deck1, using: .standard, with: 0.4))
-	context.insert(TimeTrial(in: deck2, using: .standard, with: 0.9))
+	context.insert(TimeTrial(argument: argument, with: 0.8))
+	context.insert(TimeTrial(argument: argument, with: 0.8))
+	context.insert(TimeTrial(argument: argument, with: 0.8))
+	
 	return SessionView()
 		.modelContainer(container)
 		.environment(FileImageStorage())

@@ -17,7 +17,7 @@ struct NewCardView: View {
 	
 	@Query(sort: \Card.createdAt, order: .reverse) private var cards: [Card]
 	
-	@Bindable private var preferences: Preferences = Preferences.unique
+	@Bindable private var preferences: Preferences = .unique
 	@FocusState private var focusField: FocusField?
 	@State private var frontEntry: String = ""
 	@State private var backEntry: String = ""

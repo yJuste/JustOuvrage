@@ -11,14 +11,13 @@ import Combine
 
 struct TimeTrialView: View {
 	
-	let cards: [Card]
-	let timeInterval: TimeInterval
+	let argument: Argument
 	
 	@Environment(\.dismiss) private var dismiss
 	
 	@Query(sort: \Deck.createdAt, order: .reverse) private var decks: [Deck]
 	
-	@Bindable private var preferences: Preferences = Preferences.unique
+	@Bindable private var preferences: Preferences = .unique
 	@State private var currentIndex: Int = 0
 	@State private var hasTimerReachedZero: Bool = false
 	@State private var hasTimerPaused: Bool = false
@@ -32,20 +31,19 @@ struct TimeTrialView: View {
 	@State private var showTimeTrialResult: Bool = false
 	
 	private var currentCard: Card? {
-		guard currentIndex < cards.count else { return nil }
-		return cards[currentIndex]
+		guard currentIndex < argument.cards.count else { return nil }
+		return argument.cards[currentIndex]
 	}
 	
 	private let timer = Timer.publish(every: Preferences.unique.trialRefreshTimer, on: .main, in: .common).autoconnect()
 	
 	private var selectedDeck: Deck? {
-		decks.first { $0.id == preferences.trialDeck }
+		decks.first { $0.id == argument.deck?.id }
 	}
 	
-	init(cards: [Card], timeInterval: TimeInterval) {
-		self.cards = cards
-		self.timeInterval = timeInterval
-		_remainingTime = State(initialValue: timeInterval)
+	init(argument: Argument) {
+		self.argument = argument
+		_remainingTime = State(initialValue: argument.timeInterval)
 	}
 	
 	var body: some View {
@@ -105,7 +103,7 @@ struct TimeTrialView: View {
 				}
 			}
 			.navigationDestination(isPresented: $showTimeTrialResult) {
-				TimeTrialResultView(cards: cards, results: swipeResults)
+				TimeTrialResultView(argument: argument, results: swipeResults)
 			}
 			.toolbar { toolbar }
 			.toolbar(.hidden, for: .tabBar)
@@ -135,7 +133,7 @@ struct TimeTrialView: View {
 				Text("\(card.frontEntry)")
 					.font(.system(size: geo.size.width * (isPortrait ? 0.06 : 0.04), weight: .semibold))
 					.foregroundStyle(.primary)
-				if isCardTapped && preferences.trialMode != .death {
+				if isCardTapped && argument.mode != .death {
 					Text("\(card.backEntry)")
 						.font(.system(size: geo.size.width * (isPortrait ? 0.05 : 0.03), weight: .semibold))
 						.foregroundStyle(.secondary)
@@ -153,7 +151,7 @@ struct TimeTrialView: View {
 			RoundedRectangle(cornerRadius: 35, style: .continuous)
 				.fill(LinearGradient(colors: [.green.opacity(Double(dragOffset.width / 200)), .green.opacity(0.0)], startPoint: .trailing, endPoint: .leading))
 				.opacity(dragOffset.width > 0 ? 1 : 0)
-			TimerView(size: (isPortrait ? 70 : 20), duration: timeInterval, remainingTime: remainingTime, color: UIColor.label)
+			TimerView(size: (isPortrait ? 70 : 20), duration: argument.timeInterval, remainingTime: remainingTime, color: UIColor.label)
 				.offset(y: geo.size.height * 0.25)
 		}
 		.frame(width: geo.size.width * (isPortrait ? 0.9 : 0.9), height: geo.size.height * (isPortrait ? 0.85 : 1.0))
@@ -207,7 +205,7 @@ fileprivate extension TimeTrialView {
 			Button {
 				//
 			} label: {
-				Text("\(min(currentIndex + 1, cards.count))/\(cards.count)")
+				Text("\(min(currentIndex + 1, argument.cards.count))/\(argument.cards.count)")
 			}
 		}
 	}
@@ -230,7 +228,7 @@ fileprivate extension TimeTrialView {
 		
 		Task { @MainActor in
 			self.currentIndex += 1
-			if self.currentIndex >= cards.count {
+			if self.currentIndex >= argument.cards.count {
 				showTimeTrialResult.toggle()
 			}
 			self.isCardTapped = false
@@ -238,7 +236,7 @@ fileprivate extension TimeTrialView {
 			self.rotation = 0
 			self.hasTimerReachedZero = false
 			self.hasTimerPaused = false
-			self.remainingTime = timeInterval
+			self.remainingTime = argument.timeInterval
 			self.isSwiping = false
 		}
 	}
@@ -262,15 +260,12 @@ fileprivate extension TimeTrialView {
 }
 
 #Preview {
-
-	let cards: [Card] = (1...3).map { index in
-		Card(
-			frontEntry: "Sample Front \(index)",
-			backEntry: "Exemple Dos \(index)",
-			frontLanguage: .en_US,
-			backLanguage: .fr_CA
-		)
-	}
 	
-	return TimeTrialView(cards: cards, timeInterval: 1.5)
+	let cards: [Card] = [Card(frontEntry: "FrontEntry", backEntry: "BackEntry", frontLanguage: .fr_CA, backLanguage: .en_GB)]
+	
+	let deck = Deck(name: "Title deck", image: "deck")
+	
+	let argument = Trial.make(cards: cards, deck: deck, mode: .chill, order: .alphabeticalAscending, numberOfCards: 30, interval: 5.0)
+	
+	TimeTrialView(argument: argument)
 }

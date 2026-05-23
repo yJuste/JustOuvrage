@@ -21,7 +21,7 @@ struct DeckView: View {
 	
 	@Query(sort: \Card.createdAt, order: .reverse) private var cards: [Card]
 	
-	@Bindable private var preferences: Preferences = Preferences.unique
+	@Bindable private var preferences: Preferences = .unique
 	@State private var selectedCard: Card?
 	@State private var showCard: Bool = false
 	@State private var showToolbar: Bool = false
@@ -67,7 +67,8 @@ struct DeckView: View {
 							GlassEffectContainer {
 								HStack(alignment: .center, spacing: 15) {
 									Button {
-										let arg = Trial.make(cards: cards, deck: deck, mode: .standard, preferences: preferences)
+										showCard = false
+										let arg = Trial.make(cards: cards, deck: deck, mode: .standard, order: .random, numberOfCards: 0, interval: 0)
 										guard !arg.cards.isEmpty else { return showNoCards.toggle() }
 										argument = arg
 										showTimeTrial.toggle()
@@ -77,7 +78,8 @@ struct DeckView: View {
 											.glassEffect(.clear.interactive())
 									}
 									Button {
-										let arg = Trial.make(cards: cards, deck: deck, mode: .chill, preferences: preferences)
+										showCard = false
+										let arg = Trial.make(cards: cards, deck: deck, mode: .chill, order: .newestToOldest, numberOfCards: 0, interval: 0)
 										guard !arg.cards.isEmpty else { return showNoCards.toggle() }
 										argument = arg
 										showTimeTrial.toggle()
@@ -180,10 +182,7 @@ struct DeckView: View {
 			}
 			.navigationDestination(isPresented: $showTimeTrial) {
 				if let argument = argument {
-					TimeTrialView(
-						cards: argument.cards,
-						timeInterval: argument.timeInterval
-					)
+					TimeTrialView(argument: argument)
 					.navigationBarBackButtonHidden(true)
 					.navigationAllowDismissalGestures(.none)
 				}

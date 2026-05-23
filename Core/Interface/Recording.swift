@@ -11,7 +11,7 @@ import AVFoundation
 @Observable final class Recording {
 	
 	private var recorder: AVAudioRecorder?
-	private let preferences: Preferences = Preferences.unique
+	private let preferences: Preferences = .unique
 	
 	private let folder: URL = {
 		let url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0].appendingPathComponent("Audio", isDirectory: true)

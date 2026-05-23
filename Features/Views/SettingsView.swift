@@ -13,7 +13,7 @@ struct SettingsView: View {
 	@Environment(\.modelContext) private var modelContext
 	@Environment(\.dismiss) private var dismiss
 	
-	@Bindable private var preferences = Preferences.unique
+	@Bindable private var preferences: Preferences = .unique
 	@State private var state: CleaningState = .idle
 	@State private var isCleaning = false
 	

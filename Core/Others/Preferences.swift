@@ -45,7 +45,7 @@ import Observation
 	private var trialOrderRaw: Int = 0
 	private var trialModeRaw: Int = 0
 	private var lastCleanDuplicateRaw: Double = 0
-	private var trialRefreshTimerRaw: Double = 1.0/60.0
+	private var trialRefreshTimerRaw: Double = 2.0/60.0
 	private var audioQualityRaw: String = ""
 	
 	private init() {
@@ -61,7 +61,7 @@ import Observation
 		trialOrderRaw = userDefaults.integer(forKey: Key.trialOrder.rawValue)
 		trialModeRaw = userDefaults.integer(forKey: Key.trialMode.rawValue)
 		lastCleanDuplicateRaw = userDefaults.double(forKey: Key.lastCleanDuplicate.rawValue)
-		trialRefreshTimerRaw = userDefaults.object(forKey: Key.trialRefreshTimer.rawValue) as? Double ?? (1.0 / 60.0)
+		trialRefreshTimerRaw = userDefaults.object(forKey: Key.trialRefreshTimer.rawValue) as? Double ?? (2.0 / 60.0)
 		audioQualityRaw = userDefaults.string(forKey: Key.audioQuality.rawValue) ?? AudioQuality.high.rawValue
 	}
 	

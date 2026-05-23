@@ -9,49 +9,52 @@ import Foundation
 
 struct Trial {
 	
-	static func make(cards: [Card], deck: Deck?, mode: Mode?, preferences: Preferences) -> Argument {
+	static func make(cards: [Card], deck: Deck?, mode: Mode, order: SortTrial, numberOfCards: Int, interval: TimeInterval) -> Argument {
 		
 		var res = cards
 		
 		if let deck {
 			res = res.filter { $0.decks.contains(deck) }
 		}
-		switch preferences.trialOrder {
-		case .random: res.shuffle()
-		case .newestToOldest: res = res.sorted { $0.createdAt > $1.createdAt }
-		case .oldestToNewest: res = res.sorted { $0.createdAt < $1.createdAt }
-		case .alphabeticalAscending:
-			res = res.sorted {
-				if $0.frontEntry == $1.frontEntry {
-					return $0.backEntry.localizedCaseInsensitiveCompare($1.backEntry) == .orderedAscending
+		
+		var finalInterval = interval
+		
+		switch mode {
+		case .chill:
+			res = res.sorted { $0.createdAt > $1.createdAt }
+			finalInterval = 31_536_000
+		case .standard:
+			res.shuffle()
+			finalInterval = 4.0
+		case .death:
+			res.shuffle()
+			finalInterval = 1.5
+		case .custom:
+			switch order {
+			case .random: res.shuffle()
+			case .newestToOldest: res = res.sorted { $0.createdAt > $1.createdAt }
+			case .oldestToNewest: res = res.sorted { $0.createdAt < $1.createdAt }
+			case .alphabeticalAscending:
+				res = res.sorted {
+					if $0.frontEntry == $1.frontEntry {
+						return $0.backEntry.localizedCaseInsensitiveCompare($1.backEntry) == .orderedAscending
+					}
+					return $0.frontEntry.localizedCaseInsensitiveCompare($1.frontEntry) == .orderedAscending
 				}
-				return $0.frontEntry.localizedCaseInsensitiveCompare($1.frontEntry) == .orderedAscending
-			}
-		case .alphabeticalDescending:
-			res = res.sorted {
-				if $0.frontEntry == $1.frontEntry {
-					return $0.backEntry.localizedCaseInsensitiveCompare($1.backEntry) == .orderedDescending
+			case .alphabeticalDescending:
+				res = res.sorted {
+					if $0.frontEntry == $1.frontEntry {
+						return $0.backEntry.localizedCaseInsensitiveCompare($1.backEntry) == .orderedDescending
+					}
+					return $0.frontEntry.localizedCaseInsensitiveCompare($1.frontEntry) == .orderedDescending
 				}
-				return $0.frontEntry.localizedCaseInsensitiveCompare($1.frontEntry) == .orderedDescending
 			}
 		}
 		
-		let limit = preferences.trialNumberOfCards
-		if limit > 0 {
-			res = Array(res.prefix(limit))
+		if numberOfCards > 0 {
+			res = Array(res.prefix(numberOfCards))
 		}
 		
-		var interval = preferences.trialTimeInterval
-		let activeMode = mode ?? preferences.trialMode
-		
-		switch activeMode {
-		case .chill: res = res.sorted { $0.createdAt > $1.createdAt }; interval = 31_536_000
-		case .standard: res.shuffle(); interval = 4.0
-		case .death: res.shuffle(); interval = 1.5
-		case .custom: break
-		}
-		return Argument(cards: res, timeInterval: interval)
+		return Argument(cards: res, timeInterval: finalInterval, deck: deck, mode: mode)
 	}
 }
-
-// 86_400

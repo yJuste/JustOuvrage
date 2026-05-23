@@ -13,16 +13,20 @@ import Foundation
 @Model final class TimeTrial {
 	
 	@Attribute(.unique) var id: UUID
+	var cards: [Card]
+	var timeInterval: TimeInterval
 	var deck: Deck?
 	var mode: Mode
 	var success: Double
 	
 	private(set) var createdAt: Date
 	
-	init(in deck: Deck?, using mode: Mode, with success: Double) {
+	init(argument: Argument, with success: Double) {
 		self.id = UUID()
-		self.deck = deck
-		self.mode = mode
+		self.cards = argument.cards
+		self.timeInterval = argument.timeInterval
+		self.deck = argument.deck
+		self.mode = argument.mode
 		self.success = success
 		self.createdAt = .now
 	}

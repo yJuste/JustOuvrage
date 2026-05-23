@@ -18,7 +18,7 @@ struct TrialView: View {
 	@Query(sort: \Card.createdAt, order: .reverse) private var cards: [Card]
 	@Query(sort: \Deck.createdAt, order: .reverse) private var decks: [Deck]
 	
-	@Bindable private var preferences: Preferences = Preferences.unique
+	@Bindable private var preferences: Preferences = .unique
 	@State private var argument: Argument?
 	@State private var showTimeTrial: Bool = false
 	@State private var showNoCards: Bool = false
@@ -46,18 +46,6 @@ struct TrialView: View {
 		
 		NavigationStack {
 			Form {
-				Section {
-					Picker(selection: $preferences.trialTimeInterval) {
-						ForEach(optionsOfTimer, id: \.self) { time in
-							Text("\(time, format: .number.precision(.fractionLength(0...1))) sec")
-								.tag(time)
-						}
-					} label: {
-						Text("Timer")
-					}
-				} footer: {
-					Text("Maximum time per card.")
-				}
 				Section {
 					NavigationLink {
 						TimeTrialDeckSelectionView(
@@ -96,30 +84,6 @@ struct TrialView: View {
 					}
 				} footer: {
 					Text("How many cards to include in this session.")
-				}
-				Section {
-					Picker(selection: $preferences.trialOrder) {
-						ForEach(optionsOfOrder, id: \.self) { order in
-							switch order {
-							case .random: Text("Random (default)")
-									.tag(order)
-							case .newestToOldest: Text("Newest to Oldest")
-									.tag(order)
-							case .oldestToNewest: Text("Oldest to Newest")
-									.tag(order)
-							case .alphabeticalAscending:
-								Text("A → Z Ascending")
-									.tag(order)
-							case .alphabeticalDescending:
-								Text("Z → A Descending")
-									.tag(order)
-							}
-						}
-					} label: {
-						Text("Order by")
-					}
-				} footer: {
-					Text("Order in which cards are shown.")
 				}
 				Section {
 					Picker(selection: $preferences.trialMode) {
@@ -162,14 +126,53 @@ struct TrialView: View {
   Custom = fully configurable settings.
   """)
 				}
+				if preferences.trialMode == .custom {
+					Group {
+						Section {
+							Picker(selection: $preferences.trialTimeInterval) {
+								ForEach(optionsOfTimer, id: \.self) { time in
+									Text("\(time, format: .number.precision(.fractionLength(0...1))) sec")
+										.tag(time)
+								}
+							} label: {
+								Text("Timer")
+							}
+						} footer: {
+							Text("Maximum time per card.")
+						}
+						Section {
+							Picker(selection: $preferences.trialOrder) {
+								ForEach(optionsOfOrder, id: \.self) { order in
+									switch order {
+									case .random: Text("Random (default)")
+											.tag(order)
+									case .newestToOldest: Text("Newest to Oldest")
+											.tag(order)
+									case .oldestToNewest: Text("Oldest to Newest")
+											.tag(order)
+									case .alphabeticalAscending:
+										Text("A → Z Ascending")
+											.tag(order)
+									case .alphabeticalDescending:
+										Text("Z → A Descending")
+											.tag(order)
+									}
+								}
+							} label: {
+								Text("Order by")
+							}
+						} footer: {
+							Text("Order in which cards are shown.")
+						}
+					}
+					.transition(.opacity.combined(with: .move(edge: .top)))
+				}
 			}
+			.animation(.spring(response: 0.35, dampingFraction: 0.9), value: preferences.trialMode)
 			.navigationDestination(isPresented: $showTimeTrial) {
 				if let argument = argument {
-					TimeTrialView(
-						cards: argument.cards,
-						timeInterval: argument.timeInterval
-					)
-					.navigationBarBackButtonHidden(true)
+					TimeTrialView(argument: argument)
+						.navigationBarBackButtonHidden(true)
 				}
 			}
 			.toolbar { toolbar }
@@ -191,7 +194,7 @@ fileprivate extension TrialView {
 	@ToolbarContentBuilder private var toolbar: some ToolbarContent {
 		ToolbarItem(placement: .topBarTrailing) {
 			Button {
-				let arg = Trial.make(cards: cards, deck: selectedDeck.wrappedValue, mode: nil, preferences: preferences)
+				let arg = Trial.make(cards: cards, deck: selectedDeck.wrappedValue, mode: preferences.trialMode, order: preferences.trialOrder, numberOfCards: preferences.trialNumberOfCards, interval: preferences.trialTimeInterval)
 				guard !arg.cards.isEmpty else { return showNoCards.toggle() }
 				argument = arg
 				showTimeTrial.toggle()

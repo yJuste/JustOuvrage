@@ -10,7 +10,7 @@ import SwiftData
 
 struct TimeTrialResultView: View {
 	
-	let cards: [Card]
+	let argument: Argument
 	let results: [SwipeDirection]
 	
 	@Environment(\.modelContext) private var modelContext
@@ -18,21 +18,20 @@ struct TimeTrialResultView: View {
 	
 	@Query(sort: \Deck.createdAt, order: .reverse) private var decks: [Deck]
 	
-	@Bindable private var preferences: Preferences = Preferences.unique
 	@State private var timeTrial: TimeTrial?
 	@State private var showSave: Bool = false
 	
 	private var selectedDeck: Deck? {
-		decks.first { $0.id == preferences.trialDeck }
+		decks.first { $0.id == argument.deck?.id }
 	}
 	
 	var body: some View {
 		
 		NavigationStack {
 			List {
-				Section { // list every card
-					ForEach(cards.indices, id: \.self) { index in
-						let card = cards[index]
+				Section {
+					ForEach(argument.cards.indices, id: \.self) { index in
+						let card = argument.cards[index]
 						let result = results.indices.contains(index) ? results[index] : nil
 						ZStack {
 							HStack {
@@ -65,7 +64,7 @@ struct TimeTrialResultView: View {
 							}
 						}
 					}
-				}
+				} /// ``list card``
 				.listRowSeparator(.hidden)
 				.listRowInsets(EdgeInsets(top: 6, leading: 15, bottom: 6, trailing: 15))
 				Section { /// ``metadata``
@@ -83,7 +82,7 @@ struct TimeTrialResultView: View {
 				.listRowSeparator(.hidden)
 			}
 			.onAppear {
-				let newTimeTrial = TimeTrial(in: selectedDeck, using: preferences.trialMode, with: calculateSuccesRate(results))
+				let newTimeTrial = TimeTrial(argument: argument, with: calculateSuccesRate(results))
 				modelContext.insert(newTimeTrial)
 				timeTrial = newTimeTrial
 			}
@@ -127,15 +126,13 @@ fileprivate extension TimeTrialResultView {
 
 #Preview {
 	
-	let cards: [Card] = (1...3).map { index in
-		Card(
-			frontEntry: "Sample Front \(index)",
-			backEntry: "Exemple Dos \(index)",
-			frontLanguage: .en_US,
-			backLanguage: .fr_CA
-		)
-	}
+	let cards: [Card] = [Card(frontEntry: "FrontEntry", backEntry: "BackEntry", frontLanguage: .fr_CA, backLanguage: .en_GB)]
+	
+	let deck = Deck(name: "Title deck", image: "deck")
+	
+	let argument = Trial.make(cards: cards, deck: deck, mode: .chill, order: .alphabeticalAscending, numberOfCards: 30, interval: 5.0)
+	
 	let res: [SwipeDirection] = [.left, .right, .right]
 	
-	TimeTrialResultView(cards: cards, results: res)
+	TimeTrialResultView(argument: argument, results: res)
 }

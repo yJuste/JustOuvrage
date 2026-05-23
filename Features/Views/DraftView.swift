@@ -18,7 +18,7 @@ struct DraftView: View {
 	
 	@Query(sort: \Card.createdAt, order: .reverse) private var cards: [Card]
 	
-	@Bindable private var preferences: Preferences = Preferences.unique
+	@Bindable private var preferences: Preferences = .unique
 	@State private var destination: Destination?
 	@State private var showLanguage: Bool = false
 	@State private var showNewCard: Bool = false
