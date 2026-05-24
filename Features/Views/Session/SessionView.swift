@@ -37,7 +37,7 @@ struct SessionView: View {
 				SessionRecordingView(id: audioRecording.id, namespace: namespace)
 			}
 			.navigationDestination(isPresented: $showTimeTrial) {
-				SessionTimeTrial(id: timeTrial.id, namespace: namespace)
+				SessionTimeTrialView(id: timeTrial.id, namespace: namespace)
 			}
 			.navigationTitle("Session")
 			.toolbarTitleDisplayMode(.inlineLarge)

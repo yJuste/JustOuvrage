@@ -1,14 +1,14 @@
 //
-//  SessionTimeTrial.swift
+//  SessionTimeTrialView.swift
 //  JustOuvrage
 //
-//  Created by Jules Longin on 5/23/26.
+//  Created by Jules Longin on 5/24/26.
 //
 
 import SwiftUI
 import SwiftData
 
-struct SessionTimeTrial: View {
+struct SessionTimeTrialView: View {
 	
 	let id: UUID
 	let namespace: Namespace.ID
@@ -28,6 +28,7 @@ struct SessionTimeTrial: View {
 	@State private var showTimeTrial: Bool = false
 	@State private var showDownload: Bool = false
 	@State private var showSelectedTimeTrial: Bool = false
+	@State private var showMetaData: Bool = false
 	
 	private let session: TimeTrialSession = Session.unique.timeTrial
 	
@@ -82,7 +83,9 @@ struct SessionTimeTrial: View {
 											.font(.system(size: 15, weight: .semibold))
 										ZStack(alignment: .bottom) {
 											Button {
-												//
+												selectedTimeTrial = timeTrial
+												showTimeTrial = false
+												showMetaData = true
 											} label: {
 												let score = Int((timeTrial.success * 100).rounded())
 												Text("\(score)")
@@ -113,6 +116,7 @@ struct SessionTimeTrial: View {
 										}
 									} else {
 										selectedTimeTrial = timeTrial
+										showMetaData = false
 										showTimeTrial = true
 									}
 								}
@@ -133,6 +137,16 @@ struct SessionTimeTrial: View {
 						.presentationDetents([
 							.fraction(Constants.heightOfATimeTrial[0]),
 							.fraction(Constants.heightOfATimeTrial[1])
+						])
+						.presentationBackgroundInteraction(.enabled)
+				}
+			}
+			.sheet(isPresented: $showMetaData) {
+				if let timeTrial = selectedTimeTrial {
+					TimeTrialMetaDataView(timeTrial: timeTrial)
+						.presentationDetents([
+							.fraction(Constants.heightOfAMetaData[0]),
+							.fraction(Constants.heightOfAMetaData[1])
 						])
 						.presentationBackgroundInteraction(.enabled)
 				}
@@ -224,7 +238,7 @@ struct SessionTimeTrial: View {
 }
 
 /// Methods of SessionTimeTrialView.
-fileprivate extension SessionTimeTrial {
+fileprivate extension SessionTimeTrialView {
 	
 	private func deleteSelection() {
 		for timeTrial in timeTrials where selection.contains(timeTrial.id) {
@@ -257,7 +271,7 @@ fileprivate extension SessionTimeTrial {
 }
 
 /// Toolbar.
-fileprivate extension SessionTimeTrial {
+fileprivate extension SessionTimeTrialView {
 	
 	@ToolbarContentBuilder private var toolbar: some ToolbarContent {
 		ToolbarItem(placement: .topBarLeading) {
@@ -308,7 +322,7 @@ fileprivate extension SessionTimeTrial {
 	context.insert(TimeTrial(argument: argument, with: 0.1))
 	context.insert(TimeTrial(argument: argument, with: 0.843))
 	
-	return SessionTimeTrial(id: UUID(), namespace: namespace)
+	return SessionTimeTrialView(id: UUID(), namespace: namespace)
 		.modelContainer(container)
 		.environment(FileImageStorage())
 }
