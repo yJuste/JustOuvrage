@@ -288,16 +288,10 @@
     "Edit Deck" : {
 
     },
-    "English" : {
-
-    },
     "Every Card" : {
 
     },
     "for \"%@\"" : {
-
-    },
-    "French" : {
 
     },
     "Go!" : {
@@ -370,6 +364,9 @@
 
     },
     "Metadata" : {
+
+    },
+    "Metadata for decks is not implemented yet." : {
 
     },
     "Missing Information" : {
@@ -507,9 +504,6 @@
     "Settings" : {
 
     },
-    "Spanish" : {
-
-    },
     "Standard" : {
 
     },
@@ -541,6 +535,9 @@
 
     },
     "Very Low" : {
+
+    },
+    "View Metadata" : {
 
     },
     "Visible" : {

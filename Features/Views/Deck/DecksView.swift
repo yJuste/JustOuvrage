@@ -26,16 +26,23 @@ struct DecksView: View {
 	@State private var selectedDeck: Deck?
 	@State private var showDeck: Bool = false
 	@State private var editMode: EditMode = .inactive
+	@State private var sorts: [SortDeck] = [.newestToOldest]
 	@State private var showEditMode: Bool = false
 	@State private var showNewCard: Bool = false
 	@State private var showNewDeck: Bool = false
 	@State private var showDeleteDeck: Bool = false
 	@State private var showSelectedDecks: Bool = false
+	@State private var showMetaData: Bool = false
+	@State private var showDepiction: Bool = false
+	
+	private var filteredDecks: [Deck] {
+		decks.sorted(using: sorts.map(\.descriptor))
+	}
 	
 	var body: some View {
 		NavigationStack {
 			List(selection: $selection) {
-				ForEach(decks) { deck in
+				ForEach(filteredDecks) { deck in
 					VStack(alignment: .leading) {
 						Button {
 							selectedDeck = deck
@@ -51,20 +58,33 @@ struct DecksView: View {
 								VStack(alignment: .leading, spacing: 2) {
 									Text(deck.name)
 										.font(.system(size: 15, weight: .regular, design: .default))
-									Text(deck.depiction)
-										.font(.system(size: 15, weight: .regular, design: .default))
-										.foregroundStyle(.secondary)
-										.lineLimit(2)
+									if !showDepiction {
+										Text(deck.depiction)
+											.font(.system(size: 15, weight: .regular, design: .default))
+											.foregroundStyle(.secondary)
+											.lineLimit(2)
+									}
 								}
 								Spacer()
-								Button {
-									//
+								Menu {
+									Button {
+										showMetaData.toggle()
+									} label: {
+										Label {
+											Text("View Metadata")
+										} icon: {
+											Image(systemName: "info.circle")
+										}
+										
+									}
 								} label: {
 									Image(systemName: "ellipsis")
 										.font(.system(size: 20, weight: .bold))
-										.foregroundStyle(Color.primary)
+										.frame(width: 40, height: 40)
+										.background (Circle().fill(.background))
 								}
 								.padding(.trailing, 10)
+								.buttonStyle(.plain)
 							}
 						}
 						.contextMenu {
@@ -80,9 +100,7 @@ struct DecksView: View {
 									.resizable()
 									.scaledToFill()
 									.frame(width: 280, height: 280)
-									.clipped()
 									.clipShape(RoundedRectangle(cornerRadius: 15))
-									.padding(.top, -5)
 								VStack(alignment: .leading, spacing: 2) {
 									Text(deck.name)
 										.font(.system(size: 20, weight: .bold, design: .default))
@@ -90,6 +108,8 @@ struct DecksView: View {
 										.font(.system(size: 20, weight: .regular, design: .default))
 										.foregroundStyle(.secondary)
 								}
+								.lineLimit(1)
+								.frame(width: 280, alignment: .leading)
 							}
 							.frame(width: 320, height: 370)
 						}
@@ -135,6 +155,9 @@ struct DecksView: View {
 			} message: {
 				Text("Are you sure you want to delete all the selection?")
 			}
+			.alert("Metadata for decks is not implemented yet.", isPresented: $showMetaData) {
+				Button("OK", role: .cancel) { }
+			}
 			.listStyle(.plain)
 		}
 	}
@@ -162,6 +185,24 @@ fileprivate extension DecksView {
 		Task {
 			try? await Task.sleep(for: .milliseconds(250))
 			showEditMode.toggle()
+		}
+	}
+}
+
+fileprivate extension DecksView {
+	
+	func toggleSort(first: SortDeck, second: SortDeck) {
+		
+		if sorts.contains(first) {
+			sorts.removeAll { $0 == first }
+			if !sorts.contains(second) {
+				sorts.insert(second, at: 0)
+			}
+		} else {
+			sorts.removeAll { $0 == second }
+			if !sorts.contains(first) {
+				sorts.insert(first, at: 0)
+			}
 		}
 	}
 }
@@ -206,55 +247,26 @@ fileprivate extension DecksView {
 				}
 				Section {
 					Button {
-						// Hide definition
+						showDepiction.toggle()
 					} label: {
-						Label("Hide", systemImage: "eye")
-						Text("Visible") // Hidden with eye.slash
+						Label("Hide", systemImage: showDepiction ? "eye.slash" : "eye")
+						Text(showDepiction ? "Hidden" : "Visible")
 							.font(.caption)
 					}
 				}
 				Section {
 					Button {
-						// sort Date
+						toggleSort(first: .newestToOldest, second: .oldestToNewest)
 					} label: {
-						Label("Date", systemImage: "checkmark")
-						Text("Newest to Oldest") // Oldest to Newest
-							.font(.caption)
+						Label("Date", systemImage: sorts.contains(.newestToOldest) ? "text.line.first.and.arrowtriangle.forward" : "text.line.last.and.arrowtriangle.forward")
+						Text(sorts.contains(.newestToOldest) ? "Newest to Oldest" : "Oldest to Newest")
 					}
 					Button {
-						// sort Name
+						toggleSort(first: .alphabeticalAscending, second: .alphabeticalDescending)
 					} label: {
-						Image(systemName: "checkmark")
-							.hidden(false)
-						Text("Name")
-						Text("Ascending") // Descending
-							.font(.caption)
+						Label("Name", systemImage: sorts.contains(.alphabeticalAscending) ? "text.line.first.and.arrowtriangle.forward" : "text.line.last.and.arrowtriangle.forward")
+						Text(sorts.contains(.alphabeticalAscending) ? "Ascending" : "Descending")
 					}
-				}
-				Menu {
-					Button {
-						//
-					} label: {
-						Image(systemName: "checkmark")
-							.hidden(false)
-						Text("English")
-					}
-					Button {
-						//
-					} label: {
-						Image(systemName: "checkmark")
-							.hidden(true)
-						Text("French")
-					}
-					Button {
-						//
-					} label: {
-						Image(systemName: "checkmark")
-							.hidden(false)
-						Text("Spanish")
-					}
-				} label: {
-					Label("Languages", systemImage: "bubble.left.and.bubble.right.fill")
 				}
 			} label: {
 				Label("Options", systemImage: "ellipsis")
@@ -271,7 +283,7 @@ fileprivate extension DecksView {
 	context.insert(Deck(name: "Lucas", image: "deck"))
 	context.insert(Deck(name: "I love you", image: "deck"))
 	context.insert(Deck(name: "Hello", image: "deck"))
-	context.insert(Deck(name: "Hello", image: "deck"))
+	context.insert(Deck(name: "Hellojfkdjk fkdfkhsfkhd hfkdhf ksdhfk kfhsk hshdf khdfkhfksdh kh", image: "deck"))
 	context.insert(Deck(name: "Hello", image: "deck"))
 	context.insert(Deck(name: "Hello", image: "deck"))
 	context.insert(Deck(name: "Hello", image: "deck"))

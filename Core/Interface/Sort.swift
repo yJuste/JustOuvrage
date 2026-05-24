@@ -35,10 +35,19 @@ enum SortCard: String, CaseIterable, Codable, Hashable {
 	}
 }
 
-enum SortDeck {
+enum SortDeck: String, CaseIterable, Codable, Hashable {
 	
 	case alphabeticalAscending
 	case alphabeticalDescending
 	case newestToOldest
 	case oldestToNewest
+	
+	var descriptor: SortDescriptor<Deck> {
+		switch self {
+		case .alphabeticalAscending: return SortDescriptor(\.name, order: .forward)
+		case .alphabeticalDescending: return SortDescriptor(\.name, order: .reverse)
+		case .newestToOldest: return SortDescriptor(\.createdAt, order: .reverse)
+		case .oldestToNewest: return SortDescriptor(\.createdAt, order: .forward)
+		}
+	}
 }

@@ -25,8 +25,7 @@ struct SessionBanner: View {
 					.scaledToFill()
 				Text(title)
 					.bold()
-					.padding(.horizontal, 12)
-					.padding(.vertical, 8)
+					.padding(EdgeInsets(top: 8, leading: 12, bottom: 8, trailing: 12))
 					.glassEffect(.clear.interactive())
 			}
 			.frame(height: 120)

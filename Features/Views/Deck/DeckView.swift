@@ -52,18 +52,21 @@ struct DeckView: View {
 							.shadow(color: .black.opacity(0.3), radius: 15)
 							.navigationTransition(id: deck.id, namespace: namespace)
 						VStack(alignment: .center, spacing: 6) {
-							Text(deck.name)
-								.font(.system(size: 25, weight: .bold))
-								.multilineTextAlignment(.center)
-							Text(deck.author)
-								.font(.title3)
+							VStack {
+								Text(deck.name)
+									.font(.system(size: 25, weight: .bold))
+									.multilineTextAlignment(.center)
+								Text(deck.author)
+									.font(.title3)
+									.foregroundStyle(.secondary)
+								Text({let langs = Set(deck.cards.flatMap { [$0.frontLanguage, $0.backLanguage] }).map { $0.rawValue }.sorted()
+									let year = deck.createdAt.formatted(.dateTime.year())
+									return langs.isEmpty ? year : year + " ⋅ " + langs.joined(separator: " ⋅ ")}())
+								.font(.system(size: 12, weight: .semibold))
 								.foregroundStyle(.secondary)
-							Text({let langs = Set(deck.cards.flatMap { [$0.frontLanguage, $0.backLanguage] }).map { $0.rawValue }.sorted()
-								let year = deck.createdAt.formatted(.dateTime.year())
-								return langs.isEmpty ? year : year + " ⋅ " + langs.joined(separator: " ⋅ ")}())
-							.font(.system(size: 12, weight: .semibold))
-							.foregroundStyle(.secondary)
-							.padding(.top, 5)
+								.padding(.top, 5)
+							}
+							.padding(.horizontal)
 							GlassEffectContainer {
 								HStack(alignment: .center, spacing: 15) {
 									Button {
