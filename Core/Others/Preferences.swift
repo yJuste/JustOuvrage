@@ -34,6 +34,15 @@ import Observation
 		case lastCleanDuplicate
 		case trialRefreshTimer
 		case audioQuality
+		
+		// Decks
+		case visibleDecks
+		case sortDecks
+		
+		// Cards
+		case invertCards
+		case visibleCards
+		case sortCards
 	}
 	
 	static let unique: Preferences = Preferences()
@@ -51,6 +60,11 @@ import Observation
 	private var lastCleanDuplicateRaw: Double = 0
 	private var trialRefreshTimerRaw: Double = 0
 	private var audioQualityRaw: String = ""
+	private var visibleDecksRaw: Bool = false
+	private var sortDecksRaw: [String] = []
+	private var invertCardsRaw: Bool = false
+	private var visibleCardsRaw: Bool = false
+	private var sortCardsRaw: [String] = []
 	
 	private init() {
 		
@@ -68,6 +82,11 @@ import Observation
 		lastCleanDuplicateRaw = userDefaults.double(forKey: Key.lastCleanDuplicate.rawValue)
 		trialRefreshTimerRaw = userDefaults.object(forKey: Key.trialRefreshTimer.rawValue) as? Double ?? (2.0 / 60.0)
 		audioQualityRaw = userDefaults.string(forKey: Key.audioQuality.rawValue) ?? AudioQuality.high.rawValue
+		visibleDecksRaw = userDefaults.bool(forKey: Key.visibleDecks.rawValue)
+		sortDecksRaw = userDefaults.stringArray(forKey: Key.sortDecks.rawValue) ?? [SortDeck.newestToOldest.rawValue]
+		invertCardsRaw = userDefaults.bool(forKey: Key.invertCards.rawValue)
+		visibleCardsRaw = userDefaults.bool(forKey: Key.visibleCards.rawValue)
+		sortCardsRaw = userDefaults.stringArray(forKey: Key.sortCards.rawValue) ?? [SortCard.newestToOldest.rawValue]
 	}
 	
 	var tabBar: TabBar {
@@ -162,6 +181,46 @@ import Observation
 		set {
 			audioQualityRaw = newValue.rawValue
 			userDefaults.set(audioQualityRaw, forKey: Key.audioQuality.rawValue)
+		}
+	}
+	
+	var visibleDecks: Bool {
+		get { visibleDecksRaw }
+		set {
+			visibleDecksRaw = newValue
+			userDefaults.set(visibleDecksRaw, forKey: Key.visibleDecks.rawValue)
+		}
+	}
+	
+	var sortDecks: [SortDeck] {
+		get { sortDecksRaw.compactMap(SortDeck.init(rawValue:)) }
+		set {
+			sortDecksRaw = newValue.map(\.rawValue)
+			userDefaults.set(sortDecksRaw, forKey: Key.sortDecks.rawValue)
+		}
+	}
+	
+	var invertCards: Bool {
+		get { invertCardsRaw }
+		set {
+			invertCardsRaw = newValue
+			userDefaults.set(invertCardsRaw, forKey: Key.invertCards.rawValue)
+		}
+	}
+	
+	var visibleCards: Bool {
+		get { visibleCardsRaw }
+		set {
+			visibleCardsRaw = newValue
+			userDefaults.set(visibleCardsRaw, forKey: Key.visibleCards.rawValue)
+		}
+	}
+	
+	var sortCards: [SortCard] {
+		get { sortCardsRaw.compactMap(SortCard.init(rawValue:)) }
+		set {
+			sortCardsRaw = newValue.map(\.rawValue)
+			userDefaults.set(sortCardsRaw, forKey: Key.sortCards.rawValue)
 		}
 	}
 }

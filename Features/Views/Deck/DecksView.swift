@@ -21,19 +21,20 @@ struct DecksView: View {
 	
 	@Query(sort: \Deck.createdAt, order: .reverse) private var decks: [Deck]
 	
+	@Bindable private var preferences: Preferences = .unique
 	@State private var item: Deck?
 	@State private var selection: Set<Deck> = []
 	@State private var selectedDeck: Deck?
 	@State private var showDeck: Bool = false
 	@State private var editMode: EditMode = .inactive
-	@State private var sorts: [SortDeck] = [.newestToOldest]
+	@State private var sorts: [SortDeck] = Preferences.unique.sortDecks
+	@State private var showDepiction: Bool = Preferences.unique.visibleDecks
 	@State private var showEditMode: Bool = false
 	@State private var showNewCard: Bool = false
 	@State private var showNewDeck: Bool = false
 	@State private var showDeleteDeck: Bool = false
 	@State private var showSelectedDecks: Bool = false
 	@State private var showMetaData: Bool = false
-	@State private var showDepiction: Bool = false
 	
 	private var filteredDecks: [Deck] {
 		decks.sorted(using: sorts.map(\.descriptor))
@@ -204,6 +205,7 @@ fileprivate extension DecksView {
 				sorts.insert(first, at: 0)
 			}
 		}
+		preferences.sortDecks = sorts
 	}
 }
 
@@ -248,6 +250,7 @@ fileprivate extension DecksView {
 				Section {
 					Button {
 						showDepiction.toggle()
+						preferences.visibleDecks = showDepiction
 					} label: {
 						Label("Hide", systemImage: showDepiction ? "eye.slash" : "eye")
 						Text(showDepiction ? "Hidden" : "Visible")

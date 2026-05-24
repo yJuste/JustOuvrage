@@ -18,12 +18,15 @@ struct CardsView: View {
 	
 	@Query(sort: \Card.createdAt, order: .reverse) private var cards: [Card]
 	
+	@Bindable private var preferences: Preferences = .unique
 	@State private var item: Card?
 	@State private var selection: Set<Card> = []
 	@State private var selectedCard: Card?
 	@State private var showCard: Bool = false
 	@State private var editMode: EditMode = .inactive
-	@State private var sorts: [SortCard] = [.newestToOldest]
+	@State private var sorts: [SortCard] = Preferences.unique.sortCards
+	@State private var showBackLanguage: Bool = Preferences.unique.visibleCards
+	@State private var showInvert: Bool = Preferences.unique.invertCards
 	@State private var selectedLanguages: Set<String> = []
 	@State private var showEditMode: Bool = false
 	@State private var showNewCard: Bool = false
@@ -31,8 +34,6 @@ struct CardsView: View {
 	@State private var showDeleteCard: Bool = false
 	@State private var showSelectedCards: Bool = false
 	@State private var showSafariExtension: Bool = false
-	@State private var showBackLanguage: Bool = false
-	@State private var showInvert: Bool = false
 	
 	private var filteredCards: [Card] {
 		
@@ -166,6 +167,7 @@ fileprivate extension CardsView {
 				sorts.insert(first, at: 0)
 			}
 		}
+		preferences.sortCards = sorts
 	}
 }
 
@@ -210,18 +212,15 @@ fileprivate extension CardsView {
 				Section {
 					Button {
 						showInvert.toggle()
+						preferences.invertCards = showInvert
 					} label: {
-						Label {
-							Text("Invert")
-						} icon: {
-							Image(systemName: "checkmark")
-								.hidden(showInvert ? false : true)
-						}
+						Label("Invert", systemImage: showInvert ? "square.2.layers.3d.bottom.filled" : "square.2.layers.3d.top.filled")
 						Text(showInvert ? "Inverted" : "Normal")
 							.font(.caption)
 					}
 					Button {
 						showBackLanguage.toggle()
+						preferences.visibleCards = showBackLanguage
 					} label: {
 						Label("Hide", systemImage: showBackLanguage ? "eye.slash" : "eye")
 						Text(showBackLanguage ? "Hidden" : "Visible")
