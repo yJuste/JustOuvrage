@@ -12,16 +12,18 @@ struct Argument: Identifiable {
 	let id: UUID
 	let deck: Deck?
 	let cards: [Card]
-	let timeInterval: TimeInterval
 	let mode: Mode
+	let timeInterval: TimeInterval
+	let order: SortTrial
 	var directions: [SwipeDirection]
 	
 	init(deck: Deck?, cards: [Card], mode: Mode = .custom, directions: [SwipeDirection], timeInterval: TimeInterval, order: SortTrial) {
 		self.id = UUID()
-		self.deck = nil
+		self.deck = deck
 		self.cards = cards
 		self.mode = mode
 		self.timeInterval = timeInterval
+		self.order = order
 		self.directions = directions
 	}
 }

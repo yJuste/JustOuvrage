@@ -153,6 +153,9 @@
     "Are you sure you want to delete this deck from your library?" : {
 
     },
+    "Are you sure you want to delete this result from Time Trial?" : {
+
+    },
     "Are you sure you want to discard changes to this card?" : {
 
     },
@@ -258,6 +261,12 @@
     "Delete from Library" : {
 
     },
+    "Delete from Time Trial" : {
+
+    },
+    "Descending" : {
+
+    },
     "Description" : {
 
     },
@@ -303,6 +312,9 @@
     "Here is your last entries." : {
 
     },
+    "Hidden" : {
+
+    },
     "Hide" : {
 
     },
@@ -315,10 +327,19 @@
     "Infinity" : {
 
     },
+    "Invert" : {
+
+    },
+    "Inverted" : {
+
+    },
     "Just Account" : {
 
     },
     "Keep Editing" : {
+
+    },
+    "Language" : {
 
     },
     "Languages" : {
@@ -379,6 +400,9 @@
 
     },
     "No cards selected" : {
+
+    },
+    "Normal" : {
 
     },
     "OK" : {

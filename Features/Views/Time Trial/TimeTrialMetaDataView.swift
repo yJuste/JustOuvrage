@@ -41,6 +41,18 @@ struct TimeTrialMetaDataView: View {
 						Spacer()
 						Text("\((timeTrial.success), format: .percent.precision(.fractionLength(0...2)))")
 					}
+					HStack {
+						Text("Language")
+							.foregroundStyle(.secondary)
+						Spacer()
+						Text(
+							Set(timeTrial.cards.flatMap { [$0.frontLanguage, $0.backLanguage] })
+								.sorted()
+								.map(\.language)
+								.joined(separator: " ⋅ ")
+						)
+						.font(.caption)
+					}
 				}
 				.frame(maxWidth: .infinity, alignment: .leading)
 				.padding()
@@ -70,10 +82,9 @@ fileprivate extension TimeTrialMetaDataView {
 	
 	let cards: [Card] = [Card(frontEntry: "FrontEntry", backEntry: "BackEntry", frontLanguage: .fr_CA, backLanguage: .en_GB)]
 	
-	let deck = Deck(name: "Title deck", image: "deck")
 	let res: [SwipeDirection] = [.left, .right, .right]
 	
-	let argument = Argument.make(deck: deck, cards: cards, mode: .chill, directions: res, timeInterval: 4.0, order: .alphabeticalAscending, numberOfCards: 30)
+	let argument = Argument.make(deck: nil, cards: cards, mode: .chill, directions: res, timeInterval: 4.0, order: .alphabeticalAscending, numberOfCards: 30)
 	
 	TimeTrialMetaDataView(timeTrial: TimeTrial(argument: argument, with: 0.348))
 }

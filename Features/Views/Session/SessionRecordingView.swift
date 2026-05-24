@@ -181,10 +181,14 @@ struct SessionRecordingView: View {
 			GlassEffectContainer {
 				HStack(alignment: .center, spacing: 15) {
 					Button {
+						showRecording = false
 						if let card = oldestCardWithoutRecording {
-							selectedCard = card
-							showCard = false
-							showRecording = true
+							Task {
+								try? await Task.sleep(for: .milliseconds(1))
+								selectedCard = card
+								showCard = false
+								showRecording = true
+							}
 						} else {
 							showDone.toggle()
 						}

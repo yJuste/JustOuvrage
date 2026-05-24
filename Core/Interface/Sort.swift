@@ -5,6 +5,9 @@
 //  Created by Jules Longin on 5/19/26.
 //
 
+import SwiftUI
+import Foundation
+
 /// Interfaces to sort.
 enum SortTrial: Int, CaseIterable {
 	
@@ -15,14 +18,21 @@ enum SortTrial: Int, CaseIterable {
 	case alphabeticalDescending
 }
 
-enum SortCard {
+enum SortCard: String, CaseIterable, Codable, Hashable {
 	
 	case alphabeticalAscending
 	case alphabeticalDescending
-	case alphabeticalLanguageAscending
-	case alphabeticalLanguageDescending
 	case newestToOldest
 	case oldestToNewest
+	
+	var descriptor: SortDescriptor<Card> {
+		switch self {
+		case .alphabeticalAscending: return SortDescriptor(\.frontEntry, order: .forward)
+		case .alphabeticalDescending: return SortDescriptor(\.frontEntry, order: .reverse)
+		case .newestToOldest: return SortDescriptor(\.createdAt, order: .reverse)
+		case .oldestToNewest: return SortDescriptor(\.createdAt, order: .forward)
+		}
+	}
 }
 
 enum SortDeck {

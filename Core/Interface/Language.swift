@@ -5,9 +5,11 @@
 //  Created by Jules Longin on 4/18/26.
 //
 
+import Foundation
+
 /// An interface to categorize the `language codes`.
 /// [ISO 639-1] + \_ + [ISO 3166]
-enum Language: String, Codable, CaseIterable {
+enum Language: String, Codable, CaseIterable, Comparable {
 	
 	case en_GB
 	case en_US
@@ -35,5 +37,19 @@ enum Language: String, Codable, CaseIterable {
 		case .fr_CA: return "Flags/ca"
 		case .fr_FR: return "Flags/fr"
 		}
+	}
+	
+	/// Comparable.
+	static func < (lhs: Language, rhs: Language) -> Bool {
+		lhs.language < rhs.language
+	}
+	
+	/// Code.
+	var code: String {
+		language.components(separatedBy: " - ").first ?? language
+	}
+	
+	static var codes: [String] {
+		Array(Set(allCases.map(\.code))).sorted()
 	}
 }

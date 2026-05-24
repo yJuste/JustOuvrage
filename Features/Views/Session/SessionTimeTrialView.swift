@@ -27,6 +27,7 @@ struct SessionTimeTrialView: View {
 	@State private var showDepiction: Bool = false
 	@State private var showTimeTrial: Bool = false
 	@State private var showDownload: Bool = false
+	@State private var showDeleteTimeTrial: Bool = false
 	@State private var showSelectedTimeTrial: Bool = false
 	@State private var showMetaData: Bool = false
 	
@@ -120,6 +121,14 @@ struct SessionTimeTrialView: View {
 										showTimeTrial = true
 									}
 								}
+								.contextMenu {
+									Button(role: .destructive) {
+										selectedTimeTrial = timeTrial
+										showDeleteTimeTrial.toggle()
+									} label: {
+										Label("Delete from Time Trial", systemImage: "trash")
+									}
+								}
 							}
 						}
 						.padding()
@@ -150,6 +159,14 @@ struct SessionTimeTrialView: View {
 						])
 						.presentationBackgroundInteraction(.enabled)
 				}
+			}
+			.alert("Are you sure you want to delete this result from Time Trial?", isPresented: $showDeleteTimeTrial) {
+				Button("Remove", role: .destructive) {
+					if let timeTrial = selectedTimeTrial {
+						modelContext.delete(timeTrial)
+					}
+				}
+				Button("Cancel", role: .cancel) { }
 			}
 			.alert("Selected Time Trial Results", isPresented: $showSelectedTimeTrial) {
 				Button("Delete", role: .destructive) {
@@ -182,6 +199,8 @@ struct SessionTimeTrialView: View {
 			GlassEffectContainer {
 				HStack(alignment: .center, spacing: 15) {
 					Button {
+						showMetaData = false
+						showTimeTrial = false
 						navigation.selectedTab = .trial
 					} label: {
 						Label("Session", systemImage: "flag.pattern.checkered.2.crossed")

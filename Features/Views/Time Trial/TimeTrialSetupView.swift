@@ -49,13 +49,7 @@ struct TimeTrialSetupView: View {
 				Section {
 					NavigationLink {
 						TimeTrialDeckSelectionView(
-							selectedDeck: Binding(
-								get: {
-									guard let id = preferences.trialDeck else { return nil }
-									return decks.first(where: { $0.id == id })
-								},
-								set: { preferences.trialDeck = $0?.id }
-							),
+							selectedDeck: selectedDeck,
 							decks: decks
 						)
 					} label: {

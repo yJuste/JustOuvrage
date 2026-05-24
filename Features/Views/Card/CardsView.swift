@@ -23,17 +23,34 @@ struct CardsView: View {
 	@State private var selectedCard: Card?
 	@State private var showCard: Bool = false
 	@State private var editMode: EditMode = .inactive
+	@State private var sorts: [SortCard] = [.newestToOldest]
+	@State private var selectedLanguages: Set<String> = []
 	@State private var showEditMode: Bool = false
 	@State private var showNewCard: Bool = false
 	@State private var showNewDeck: Bool = false
 	@State private var showDeleteCard: Bool = false
 	@State private var showSelectedCards: Bool = false
 	@State private var showSafariExtension: Bool = false
+	@State private var showBackLanguage: Bool = false
+	@State private var showInvert: Bool = false
+	
+	private var filteredCards: [Card] {
+		
+		let filtered: [Card]
+		
+		if selectedLanguages.isEmpty {
+			filtered = cards
+		} else {
+			filtered = cards.filter { selectedLanguages.contains($0.frontLanguage.code) || selectedLanguages.contains($0.backLanguage.code)
+			}
+		}
+		return filtered.sorted(using: sorts.map(\.descriptor))
+	}
 	
 	var body: some View {
 		NavigationStack {
 			List(selection: $selection) {
-				ForEach(cards) { card in
+				ForEach(filteredCards) { card in
 					VStack(alignment: .leading) {
 						Button {
 							Debug.print(level: .info, card: card)
@@ -41,11 +58,13 @@ struct CardsView: View {
 							showCard = true
 						} label: {
 							VStack(alignment: .leading, spacing: 5) {
-								Text(card.frontEntry)
+								Text(showInvert ? card.backEntry : card.frontEntry)
 									.font(.subheadline)
-								Text(card.backEntry)
-									.font(.subheadline)
-									.foregroundStyle(.secondary)
+								if !showBackLanguage {
+									Text(showInvert ? card.frontEntry : card.backEntry)
+										.font(.subheadline)
+										.foregroundStyle(.secondary)
+								}
 							}
 						}
 						.contextMenu {
@@ -132,6 +151,24 @@ fileprivate extension CardsView {
 	}
 }
 
+fileprivate extension CardsView {
+	
+	func toggleSort(first: SortCard, second: SortCard) {
+		
+		if sorts.contains(first) {
+			sorts.removeAll { $0 == first }
+			if !sorts.contains(second) {
+				sorts.insert(second, at: 0)
+			}
+		} else {
+			sorts.removeAll { $0 == second }
+			if !sorts.contains(first) {
+				sorts.insert(first, at: 0)
+			}
+		}
+	}
+}
+
 /// Toolbar.
 fileprivate extension CardsView {
 	
@@ -172,52 +209,55 @@ fileprivate extension CardsView {
 				}
 				Section {
 					Button {
-						// Hide definition
+						showInvert.toggle()
 					} label: {
-						Label("Hide", systemImage: "eye")
-						Text("Visible") // Hidden with eye.slash
+						Label {
+							Text("Invert")
+						} icon: {
+							Image(systemName: "checkmark")
+								.hidden(showInvert ? false : true)
+						}
+						Text(showInvert ? "Inverted" : "Normal")
+							.font(.caption)
+					}
+					Button {
+						showBackLanguage.toggle()
+					} label: {
+						Label("Hide", systemImage: showBackLanguage ? "eye.slash" : "eye")
+						Text(showBackLanguage ? "Hidden" : "Visible")
 							.font(.caption)
 					}
 				}
 				Section {
 					Button {
-						// sort Date
+						toggleSort(first: .newestToOldest, second: .oldestToNewest)
 					} label: {
-						Label("Date", systemImage: "checkmark")
-						Text("Newest to Oldest") // Oldest to Newest
-							.font(.caption)
+						Label("Date", systemImage: sorts.contains(.newestToOldest) ? "text.line.first.and.arrowtriangle.forward" : "text.line.last.and.arrowtriangle.forward")
+						Text(sorts.contains(.newestToOldest) ? "Newest to Oldest" : "Oldest to Newest")
 					}
 					Button {
-						// sort Name
+						toggleSort(first: .alphabeticalAscending, second: .alphabeticalDescending)
 					} label: {
-						Image(systemName: "checkmark")
-							.hidden(false)
-						Text("Name")
-						Text("Ascending") // Descending
-							.font(.caption)
+						Label("Name", systemImage: sorts.contains(.alphabeticalAscending) ? "text.line.first.and.arrowtriangle.forward" : "text.line.last.and.arrowtriangle.forward")
+						Text(sorts.contains(.alphabeticalAscending) ? "Ascending" : "Descending")
 					}
 				}
 				Menu {
-					Button {
-						//
-					} label: {
-						Image(systemName: "checkmark")
-							.hidden(false)
-						Text("English")
-					}
-					Button {
-						//
-					} label: {
-						Image(systemName: "checkmark")
-							.hidden(true)
-						Text("French")
-					}
-					Button {
-						//
-					} label: {
-						Image(systemName: "checkmark")
-							.hidden(false)
-						Text("Spanish")
+					ForEach(Language.codes, id: \.self) { language in
+						Button {
+							if selectedLanguages.contains(language) {
+								selectedLanguages.remove(language)
+							} else {
+								selectedLanguages.insert(language)
+							}
+						} label: {
+							Label {
+								Text("\(language)")
+							} icon: {
+								Image(systemName: "checkmark")
+									.hidden(!selectedLanguages.contains(language))
+							}
+						}
 					}
 				} label: {
 					Label("Languages", systemImage: "bubble.left.and.bubble.right.fill")
