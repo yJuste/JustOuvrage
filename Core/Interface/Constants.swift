@@ -46,6 +46,9 @@ enum Constants {
 	// Height of the sheet of the recording view.
 	static let heightOfARecording: [CGFloat] = [0.25, 0.4]
 	
+	// Height of the sheet of the time trial result view.
+	static let heightOfATimeTrial: [CGFloat] = [0.375, 1.0]
+	
 	//	--- Icons -------------------------------------------------------
 	
 	// Icon for the new card view.

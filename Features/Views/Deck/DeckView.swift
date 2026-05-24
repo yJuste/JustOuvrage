@@ -68,7 +68,7 @@ struct DeckView: View {
 								HStack(alignment: .center, spacing: 15) {
 									Button {
 										showCard = false
-										let arg = Trial.make(cards: cards, deck: deck, mode: .standard, order: .random, numberOfCards: 0, interval: 0)
+										let arg = Argument.make(deck: deck, cards: cards, mode: .standard, directions: [], timeInterval: 4.0, order: .random, numberOfCards: 0)
 										guard !arg.cards.isEmpty else { return showNoCards.toggle() }
 										argument = arg
 										showTimeTrial.toggle()
@@ -79,7 +79,7 @@ struct DeckView: View {
 									}
 									Button {
 										showCard = false
-										let arg = Trial.make(cards: cards, deck: deck, mode: .chill, order: .newestToOldest, numberOfCards: 0, interval: 0)
+										let arg = Argument.make(deck: deck, cards: cards, mode: .chill, directions: [], timeInterval: Constants.infinityYear, order: .random, numberOfCards: 0)
 										guard !arg.cards.isEmpty else { return showNoCards.toggle() }
 										argument = arg
 										showTimeTrial.toggle()
@@ -183,8 +183,8 @@ struct DeckView: View {
 			.navigationDestination(isPresented: $showTimeTrial) {
 				if let argument = argument {
 					TimeTrialView(argument: argument)
-					.navigationBarBackButtonHidden(true)
-					.navigationAllowDismissalGestures(.none)
+						.navigationBarBackButtonHidden(true)
+						.navigationAllowDismissalGestures(.none)
 				}
 			}
 			.alert("Delete Deck", isPresented: $showDeleteDeck) {

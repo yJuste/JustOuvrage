@@ -50,7 +50,6 @@
     "version" : 1
   },
   "properties" : {
-    "compression-type" : "gpu-optimized-smallest",
-    "preserves-vector-representation" : true
+    "compression-type" : "gpu-optimized-smallest"
   }
 }

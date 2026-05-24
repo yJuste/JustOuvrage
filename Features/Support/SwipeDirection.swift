@@ -6,7 +6,7 @@
 //
 
 // Swipe direction for trial View
-enum SwipeDirection {
+enum SwipeDirection: Codable {
 	
 	case left
 	case right

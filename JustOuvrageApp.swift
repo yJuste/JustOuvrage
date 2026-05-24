@@ -23,6 +23,7 @@ struct JustOuvrageApp: App {
 			ContentView()
 				.environment(FileImageStorage())
 				.environment(Recording())
+				.environment(Navigation())
 		}
 		.modelContainer(for: [Card.self, Deck.self, Draft.self, TimeTrial.self])
 	}

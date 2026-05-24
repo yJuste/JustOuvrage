@@ -12,6 +12,10 @@ import SwiftData
 /// External Dependencies: NewCardView, LibraryView, SearchView
 struct ContentView: View {
 	
+	@Environment(Navigation.self) private var navigation
+	
+	@Bindable private var preferences: Preferences = .unique
+	
 	var body: some View {
 		if #available(iOS 26, *) {
 			NativeTabView()
@@ -26,22 +30,28 @@ struct ContentView: View {
 fileprivate extension ContentView {
 	
 	@ViewBuilder func NativeTabView() -> some View {
-		TabView {
-			Tab("New", systemImage: "plus.rectangle.portrait") {
+		TabView(selection: Bindable(navigation).selectedTab) {
+			Tab("New", systemImage: "plus.rectangle.portrait", value: .new) {
 				NewCardView()
 			}
-			Tab("Trial", systemImage: "flag.pattern.checkered.2.crossed") {
+			Tab("Trial", systemImage: "flag.pattern.checkered.2.crossed", value: .trial) {
 				TimeTrialSetupView()
 			}
-			Tab("Session", systemImage: "rectangle.dashed.badge.record") {
+			Tab("Session", systemImage: "rectangle.dashed.badge.record", value: .session) {
 				SessionView()
 			}
-			Tab("Library", systemImage: "rectangle.stack.fill") {
+			Tab("Library", systemImage: "rectangle.stack.fill", value: .library) {
 				LibraryView()
 			}
-			Tab(role: .search) {
+			Tab(value: .search, role: .search) {
 				SearchView()
 			}
+		}
+		.onChange(of: navigation.selectedTab) { _, newValue in
+			preferences.tabBar = newValue
+		}
+		.onAppear {
+			navigation.selectedTab = preferences.tabBar
 		}
 		//.tabBarMinimizeBehavior(.onScrollDown)
 	}

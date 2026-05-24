@@ -10,29 +10,20 @@ import SwiftData
 
 struct TimeTrialResultView: View {
 	
-	let argument: Argument
-	let results: [SwipeDirection]
+	let timeTrial: TimeTrial
 	
-	@Environment(\.modelContext) private var modelContext
 	@Environment(\.dismiss) private var dismiss
 	
-	@Query(sort: \Deck.createdAt, order: .reverse) private var decks: [Deck]
-	
-	@State private var timeTrial: TimeTrial?
 	@State private var showSave: Bool = false
-	
-	private var selectedDeck: Deck? {
-		decks.first { $0.id == argument.deck?.id }
-	}
 	
 	var body: some View {
 		
 		NavigationStack {
 			List {
 				Section {
-					ForEach(argument.cards.indices, id: \.self) { index in
-						let card = argument.cards[index]
-						let result = results.indices.contains(index) ? results[index] : nil
+					ForEach(timeTrial.cards.indices, id: \.self) { index in
+						let card = timeTrial.cards[index]
+						let result = timeTrial.directions.indices.contains(index) ? timeTrial.directions[index] : nil
 						ZStack {
 							HStack {
 								VStack(alignment: .leading, spacing: 5) {
@@ -69,35 +60,20 @@ struct TimeTrialResultView: View {
 				.listRowInsets(EdgeInsets(top: 6, leading: 15, bottom: 6, trailing: 15))
 				Section { /// ``metadata``
 					VStack(alignment: .leading) {
-						Text("\(timeTrial?.createdAt ?? .now, format: .dateTime.year().month().day())")
-						Text("\(timeTrial?.deck?.name ?? "Every Card")")
-						if let mode = timeTrial?.mode {
-							Text(mode.mode)
-						}
-						Text("\((timeTrial?.success ?? 0), format: .percent.precision(.fractionLength(0...1))) success")
+						Text("\(timeTrial.createdAt, format: .dateTime.year().month().day())")
+						Text("\(timeTrial.deck?.name ?? "Every Card")")
+						Text(timeTrial.mode.mode)
+						Text("\((timeTrial.success), format: .percent.precision(.fractionLength(0...1))) success")
 					}
 					.foregroundStyle(.secondary)
 					.frame(maxWidth: .infinity, alignment: .leading)
 				}
 				.listRowSeparator(.hidden)
 			}
-			.onAppear {
-				let newTimeTrial = TimeTrial(argument: argument, with: calculateSuccesRate(results))
-				modelContext.insert(newTimeTrial)
-				timeTrial = newTimeTrial
-			}
 			.toolbar { toolbar }
 			.listStyle(.plain)
 		}
 		.navigationBarBackButtonHidden(true)
-	}
-}
-
-fileprivate extension TimeTrialResultView {
-	
-	private func calculateSuccesRate(_ results: [SwipeDirection]) -> Double {
-		guard !results.isEmpty else { return 0 }
-		return Double(results.filter { $0 == .right }.count) / Double(results.count)
 	}
 }
 
@@ -116,7 +92,7 @@ fileprivate extension TimeTrialResultView {
 			VStack {
 				Text("Results")
 					.font(.headline)
-				Text("for \"\(selectedDeck?.name ?? "Every Card")\"")
+				Text("for \"\(timeTrial.deck?.name ?? "Every Card")\"")
 					.font(.caption)
 					.foregroundStyle(.secondary)
 			}
@@ -129,10 +105,9 @@ fileprivate extension TimeTrialResultView {
 	let cards: [Card] = [Card(frontEntry: "FrontEntry", backEntry: "BackEntry", frontLanguage: .fr_CA, backLanguage: .en_GB)]
 	
 	let deck = Deck(name: "Title deck", image: "deck")
-	
-	let argument = Trial.make(cards: cards, deck: deck, mode: .chill, order: .alphabeticalAscending, numberOfCards: 30, interval: 5.0)
-	
 	let res: [SwipeDirection] = [.left, .right, .right]
 	
-	TimeTrialResultView(argument: argument, results: res)
+	let argument = Argument.make(deck: deck, cards: cards, mode: .chill, directions: res, timeInterval: 4.0, order: .alphabeticalAscending, numberOfCards: 30)
+	
+	TimeTrialResultView(timeTrial: TimeTrial(argument: argument, with: 34.8))
 }

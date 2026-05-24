@@ -22,12 +22,4 @@ enum Site: CaseIterable {
 		lazy var wordReference = WordReferenceSite()
 		lazy var google = GoogleSite()
 	}
-	
-	var site: SiteService {
-		switch self {
-		case .forvo: return Site.unique.forvo
-		case .wordReference: return Site.unique.wordReference
-		case .google: return Site.unique.google
-		}
-	}
 }

@@ -11,24 +11,24 @@ import Combine
 
 struct TimeTrialView: View {
 	
-	let argument: Argument
-	
+	@Environment(\.modelContext) private var modelContext
 	@Environment(\.dismiss) private var dismiss
 	
 	@Query(sort: \Deck.createdAt, order: .reverse) private var decks: [Deck]
 	
 	@Bindable private var preferences: Preferences = .unique
+	@State private var argument: Argument
+	@State private var timeTrial: TimeTrial?
 	@State private var currentIndex: Int = 0
 	@State private var hasTimerReachedZero: Bool = false
 	@State private var hasTimerPaused: Bool = false
 	@State private var dragOffset: CGSize = .zero
 	@State private var rotation: Double = 0
-	@State private var swipeResults: [SwipeDirection] = []
+	@State private var directions: [SwipeDirection] = []
 	@State private var showPause: Bool = false
 	@State private var isSwiping: Bool = false
 	@State private var isCardTapped: Bool = false
 	@State private var remainingTime: TimeInterval
-	@State private var showTimeTrialResult: Bool = false
 	
 	private var currentCard: Card? {
 		guard currentIndex < argument.cards.count else { return nil }
@@ -42,7 +42,7 @@ struct TimeTrialView: View {
 	}
 	
 	init(argument: Argument) {
-		self.argument = argument
+		_argument = State(initialValue: argument)
 		_remainingTime = State(initialValue: argument.timeInterval)
 	}
 	
@@ -51,7 +51,7 @@ struct TimeTrialView: View {
 			GeometryReader { geo in
 				let isPortrait: Bool = geo.size.height > geo.size.width
 				ZStack {
-					backgroundGradient
+					//backgroundGradient
 					VStack(spacing: isPortrait ? geo.size.height * 0.05 : geo.size.height * 1.0) {
 						if let card = currentCard {
 							ZStack {
@@ -102,8 +102,8 @@ struct TimeTrialView: View {
 					hasTimerReachedZero = true
 				}
 			}
-			.navigationDestination(isPresented: $showTimeTrialResult) {
-				TimeTrialResultView(argument: argument, results: swipeResults)
+			.navigationDestination(item: $timeTrial) { trial in
+				TimeTrialResultView(timeTrial: trial)
 			}
 			.toolbar { toolbar }
 			.toolbar(.hidden, for: .tabBar)
@@ -138,9 +138,7 @@ struct TimeTrialView: View {
 						.font(.system(size: geo.size.width * (isPortrait ? 0.05 : 0.03), weight: .semibold))
 						.foregroundStyle(.secondary)
 				}
-				if !isPortrait {
-					Spacer()
-				}
+				if !isPortrait { Spacer() }
 				Spacer()
 			}
 			.multilineTextAlignment(.center)
@@ -178,7 +176,6 @@ struct TimeTrialView: View {
 					}
 				}
 		)
-		.shadow(color: .black.opacity(0.3), radius: 15)
 		.onTapGesture {
 			isCardTapped.toggle()
 		}
@@ -218,7 +215,7 @@ fileprivate extension TimeTrialView {
 		
 		guard !isSwiping else { return }
 		isSwiping = true
-		swipeResults.append(direction)
+		directions.append(direction)
 		hasTimerPaused = true
 		
 		withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
@@ -229,7 +226,10 @@ fileprivate extension TimeTrialView {
 		Task { @MainActor in
 			self.currentIndex += 1
 			if self.currentIndex >= argument.cards.count {
-				showTimeTrialResult.toggle()
+				argument.directions = directions
+				let result = TimeTrial(argument: argument, with: calculateSuccesRate(argument.directions))
+				modelContext.insert(result)
+				timeTrial = result
 			}
 			self.isCardTapped = false
 			self.dragOffset = .zero
@@ -257,6 +257,11 @@ fileprivate extension TimeTrialView {
 	private var backgroundGradient: some View {
 		VStack {}
 	}
+	
+	private func calculateSuccesRate(_ directions: [SwipeDirection]) -> Double {
+		guard !directions.isEmpty else { return 0 }
+		return Double(directions.filter { $0 == .right }.count) / Double(directions.count)
+	}
 }
 
 #Preview {
@@ -265,7 +270,7 @@ fileprivate extension TimeTrialView {
 	
 	let deck = Deck(name: "Title deck", image: "deck")
 	
-	let argument = Trial.make(cards: cards, deck: deck, mode: .chill, order: .alphabeticalAscending, numberOfCards: 30, interval: 5.0)
+	let argument = Argument.make(deck: deck, cards: cards, mode: .chill, directions: [.left], timeInterval: 4.0, order: .alphabeticalAscending, numberOfCards: 30)
 	
 	TimeTrialView(argument: argument)
 }

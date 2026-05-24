@@ -9,9 +9,10 @@ import SwiftUI
 
 struct RecordingSession: SessionService {
 	
-	var title: String = "Audio Recording"
-	var subtitle: String = "Record your own pronunciation"
-	var depiction: String = """
+	let id: UUID = UUID()
+	let title: String = "Audio Recording"
+	let subtitle: String = "Record your own pronunciation"
+	let depiction: String = """
  This interface lets you record your own pronunciations for every expression.
  
  All cards are sorted by date added, with the newest ones right at the top.
@@ -25,19 +26,20 @@ struct RecordingSession: SessionService {
  
  Small indicators are also displayed so you can instantly tell how many recordings have been made for a card.
  """
-	var depiction2: String = """
+	let depiction2: String = """
    
    Once a card has recordings, you can play them back anytime directly from the card sheet by tapping the flags in the top toolbar.
   
    The first flag is linked to the first entry, while the second one corresponds to the second entry.
   """
-	var depiction3: String = """
+	let depiction3: String = """
   
   Your overall progress is displayed at the top.
   
   Have fun completing them all :)
   """
 	
-	var recordingExample = Image(.audioRecordingExample)
-	var cardExample = Image(.cardExample)
+	let banner: ImageResource = .audioRecording
+	let recordingExample: ImageResource = .audioRecordingExample
+	let cardExample: ImageResource = .cardExample
 }

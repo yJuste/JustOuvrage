@@ -198,7 +198,7 @@ fileprivate extension TimeTrialSetupView {
 	@ToolbarContentBuilder private var toolbar: some ToolbarContent {
 		ToolbarItem(placement: .topBarTrailing) {
 			Button {
-				let arg = Trial.make(cards: cards, deck: selectedDeck.wrappedValue, mode: preferences.trialMode, order: preferences.trialOrder, numberOfCards: preferences.trialNumberOfCards, interval: preferences.trialTimeInterval)
+				let arg = Argument.make(deck: selectedDeck.wrappedValue, cards: cards, mode: preferences.trialMode, directions: [], timeInterval: preferences.trialTimeInterval, order: preferences.trialOrder, numberOfCards: preferences.trialNumberOfCards)
 				guard !arg.cards.isEmpty else { return showNoCards.toggle() }
 				argument = arg
 				showTimeTrial.toggle()

@@ -9,10 +9,10 @@ import SwiftUI
 
 struct TimeTrialSession: SessionService {
 	
-	var title: String = "Time Trial"
-	var subtitle: String = "Track your time trial results"
-	var depiction: String = ""
+	let id: UUID = UUID()
+	let title: String = "Time Trial"
+	let subtitle: String = "Track your results"
+	let depiction: String = "This interface lets you track your results from the Time Trial Mode."
 	
-	var recordingExample = Image(.audioRecordingExample)
-	var cardExample = Image(.cardExample)
+	let banner: ImageResource = .timeTrial
 }

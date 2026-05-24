@@ -23,17 +23,16 @@ struct SessionBanner: View {
 				Image(image)
 					.resizable()
 					.scaledToFill()
-					.frame(height: 120)
-					.frame(maxWidth: .infinity)
-					.matchedTransitionSource(id: id, in: namespace)
-				
 				Text(title)
 					.bold()
 					.padding(.horizontal, 12)
 					.padding(.vertical, 8)
 					.glassEffect(.clear.interactive())
 			}
+			.frame(height: 120)
 			.clipShape(RoundedRectangle(cornerRadius: 8))
+			.contentShape(RoundedRectangle(cornerRadius: 8))
+			.matchedTransitionSource(id: id, in: namespace)
 		}
 		.buttonStyle(.plain)
 	}

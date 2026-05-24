@@ -19,12 +19,15 @@ struct SessionRecordingView: View {
 	
 	@State private var verticalOffset: CGFloat = 0
 	@State private var selectedCard: Card?
+	@State private var selection: Set<Card> = []
+	@State private var editMode: EditMode = .inactive
 	@State private var showDepiction: Bool = false
 	@State private var showCard: Bool = false
 	@State private var showRecording: Bool = false
 	@State private var showDownload: Bool = false
+	@State private var showDone: Bool = false
 	
-	private let session: AudioRecordingSession = Session.unique.audioRecording
+	private let session: RecordingSession = Session.unique.audioRecording
 	
 	private var audioLeft: Int {
 		cards.reduce(0) { result, card in
@@ -46,6 +49,10 @@ struct SessionRecordingView: View {
 		return Int((Double(completed) / Double(total)) * 100)
 	}
 	
+	private var oldestCardWithoutRecording: Card? {
+		cards.last(where: { $0.frontRecording == nil || $0.backRecording == nil })
+	}
+	
 	var body: some View {
 		NavigationStack {
 			GeometryReader { geo in
@@ -56,7 +63,7 @@ struct SessionRecordingView: View {
 				
 				ScrollView {
 					VStack {
-						Image(.audioRecording)
+						Image(session.banner)
 							.resizable()
 							.aspectRatio(contentMode: .fill)
 							.frame(maxWidth: isPortrait ? width : .infinity)
@@ -149,6 +156,9 @@ struct SessionRecordingView: View {
 						.presentationBackgroundInteraction(.enabled)
 				}
 			}
+			.alert("You completed every recording.", isPresented: $showDone) {
+				Button("OK", role: .cancel) { }
+			}
 			.alert("Downloading is not implemented yet.", isPresented: $showDownload) {
 				Button("OK", role: .cancel) { }
 			}
@@ -163,7 +173,7 @@ struct SessionRecordingView: View {
 			Text(session.subtitle)
 				.font(.system(size: 20, weight: .semibold))
 				.foregroundStyle(Color(.label))
-			Text("\(audioLeft) left ⋅ \(percentageLeft)%")
+			Text("\(audioLeft) left ⋅ \(percentageLeft)% done")
 				.font(.callout)
 				.fontWeight(.semibold)
 				.padding(.top, 10)
@@ -171,7 +181,13 @@ struct SessionRecordingView: View {
 			GlassEffectContainer {
 				HStack(alignment: .center, spacing: 15) {
 					Button {
-						//
+						if let card = oldestCardWithoutRecording {
+							selectedCard = card
+							showCard = false
+							showRecording = true
+						} else {
+							showDone.toggle()
+						}
 					} label: {
 						Label("Record", systemImage: "record.circle")
 							.frame(width: 160, height: 50)
@@ -217,11 +233,11 @@ struct SessionRecordingView: View {
 							Text(session.depiction)
 								.foregroundStyle(Color(.label))
 								.padding(.horizontal, 20)
-							session.recordingExample
+							Image(session.recordingExample)
 							Text(session.depiction2)
 								.foregroundStyle(Color(.label))
 								.padding(.horizontal, 20)
-							session.cardExample
+							Image(session.cardExample)
 							Text(session.depiction3)
 								.foregroundStyle(Color(.label))
 								.padding(.horizontal, 20)

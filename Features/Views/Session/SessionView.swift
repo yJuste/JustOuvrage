@@ -12,34 +12,32 @@ import SwiftData
 
 struct SessionView: View {
 	
-	enum SessionRoute: Hashable {
-		
-		case audio(UUID)
-	}
-	
 	@Namespace private var namespace
 	
-	@State private var selectedSession: SessionRoute?
+	@State private var showAudioRecording: Bool = false
+	@State private var showTimeTrial: Bool = false
 	
-	private let audio = UUID()
+	private var audioRecording: RecordingSession = Session.unique.audioRecording
+	private var timeTrial: TimeTrialSession = Session.unique.timeTrial
 	
 	var body: some View {
 		NavigationStack {
 			ScrollView {
-				Section {
-					LazyVStack(spacing: 10) {
-						SessionBanner(id: audio, namespace: namespace, title: "Audio Recording", image: .audioRecording) {
-							selectedSession = .audio(audio)
-						}
+				VStack(spacing: 10) {
+					SessionBanner(id: audioRecording.id, namespace: namespace, title: audioRecording.title, image: audioRecording.banner) {
+						showAudioRecording.toggle()
 					}
-					.padding()
+					SessionBanner(id: timeTrial.id, namespace: namespace, title: timeTrial.title, image: timeTrial.banner) {
+						showTimeTrial.toggle()
+					}
 				}
+				.padding()
 			}
-			.navigationDestination(item: $selectedSession) { session in
-				switch session {
-				case .audio(let id):
-					SessionRecordingView(id: id, namespace: namespace)
-				}
+			.navigationDestination(isPresented: $showAudioRecording) {
+				SessionRecordingView(id: audioRecording.id, namespace: namespace)
+			}
+			.navigationDestination(isPresented: $showTimeTrial) {
+				SessionTimeTrial(id: timeTrial.id, namespace: namespace)
 			}
 			.navigationTitle("Session")
 			.toolbarTitleDisplayMode(.inlineLarge)
@@ -58,7 +56,7 @@ struct SessionView: View {
 	let deck2 = Deck(name: "Lucas", image: "deck")
 	let deck3 = Deck(name: "All", image: "deck")
 	
-	let argument = Trial.make(cards: cards, deck: deck1, mode: .chill, order: .alphabeticalAscending, numberOfCards: 30, interval: 5.0)
+	let argument = Argument.make(deck: deck1, cards: cards, mode: .chill, directions: [.left], timeInterval: 4.0, order: .alphabeticalAscending, numberOfCards: 30)
 	context.insert(deck1)
 	context.insert(deck2)
 	context.insert(deck3)

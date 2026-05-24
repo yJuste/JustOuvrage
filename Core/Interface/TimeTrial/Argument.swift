@@ -10,16 +10,60 @@ import Foundation
 struct Argument: Identifiable {
 	
 	let id: UUID
+	let deck: Deck?
 	let cards: [Card]
 	let timeInterval: TimeInterval
-	let deck: Deck?
 	let mode: Mode
+	var directions: [SwipeDirection]
 	
-	init(cards: [Card], timeInterval: TimeInterval, deck: Deck?, mode: Mode = .custom) {
+	init(deck: Deck?, cards: [Card], mode: Mode = .custom, directions: [SwipeDirection], timeInterval: TimeInterval, order: SortTrial) {
 		self.id = UUID()
-		self.cards = cards
-		self.timeInterval = timeInterval
 		self.deck = nil
+		self.cards = cards
 		self.mode = mode
+		self.timeInterval = timeInterval
+		self.directions = directions
+	}
+}
+
+extension Argument {
+	
+	static func make(deck: Deck?, cards: [Card], mode: Mode, directions: [SwipeDirection], timeInterval: TimeInterval, order: SortTrial, numberOfCards: Int) -> Argument {
+		
+		var res = cards
+		var newInterval = timeInterval
+		var newOrder = order
+		
+		if let deck { res = res.filter { $0.decks.contains(deck) } }
+		
+		switch mode {
+		case .chill: res = res.sorted { $0.createdAt > $1.createdAt }; newInterval = Constants.infinityYear; newOrder = .newestToOldest
+		case .standard: res.shuffle(); newInterval = 4.0; newOrder = .random
+		case .death: res.shuffle(); newInterval = 1.5; newOrder = .random
+		case .custom:
+			switch order {
+			case .random: res.shuffle()
+			case .newestToOldest: res = res.sorted { $0.createdAt > $1.createdAt }
+			case .oldestToNewest: res = res.sorted { $0.createdAt < $1.createdAt }
+			case .alphabeticalAscending:
+				res = res.sorted {
+					if $0.frontEntry == $1.frontEntry {
+						return $0.backEntry.localizedCaseInsensitiveCompare($1.backEntry) == .orderedAscending
+					}
+					return $0.frontEntry.localizedCaseInsensitiveCompare($1.frontEntry) == .orderedAscending
+				}
+			case .alphabeticalDescending:
+				res = res.sorted {
+					if $0.frontEntry == $1.frontEntry {
+						return $0.backEntry.localizedCaseInsensitiveCompare($1.backEntry) == .orderedDescending
+					}
+					return $0.frontEntry.localizedCaseInsensitiveCompare($1.frontEntry) == .orderedDescending
+				}
+			}
+		}
+		
+		if numberOfCards > 0 { res = Array(res.prefix(numberOfCards)) }
+		
+		return Argument(deck: deck, cards: res, mode: mode, directions: directions, timeInterval: newInterval, order: newOrder)
 	}
 }

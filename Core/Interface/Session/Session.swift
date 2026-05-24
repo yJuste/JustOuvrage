@@ -17,14 +17,7 @@ enum Session: CaseIterable {
 		
 		fileprivate init() {}
 		
-		lazy var audioRecording = AudioRecordingSession()
+		lazy var audioRecording = RecordingSession()
 		lazy var timeTrial = TimeTrialSession()
-	}
-	
-	var session: SessionService {
-		switch self {
-		case .audioRecording: return Session.unique.audioRecording
-		case .timeTrial: return Session.unique.timeTrial
-		}
 	}
 }

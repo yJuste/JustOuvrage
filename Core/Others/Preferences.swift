@@ -15,6 +15,9 @@ import Observation
 	/// An Interface that lists all `persisted selections` with UserDefault.
 	private enum Key: String {
 		
+		// Tab
+		case tabBar
+		
 		// In New Card
 		case frontLanguage
 		case backLanguage
@@ -36,22 +39,24 @@ import Observation
 	static let unique: Preferences = Preferences()
 	
 	private let userDefaults: UserDefaults = UserDefaults.standard
+	private var tabBarRaw: String = ""
 	private var frontLanguageRaw: String = ""
 	private var backLanguageRaw: String = ""
 	private var exactMatchRaw: String = ""
-	private var trialTimeIntervalRaw: TimeInterval = 4.0
+	private var trialTimeIntervalRaw: TimeInterval = 0
 	private var trialDeckRaw: String = ""
 	private var trialNumberOfCardsRaw: Int = 0
 	private var trialOrderRaw: Int = 0
 	private var trialModeRaw: Int = 0
 	private var lastCleanDuplicateRaw: Double = 0
-	private var trialRefreshTimerRaw: Double = 2.0/60.0
+	private var trialRefreshTimerRaw: Double = 0
 	private var audioQualityRaw: String = ""
 	
 	private init() {
 		
 		let defaultLanguage: String = Language.en_US.rawValue
 		
+		tabBarRaw = userDefaults.string(forKey: Key.tabBar.rawValue) ?? TabBar.new.rawValue
 		frontLanguageRaw = userDefaults.string(forKey: Key.frontLanguage.rawValue) ?? defaultLanguage
 		backLanguageRaw = userDefaults.string(forKey: Key.backLanguage.rawValue) ?? defaultLanguage
 		exactMatchRaw = userDefaults.string(forKey: Key.exactMatch.rawValue) ?? defaultLanguage
@@ -63,6 +68,14 @@ import Observation
 		lastCleanDuplicateRaw = userDefaults.double(forKey: Key.lastCleanDuplicate.rawValue)
 		trialRefreshTimerRaw = userDefaults.object(forKey: Key.trialRefreshTimer.rawValue) as? Double ?? (2.0 / 60.0)
 		audioQualityRaw = userDefaults.string(forKey: Key.audioQuality.rawValue) ?? AudioQuality.high.rawValue
+	}
+	
+	var tabBar: TabBar {
+		get { TabBar(rawValue: tabBarRaw) ?? .new }
+		set {
+			tabBarRaw = newValue.rawValue
+			userDefaults.set(tabBarRaw, forKey: Key.tabBar.rawValue)
+		}
 	}
 	
 	var frontLanguage: Language {

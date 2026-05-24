@@ -72,12 +72,22 @@
         }
       }
     },
-    "%lld left ⋅ %lld%%" : {
+    "%lld left ⋅ %lld%% done" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "%1$lld left ⋅ %2$lld%%"
+            "value" : "%1$lld left ⋅ %2$lld%% done"
+          }
+        }
+      }
+    },
+    "%lld sessions ⋅ %lld%% success" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$lld sessions ⋅ %2$lld%% success"
           }
         }
       }
@@ -458,6 +468,9 @@
     "Selected Decks" : {
 
     },
+    "Selected Time Trial Results" : {
+
+    },
     "Session" : {
 
     },
@@ -501,6 +514,9 @@
 
     },
     "You can't start the Time Trial because there are no cards in the deck." : {
+
+    },
+    "You completed every recording." : {
 
     },
     "Your Just Account provides a unique identifier that connects you across all Just Anthology productions." : {
