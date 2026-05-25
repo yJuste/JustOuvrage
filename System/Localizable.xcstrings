@@ -393,6 +393,9 @@
     "Metadata" : {
 
     },
+    "Microphone Permission Required" : {
+
+    },
     "Missing Information" : {
 
     },
@@ -571,6 +574,9 @@
 
     },
     "You completed every recording." : {
+
+    },
+    "You have to enable the microphone in the settings." : {
 
     },
     "Your Just Account provides a unique identifier that connects you across all Just Anthology productions." : {

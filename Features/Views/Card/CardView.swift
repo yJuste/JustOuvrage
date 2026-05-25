@@ -22,6 +22,7 @@ struct CardView: View {
 	@Environment(\.modelContext) private var modelContext
 	@Environment(\.dismiss) private var dismiss
 	
+	@Bindable private var preferences: Preferences = .unique
 	@State private var destination: Destination?
 	@State private var player: AVAudioPlayer?
 	@State private var activePlaying: String?
@@ -30,6 +31,7 @@ struct CardView: View {
 	@State private var showDeleteCard: Bool = false
 	@State private var showDecksToCard: Bool = false
 	@State private var showRecording: Bool = false
+	@State private var showGradientBackground: Bool = Preferences.unique.gradientBackground
 	
 	private var cleanFrontEntry: [String] {
 		cleanWords(expression: card.frontEntry)
@@ -100,6 +102,7 @@ struct CardView: View {
 						.padding(.vertical)
 					} /// ``Metadata``
 				}
+				.foregroundStyle(showGradientBackground ? Color(.label) : .primary)
 				.padding(.horizontal)
 			}
 			.onDisappear {
@@ -174,6 +177,20 @@ fileprivate extension CardView {
 	}
 }
 
+/// Methods of CardView.
+fileprivate extension CardView {
+	
+	private func cleanWords(expression: String) -> [String] {
+		return expression
+			.components(separatedBy: ",")
+			.map {
+				$0.unicodeScalars.filter { !($0.properties.isEmoji && $0.properties.isEmojiPresentation) }.map { String($0) }.joined()
+					.trimmingCharacters(in: .whitespacesAndNewlines)
+			}
+			.filter { !$0.isEmpty }
+	}
+}
+
 /// Toolbar.
 fileprivate extension CardView {
 	
@@ -202,6 +219,7 @@ fileprivate extension CardView {
 				}
 			} label: {
 				Image(systemName: "ellipsis")
+					.foregroundStyle(showGradientBackground ? Color(.label) : .primary)
 			}
 		}
 		ToolbarItem(placement: .topBarLeading) {
@@ -223,20 +241,6 @@ fileprivate extension CardView {
 					play(card.backRecording)
 				}
 		}
-	}
-}
-
-/// Methods of CardView.
-fileprivate extension CardView {
-	
-	private func cleanWords(expression: String) -> [String] {
-		return expression
-			.components(separatedBy: ",")
-			.map {
-				$0.unicodeScalars.filter { !($0.properties.isEmoji && $0.properties.isEmojiPresentation) }.map { String($0) }.joined()
-					.trimmingCharacters(in: .whitespacesAndNewlines)
-			}
-			.filter { !$0.isEmpty }
 	}
 }
 

@@ -47,6 +47,7 @@ struct DeckView: View {
 				if showGradientBackground {
 					if let colors {
 						AmazingBackground(colors: colors, active: showAnimationBackground ? true : false)
+							.opacity(0.5)
 							.ignoresSafeArea()
 					}
 				}

@@ -57,6 +57,10 @@ struct SessionRecordingView: View {
 		cards.last(where: { $0.frontRecording == nil || $0.backRecording == nil })
 	}
 	
+	private var dismissItems: [Binding<Bool>] {
+		[$showEditMode, $showDepiction, $showCard, $showRecording]
+	}
+	
 	var body: some View {
 		NavigationStack {
 			GeometryReader { geo in
@@ -98,7 +102,7 @@ struct SessionRecordingView: View {
 									ZStack(alignment: .bottom) {
 										Button {
 											selectedCard = card
-											show($showRecording)
+											dismissItems.showOnly($showRecording)
 										} label: {
 											Image(systemName: "waveform")
 												.font(.system(size: 28))
@@ -134,7 +138,7 @@ struct SessionRecordingView: View {
 										}
 									} else {
 										selectedCard = card
-										show($showCard)
+										dismissItems.showOnly($showCard)
 									}
 								}
 								.contextMenu {
@@ -224,7 +228,7 @@ fileprivate extension SessionRecordingView {
 							Task {
 								try? await Task.sleep(for: .milliseconds(1))
 								selectedCard = card
-								show($showRecording)
+								dismissItems.showOnly($showRecording)
 							}
 						} else {
 							showDone.toggle()
@@ -251,7 +255,7 @@ fileprivate extension SessionRecordingView {
 				.multilineTextAlignment(.leading)
 				.padding(.horizontal, paddingText)
 				.onTapGesture {
-					show($showDepiction)
+					dismissItems.showOnly($showDepiction)
 				}
 				.sheet(isPresented: $showDepiction) {
 					NavigationStack {
@@ -286,23 +290,6 @@ fileprivate extension SessionRecordingView {
 /// Methods of SessionRecordingView.
 fileprivate extension SessionRecordingView {
 	
-	private func show(_ item: Binding<Bool>) {
-		showEditMode = false
-		showDepiction = false
-		showCard = false
-		showRecording = false
-		item.wrappedValue = true
-	}
-	
-	private func toggle(for item: Binding<Bool>) {
-		let newValue = !item.wrappedValue
-		showEditMode = false
-		showDepiction = false
-		showCard = false
-		showRecording = false
-		item.wrappedValue = newValue
-	}
-	
 	private func clearSelection() {
 		for card in cards where selection.contains(card.id) {
 			if let front = card.frontRecording {
@@ -333,7 +320,7 @@ fileprivate extension SessionRecordingView {
 	
 	private func toggleEditMode() {
 		guard !showEditMode else { return }
-		toggle(for: $showEditMode)
+		dismissItems.toggleOnly($showEditMode)
 		withAnimation(.smooth(duration: 0.25)) {
 			if editMode == .active {
 				editMode = .inactive
@@ -344,7 +331,7 @@ fileprivate extension SessionRecordingView {
 		}
 		Task {
 			try? await Task.sleep(for: .milliseconds(250))
-			toggle(for: $showEditMode)
+			dismissItems.toggleOnly($showEditMode)
 		}
 	}
 }

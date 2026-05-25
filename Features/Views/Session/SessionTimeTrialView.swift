@@ -38,6 +38,10 @@ struct SessionTimeTrialView: View {
 		return Int((timeTrials.map(\.success).reduce(0, +) / Double(timeTrials.count) * 100).rounded())
 	}
 	
+	private var dismissItems: [Binding<Bool>] {
+		[$showEditMode, $showDepiction, $showTimeTrial, $showMetaData]
+	}
+	
 	var body: some View {
 		NavigationStack {
 			GeometryReader { geo in
@@ -82,7 +86,7 @@ struct SessionTimeTrialView: View {
 										ZStack(alignment: .bottom) {
 											Button {
 												selectedTimeTrial = timeTrial
-												show($showMetaData)
+												dismissItems.showOnly($showMetaData)
 											} label: {
 												let score = Int((timeTrial.success * 100).rounded())
 												Text(score, format: .number)
@@ -114,7 +118,7 @@ struct SessionTimeTrialView: View {
 										}
 									} else {
 										selectedTimeTrial = timeTrial
-										show($showTimeTrial)
+										dismissItems.showOnly($showTimeTrial)
 									}
 								}
 								.contextMenu {
@@ -192,6 +196,7 @@ struct SessionTimeTrialView: View {
 			GlassEffectContainer {
 				HStack(alignment: .center, spacing: 15) {
 					Button {
+						dismissItems.setAll(to: false)
 						navigation.selectedTab = .trial
 					} label: {
 						Label("Session", systemImage: "flag.pattern.checkered.2.crossed")
@@ -215,7 +220,7 @@ struct SessionTimeTrialView: View {
 				.multilineTextAlignment(.leading)
 				.padding(.horizontal, paddingText)
 				.onTapGesture {
-					show($showDepiction)
+					dismissItems.showOnly($showDepiction)
 				}
 				.sheet(isPresented: $showDepiction) {
 					NavigationStack {
@@ -242,23 +247,6 @@ struct SessionTimeTrialView: View {
 /// Methods of SessionTimeTrialView.
 fileprivate extension SessionTimeTrialView {
 	
-	private func show(_ item: Binding<Bool>) {
-		showEditMode = false
-		showDepiction = false
-		showTimeTrial = false
-		showMetaData = false
-		item.wrappedValue = true
-	}
-	
-	private func toggle(for item: Binding<Bool>) {
-		let newValue = !item.wrappedValue
-		showEditMode = false
-		showDepiction = false
-		showTimeTrial = false
-		showMetaData = false
-		item.wrappedValue = newValue
-	}
-	
 	private func deleteSelection() {
 		for timeTrial in timeTrials where selection.contains(timeTrial.id) {
 			modelContext.delete(timeTrial)
@@ -270,7 +258,7 @@ fileprivate extension SessionTimeTrialView {
 	
 	private func toggleEditMode() {
 		guard !showEditMode else { return }
-		toggle(for: $showEditMode)
+		dismissItems.toggleOnly($showEditMode)
 		withAnimation(.smooth(duration: 0.25)) {
 			if editMode == .active {
 				editMode = .inactive
@@ -281,7 +269,7 @@ fileprivate extension SessionTimeTrialView {
 		}
 		Task {
 			try? await Task.sleep(for: .milliseconds(250))
-			toggle(for: $showEditMode)
+			dismissItems.toggleOnly($showEditMode)
 		}
 	}
 }

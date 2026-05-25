@@ -8,8 +8,6 @@
 import SwiftUI
 import SwiftData
 
-// MARK: Protect 'All Deck'
-
 /// A view that shows every deck.
 /// External Dependencies: Deck, FileImageStorage, DeckView, NewCardView, NewDeckView
 struct DecksView: View {
@@ -39,6 +37,10 @@ struct DecksView: View {
 		decks.sorted(using: sorts.map(\.descriptor))
 	}
 	
+	private var dismissItems: [Binding<Bool>] {
+		[$showDeck, $showEditMode, $showNewCard, $showNewDeck, $showDeleteDeck, $showDeleteDeck, $showSelectedDecks, $showMetaData]
+	}
+	
 	var body: some View {
 		NavigationStack {
 			List(selection: $selection) {
@@ -50,7 +52,7 @@ struct DecksView: View {
 						Button {
 							selectedDeck = deck
 							deck.lastOpenedAt = .now
-							show($showDeck)
+							dismissItems.showOnly($showDeck)
 						} label: {
 							HStack(spacing: 12) {
 								Image(image: image, storage: storage)
@@ -72,7 +74,7 @@ struct DecksView: View {
 								Menu {
 									Button {
 										selectedDeck = deck
-										show($showMetaData)
+										dismissItems.showOnly($showMetaData)
 									} label: {
 										Label("View Metadata", systemImage: "info.circle")
 									}
@@ -89,7 +91,7 @@ struct DecksView: View {
 						.contextMenu {
 							Button(role: .destructive) {
 								selectedDeck = deck
-								show($showDeleteDeck)
+								dismissItems.showOnly($showDeleteDeck)
 							} label: {
 								Label("Delete from Library", systemImage: "trash")
 							}
@@ -183,32 +185,9 @@ fileprivate extension DecksView {
 /// Methods of DecksView. (toggle)
 fileprivate extension DecksView {
 	
-	private func show(_ item: Binding<Bool>) {
-		showDeck = false
-		showEditMode = false
-		showNewCard = false
-		showNewDeck = false
-		showDeleteDeck = false
-		showSelectedDecks = false
-		showMetaData = false
-		item.wrappedValue = true
-	}
-	
-	private func toggle(for item: Binding<Bool>) {
-		let newValue = !item.wrappedValue
-		showDeck = false
-		showEditMode = false
-		showNewCard = false
-		showNewDeck = false
-		showDeleteDeck = false
-		showSelectedDecks = false
-		showMetaData = false
-		item.wrappedValue = newValue
-	}
-	
 	private func toggleEditMode() {
 		guard !showEditMode else { return }
-		toggle(for: $showEditMode)
+		dismissItems.toggleOnly($showEditMode)
 		if editMode == .active {
 			editMode = .inactive
 			selection.removeAll()
@@ -217,7 +196,7 @@ fileprivate extension DecksView {
 		}
 		Task {
 			try? await Task.sleep(for: .milliseconds(250))
-			toggle(for: $showEditMode)
+			dismissItems.toggleOnly($showEditMode)
 		}
 	}
 	
@@ -244,7 +223,7 @@ fileprivate extension DecksView {
 		ToolbarItem(placement: .topBarLeading) {
 			if !selection.isEmpty {
 				Button(role: .destructive) {
-					show($showSelectedDecks)
+					dismissItems.showOnly($showSelectedDecks)
 				} label: {
 					Text("Delete (\(selection.count))")
 						.foregroundStyle(.red)
@@ -266,12 +245,12 @@ fileprivate extension DecksView {
 		ToolbarItem(placement: .topBarTrailing) {
 			Menu {
 				Button {
-					show($showNewCard)
+					dismissItems.showOnly($showNewCard)
 				} label: {
 					Label("New Card", systemImage: "plus.square.fill.on.square.fill")
 				}
 				Button {
-					show($showNewDeck)
+					dismissItems.showOnly($showNewDeck)
 				} label: {
 					Label("New Deck", systemImage: "rectangle.stack.badge.play")
 				}

@@ -42,6 +42,10 @@ struct CardsView: View {
 		return filtered.sorted(using: sorts.map(\.descriptor))
 	}
 	
+	private var dismissItems: [Binding<Bool>] {
+		[$showCard, $showEditMode, $showNewCard, $showNewDeck, $showDeleteCard, $showSelectedCards]
+	}
+	
 	var body: some View {
 		NavigationStack {
 			List(selection: $selection) {
@@ -51,7 +55,7 @@ struct CardsView: View {
 					VStack(alignment: .leading) {
 						Button {
 							selectedCard = card
-							show($showCard)
+							dismissItems.showOnly($showCard)
 						} label: {
 							VStack(alignment: .leading, spacing: 5) {
 								Text(filterInvert ? back : front)
@@ -66,7 +70,7 @@ struct CardsView: View {
 						.contextMenu {
 							Button(role: .destructive) {
 								selectedCard = card
-								show($showDeleteCard)
+								dismissItems.showOnly($showDeleteCard)
 							} label: {
 								Label("Delete from Library", systemImage: "trash")
 							}
@@ -135,30 +139,9 @@ fileprivate extension CardsView {
 /// Methods of CardsView. (toggle)
 fileprivate extension CardsView {
 	
-	private func show(_ item: Binding<Bool>) {
-		showCard = false
-		showEditMode = false
-		showNewCard = false
-		showNewDeck = false
-		showDeleteCard = false
-		showSelectedCards = false
-		item.wrappedValue = true
-	}
-	
-	private func toggle(for item: Binding<Bool>) {
-		let newValue = !item.wrappedValue
-		showCard = false
-		showEditMode = false
-		showNewCard = false
-		showNewDeck = false
-		showDeleteCard = false
-		showSelectedCards = false
-		item.wrappedValue = newValue
-	}
-	
 	private func toggleEditMode() {
 		guard !showEditMode else { return }
-		toggle(for: $showEditMode)
+		dismissItems.toggleOnly($showEditMode)
 		if editMode == .active {
 			editMode = .inactive
 			selection.removeAll()
@@ -167,7 +150,7 @@ fileprivate extension CardsView {
 		}
 		Task {
 			try? await Task.sleep(for: .milliseconds(250))
-			toggle(for: $showEditMode)
+			dismissItems.toggleOnly($showEditMode)
 		}
 	}
 	
@@ -194,7 +177,7 @@ fileprivate extension CardsView {
 		ToolbarItem(placement: .topBarLeading) {
 			if !selection.isEmpty {
 				Button(role: .destructive) {
-					show($showSelectedCards)
+					dismissItems.showOnly($showSelectedCards)
 				} label: {
 					Text("Delete (\(selection.count))")
 						.foregroundStyle(.red)
@@ -216,12 +199,12 @@ fileprivate extension CardsView {
 		ToolbarItem(placement: .topBarTrailing) {
 			Menu {
 				Button {
-					show($showNewCard)
+					dismissItems.showOnly($showNewCard)
 				} label: {
 					Label("New Card", systemImage: "plus.square.fill.on.square.fill")
 				}
 				Button {
-					show($showNewDeck)
+					dismissItems.showOnly($showNewCard)
 				} label: {
 					Label("New Deck", systemImage: "rectangle.stack.badge.play")
 				}

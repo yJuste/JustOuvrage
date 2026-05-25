@@ -19,11 +19,24 @@ import AVFoundation
 		return url
 	}()
 	
+	private var hasRecordingPermission: Bool { AVAudioApplication.shared.recordPermission == .granted }
+	private func requestRecordingPermission() async -> Bool { await AVAudioApplication.requestRecordPermission() }
+	
 	func url(for filename: String) -> URL {
 		folder.appendingPathComponent(filename)
 	}
 	
-	func start() throws -> String {
+	func start() async throws -> String {
+		
+		let allowed: Bool
+		
+		if hasRecordingPermission {
+			allowed = true
+		} else {
+			allowed = await requestRecordingPermission()
+		}
+		
+		guard allowed else { throw Errors.AudioRecorder }
 		
 		let filename = "\(UUID().uuidString).m4a"
 		let url = url(for: filename)

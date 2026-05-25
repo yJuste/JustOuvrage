@@ -15,12 +15,15 @@ struct RecordingView: View {
 	@Environment(Recording.self) private var storage
 	@Environment(\.dismiss) private var dismiss
 	
+	@Bindable private var preferences: Preferences = .unique
 	@State private var activeRecording: Side?
 	@State private var activePlaying: Side?
 	@State private var deleteSide: DeleteSide?
 	@State private var player: AVAudioPlayer?
 	@State private var playerDelegate = PlayerDelegate()
 	@State private var durations: [Side: String] = [:]
+	@State private var showGradientBackground: Bool = false
+	@State private var showNoPermission: Bool = false
 	
 	var body: some View {
 		NavigationStack {
@@ -29,6 +32,7 @@ struct RecordingView: View {
 					recordSection(title: card.frontEntry, filename: card.frontRecording, side: .front)
 					recordSection(title: card.backEntry, filename: card.backRecording, side: .back)
 				}
+				.foregroundStyle(showGradientBackground ? Color(.label) : .primary)
 				.padding(.horizontal, 20)
 			}
 			.onAppear {
@@ -58,6 +62,11 @@ struct RecordingView: View {
 				}
 			} message: {
 				Text("Are you sure you want to clear this audio?")
+			}
+			.alert("Microphone Permission Required", isPresented: $showNoPermission) {
+				Button("OK", role: .cancel) {}
+			} message: {
+				Text("You have to enable the microphone in the settings.")
 			}
 		}
 	}
@@ -125,25 +134,27 @@ fileprivate extension RecordingView {
 			return stopRecording()
 		}
 		stopRecording()
-		do {
-			
-			let filename = try storage.start()
-			let previous: String?
-			
-			switch side {
-			case .front:
-				previous = card.frontRecording
-				card.frontRecording = filename
-			case .back:
-				previous = card.backRecording
-				card.backRecording = filename
+		Task {
+			do {
+				let filename = try await storage.start()
+				let previous: String?
+				
+				switch side {
+				case .front:
+					previous = card.frontRecording
+					card.frontRecording = filename
+				case .back:
+					previous = card.backRecording
+					card.backRecording = filename
+				}
+				if let previous {
+					storage.delete(previous)
+				}
+				activeRecording = side
+			} catch {
+				showNoPermission.toggle()
+				stopRecording()
 			}
-			if let previous {
-				storage.delete(previous)
-			}
-			activeRecording = side
-		} catch {
-			stopRecording()
 		}
 	}
 	
@@ -260,6 +271,7 @@ fileprivate extension RecordingView {
 				}
 			} label: {
 				Image(systemName: "ellipsis")
+					.foregroundStyle(showGradientBackground ? Color(.label) : .primary)
 			}
 		}
 	}
