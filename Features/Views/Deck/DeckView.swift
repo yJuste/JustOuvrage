@@ -130,10 +130,7 @@ struct DeckView: View {
 							.padding(EdgeInsets(top: 10, leading: 10, bottom: 0, trailing: 10))
 						} /// ``header``
 						Section {
-							Rectangle()
-								.fill(((colors?.last ?? .secondary)).mix(with: .white, amount: 0.2))
-								.frame(height: 1.0)
-								.padding(.horizontal)
+							separator
 							LazyVStack(alignment: .leading) {
 								ForEach(Array(cardsFromDeck.enumerated()), id: \.element.id) { index, card in
 									Button {
@@ -157,10 +154,7 @@ struct DeckView: View {
 										.contentShape(Rectangle())
 									}
 									.buttonStyle(.plain)
-									Rectangle()
-										.fill(((colors?.last ?? .secondary)).mix(with: .white, amount: 0.2))
-										.frame(height: 1.0)
-										.padding(.horizontal)
+									separator
 								}
 								.sheet(isPresented: $showCard) {
 									if let card = selectedCard {
@@ -187,7 +181,7 @@ struct DeckView: View {
 							}
 						} /// ``items``
 					}
-					.foregroundStyle(showGradientBackground ? .white : .primary)
+					.foregroundStyle(showGradientBackground && colors?.last != nil ? .white : .primary)
 					.frame(maxWidth: .infinity)
 					.padding(.top, 17)
 				}
@@ -245,6 +239,16 @@ fileprivate extension DeckView {
 		} else {
 			colors = nil
 		}
+	}
+	
+	private var separator: some View {
+		Divider()
+			.overlay {
+				if showGradientBackground, let color = colors?.last {
+					color.mix(with: .white, amount: 0.4)
+				}
+			}
+			.padding(.horizontal)
 	}
 }
 

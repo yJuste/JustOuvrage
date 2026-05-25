@@ -99,11 +99,9 @@ struct TimeTrialView: View {
 							.disabled(isSwiping)
 						}
 					}
+					.foregroundStyle(showGradientBackground && colors?.last != nil ? .white : .primary)
 					.frame(maxWidth: .infinity, maxHeight: .infinity)
 				}
-			}
-			.onAppear {
-				loadImageForBackground()
 			}
 			.onChange(of: hasTimerReachedZero) { _, reached in
 				guard reached else { return }
@@ -117,6 +115,9 @@ struct TimeTrialView: View {
 				} else {
 					hasTimerReachedZero = true
 				}
+			}
+			.onAppear {
+				loadImageForBackground()
 			}
 			.navigationDestination(item: $timeTrial) { trial in
 				TimeTrialResultView(timeTrial: trial)
@@ -166,7 +167,7 @@ struct TimeTrialView: View {
 			rectangle
 				.fill(LinearGradient(colors: [.green.opacity(Double(dragOffset.width / 200)), .green.opacity(0.0)], startPoint: .trailing, endPoint: .leading))
 				.opacity(dragOffset.width > 0 ? 1 : 0)
-			TimerView(size: (isPortrait ? 70 : 20), duration: argument.timeInterval, remainingTime: remainingTime, color: UIColor.label)
+			TimerView(size: (isPortrait ? 70 : 20), duration: argument.timeInterval, remainingTime: remainingTime, color: showGradientBackground ? .white : UIColor.label)
 				.offset(y: height * 0.25)
 		}
 		.frame(width: width * (isPortrait ? 0.9 : 0.9), height: height * (isPortrait ? 0.85 : 1.0))
@@ -195,44 +196,6 @@ struct TimeTrialView: View {
 		)
 		.onTapGesture {
 			isCardTapped.toggle()
-		}
-	}
-	
-	private func loadImageForBackground() {
-		if let deckImage = argument.deck?.image {
-			if let uiImage = try? storage.load(image: deckImage, size: 512) {
-				if showGradientBackground {
-					colors = Theme.gradientColors(from: uiImage)
-				}
-			} else {
-				colors = nil
-			}
-		}
-	}
-}
-
-/// Toolbar.
-fileprivate extension TimeTrialView {
-	
-	@ToolbarContentBuilder private var toolbar: some ToolbarContent {
-		ToolbarItem(placement: .topBarLeading) {
-			Button {
-				hasTimerPaused = true
-				showPause.toggle()
-			} label: {
-				Label("Close", systemImage: "xmark")
-			}
-		}
-		ToolbarItem(placement: .principal) {
-			Text(selectedDeck?.name ?? "Every Card")
-				.font(.headline)
-		}
-		ToolbarItem(placement: .topBarTrailing) {
-			Button {
-				//
-			} label: {
-				Text("\(min(currentIndex + 1, argument.cards.count))/\(argument.cards.count)")
-			}
 		}
 	}
 }
@@ -269,6 +232,18 @@ fileprivate extension TimeTrialView {
 			self.isSwiping = false
 		}
 	}
+	
+	private func loadImageForBackground() {
+		if let deckImage = argument.deck?.image {
+			if let uiImage = try? storage.load(image: deckImage, size: 512) {
+				if showGradientBackground {
+					colors = Theme.gradientColors(from: uiImage)
+				}
+			} else {
+				colors = nil
+			}
+		}
+	}
 }
 
 /// Background for Gradient & Deck.
@@ -283,13 +258,36 @@ fileprivate extension TimeTrialView {
 			)
 	}
 	
-	private var backgroundGradient: some View {
-		VStack {}
-	}
-	
 	private func calculateSuccesRate(_ directions: [SwipeDirection]) -> Double {
 		guard !directions.isEmpty else { return 0 }
 		return Double(directions.filter { $0 == .right }.count) / Double(directions.count)
+	}
+}
+
+/// Toolbar.
+fileprivate extension TimeTrialView {
+	
+	@ToolbarContentBuilder private var toolbar: some ToolbarContent {
+		ToolbarItem(placement: .topBarLeading) {
+			Button {
+				hasTimerPaused = true
+				showPause.toggle()
+			} label: {
+				Label("Close", systemImage: "xmark")
+			}
+		}
+		ToolbarItem(placement: .principal) {
+			Text(selectedDeck?.name ?? "Every Card")
+				.font(.headline)
+				.foregroundStyle(showGradientBackground && colors?.last != nil ? .white : .primary)
+		}
+		ToolbarItem(placement: .topBarTrailing) {
+			Button {
+				//
+			} label: {
+				Text("\(min(currentIndex + 1, argument.cards.count))/\(argument.cards.count)")
+			}
+		}
 	}
 }
 
