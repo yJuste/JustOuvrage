@@ -131,7 +131,7 @@ struct DeckView: View {
 						} /// ``header``
 						Section {
 							Rectangle()
-								.fill(Color(uiColor: .separator))
+								.fill(((colors?.last ?? .secondary)).mix(with: .white, amount: 0.2))
 								.frame(height: 1.0)
 								.padding(.horizontal)
 							LazyVStack(alignment: .leading) {
@@ -158,7 +158,7 @@ struct DeckView: View {
 									}
 									.buttonStyle(.plain)
 									Rectangle()
-										.fill(Color(uiColor: .separator))
+										.fill(((colors?.last ?? .secondary)).mix(with: .white, amount: 0.2))
 										.frame(height: 1.0)
 										.padding(.horizontal)
 								}

@@ -11,6 +11,7 @@ import Combine
 
 struct TimeTrialView: View {
 	
+	@Environment(FileImageStorage.self) private var storage
 	@Environment(\.modelContext) private var modelContext
 	@Environment(\.dismiss) private var dismiss
 	
@@ -29,6 +30,9 @@ struct TimeTrialView: View {
 	@State private var isSwiping: Bool = false
 	@State private var isCardTapped: Bool = false
 	@State private var remainingTime: TimeInterval
+	@State private var colors: [Color]?
+	@State private var showGradientBackground: Bool = Preferences.unique.gradientBackground
+	@State private var showAnimationBackground: Bool = Preferences.unique.animationBackground
 	
 	private var currentCard: Card? {
 		guard currentIndex < argument.cards.count else { return nil }
@@ -50,12 +54,19 @@ struct TimeTrialView: View {
 	
 	var body: some View {
 		NavigationStack {
-			GeometryReader { geo in
-				let height = geo.size.height
-				let width = geo.size.width
-				let isPortrait: Bool = height > width
-				ZStack {
-					//backgroundGradient
+			ZStack {
+				if showGradientBackground {
+					if let colors {
+						AmazingBackground(colors: colors, active: showAnimationBackground ? true : false)
+							.ignoresSafeArea()
+					}
+				}
+				GeometryReader { geo in
+					
+					let height = geo.size.height
+					let width = geo.size.width
+					let isPortrait: Bool = height > width
+					
 					VStack(spacing: isPortrait ? height * 0.05 : height * 1.0) {
 						if let card = currentCard {
 							ZStack {
@@ -90,6 +101,9 @@ struct TimeTrialView: View {
 					}
 					.frame(maxWidth: .infinity, maxHeight: .infinity)
 				}
+			}
+			.onAppear {
+				loadImageForBackground()
 			}
 			.onChange(of: hasTimerReachedZero) { _, reached in
 				guard reached else { return }
@@ -181,6 +195,18 @@ struct TimeTrialView: View {
 		)
 		.onTapGesture {
 			isCardTapped.toggle()
+		}
+	}
+	
+	private func loadImageForBackground() {
+		if let deckImage = argument.deck?.image {
+			if let uiImage = try? storage.load(image: deckImage, size: 512) {
+				if showGradientBackground {
+					colors = Theme.gradientColors(from: uiImage)
+				}
+			} else {
+				colors = nil
+			}
 		}
 	}
 }
