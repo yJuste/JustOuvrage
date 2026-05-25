@@ -182,9 +182,10 @@ struct TimeTrialView: View {
 				}
 				.onEnded { value in
 					let horizontal = value.translation.width
-					if horizontal > 50 {
+					let swipeTrigger = preferences.trialSwipeThreshold
+					if horizontal > swipeTrigger {
 						swipe(.right)
-					} else if horizontal < -50 {
+					} else if horizontal < -swipeTrigger {
 						swipe(.left)
 					} else {
 						withAnimation(.spring(response: 0.4)) {

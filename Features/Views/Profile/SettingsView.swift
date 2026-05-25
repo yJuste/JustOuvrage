@@ -95,7 +95,7 @@ struct SettingsView: View {
   Ultra: high fidelity, larger files
   Max: stereo, highest quality, highest resource usage
   
-  Storage estimate (100 Mo, 3-second recordings):
+  Storage estimate (for 100 Mo, 3-second recordings):
   
   Very Low ≈ 11,300 recordings
   Low ≈ 8,500 recordings
@@ -108,7 +108,7 @@ struct SettingsView: View {
   """)
 				}
 				Section {
-					Picker("Background", selection: Binding<Int>(
+					Picker("Colored Background", selection: Binding<Int>(
 						get: {
 							if preferences.gradientBackground { return preferences.animationBackground ? 2 : 1 }
 							return 0
@@ -143,6 +143,37 @@ struct SettingsView: View {
   Animated background: dynamic visual effects
   Moderate impact on memory (~1.5x) and significant and continuous energy consumption (~2.5x)
   """)
+				}
+				Section {
+					VStack(alignment: .trailing) {
+						HStack {
+							Text("Swipe Trigger")
+							Spacer()
+							Text("\(preferences.trialSwipeThreshold, specifier: "%.0f") pt")
+								.font(.caption)
+								.foregroundStyle(.secondary)
+						}
+						Slider(value: Binding(
+							get: {
+								preferences.trialSwipeThreshold
+							},
+							set: { value in
+								preferences.trialSwipeThreshold = value
+							}
+						), in: 10...150, step: 1)
+						.font(.footnote)
+						.foregroundStyle(.secondary)
+					}
+				} footer: {
+					Text("""
+   Controls how far a card must be dragged before it is swiped away.
+   
+   150 pt = very long swipe
+   100 pt = long swipe
+   80 pt = moderate swipe
+   50 pt = quick swipe
+   10 pt = very fast swipe
+   """)
 				}
 			}
 			.toolbar { toolbar }

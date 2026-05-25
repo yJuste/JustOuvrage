@@ -29,10 +29,11 @@ import Observation
 		case trialNumberOfCards
 		case trialOrder
 		case trialMode
+		case trialRefreshTimer
+		case trialSwipeThreshold
 		
 		// In Settings
 		case lastCleanDuplicate
-		case trialRefreshTimer
 		case audioQuality
 		
 		// Decks
@@ -61,8 +62,9 @@ import Observation
 	private var trialNumberOfCardsRaw: Int = 0
 	private var trialOrderRaw: Int = 0
 	private var trialModeRaw: Int = 0
-	private var lastCleanDuplicateRaw: Double = 0
 	private var trialRefreshTimerRaw: Double = 0
+	private var trialSwipeThresholdRaw: Double = 0
+	private var lastCleanDuplicateRaw: Double = 0
 	private var audioQualityRaw: String = ""
 	private var visibleDecksRaw: Bool = false
 	private var sortDecksRaw: [String] = []
@@ -77,6 +79,9 @@ import Observation
 		let defaultLanguage: String = Language.en_US.rawValue
 		
 		userDefaults.register(defaults: [
+			Key.trialTimeInterval.rawValue: 4.0,
+			Key.trialRefreshTimer.rawValue: (2.0 / 60.0),
+			Key.trialSwipeThreshold.rawValue: 50.0,
 			Key.gradientBackground.rawValue: true,
 			Key.animationBackground.rawValue: false
 		])
@@ -85,13 +90,14 @@ import Observation
 		frontLanguageRaw = userDefaults.string(forKey: Key.frontLanguage.rawValue) ?? defaultLanguage
 		backLanguageRaw = userDefaults.string(forKey: Key.backLanguage.rawValue) ?? defaultLanguage
 		exactMatchRaw = userDefaults.string(forKey: Key.exactMatch.rawValue) ?? defaultLanguage
-		trialTimeIntervalRaw = userDefaults.object(forKey: Key.trialTimeInterval.rawValue) as? Double ?? 4.0
+		trialTimeIntervalRaw = userDefaults.double(forKey: Key.trialTimeInterval.rawValue)
 		trialDeckRaw = userDefaults.string(forKey: Key.trialDeck.rawValue) ?? ""
 		trialNumberOfCardsRaw = userDefaults.integer(forKey: Key.trialNumberOfCards.rawValue)
 		trialOrderRaw = userDefaults.integer(forKey: Key.trialOrder.rawValue)
 		trialModeRaw = userDefaults.integer(forKey: Key.trialMode.rawValue)
+		trialRefreshTimerRaw = userDefaults.double(forKey: Key.trialRefreshTimer.rawValue)
+		trialSwipeThresholdRaw = userDefaults.double(forKey: Key.trialSwipeThreshold.rawValue)
 		lastCleanDuplicateRaw = userDefaults.double(forKey: Key.lastCleanDuplicate.rawValue)
-		trialRefreshTimerRaw = userDefaults.object(forKey: Key.trialRefreshTimer.rawValue) as? Double ?? (2.0 / 60.0)
 		audioQualityRaw = userDefaults.string(forKey: Key.audioQuality.rawValue) ?? AudioQuality.high.rawValue
 		visibleDecksRaw = userDefaults.bool(forKey: Key.visibleDecks.rawValue)
 		sortDecksRaw = userDefaults.stringArray(forKey: Key.sortDecks.rawValue) ?? [SortDeck.newestToOldest.rawValue]
@@ -174,19 +180,27 @@ import Observation
 		}
 	}
 	
-	var lastCleanDuplicate: Date? {
-		get { lastCleanDuplicateRaw == 0 ? nil : Date(timeIntervalSince1970: lastCleanDuplicateRaw) }
-		set {
-			lastCleanDuplicateRaw = newValue?.timeIntervalSince1970 ?? 0
-			userDefaults.set(lastCleanDuplicateRaw, forKey: Key.lastCleanDuplicate.rawValue) }
-	}
-	
 	var trialRefreshTimer: Double {
 		get { trialRefreshTimerRaw }
 		set {
 			trialRefreshTimerRaw = newValue
 			userDefaults.set(trialRefreshTimerRaw, forKey: Key.trialRefreshTimer.rawValue)
 		}
+	}
+	
+	var trialSwipeThreshold: CGFloat {
+		get { CGFloat(trialSwipeThresholdRaw) }
+		set {
+			trialSwipeThresholdRaw = Double(newValue)
+			userDefaults.set(trialSwipeThresholdRaw, forKey: Key.trialSwipeThreshold.rawValue)
+		}
+	}
+	
+	var lastCleanDuplicate: Date? {
+		get { lastCleanDuplicateRaw == 0 ? nil : Date(timeIntervalSince1970: lastCleanDuplicateRaw) }
+		set {
+			lastCleanDuplicateRaw = newValue?.timeIntervalSince1970 ?? 0
+			userDefaults.set(lastCleanDuplicateRaw, forKey: Key.lastCleanDuplicate.rawValue) }
 	}
 	
 	var audioQuality: AudioQuality {

@@ -17,11 +17,17 @@ struct TimeTrialDeckSelectionView: View {
 	@State private var searchText = ""
 	
 	var filteredDecks: [Deck] {
+		
+		let decksToFilter: [Deck]
+		
 		if searchText.isEmpty {
-			return decks
+			decksToFilter = decks
 		} else {
-			return decks.filter { $0.name.localizedCaseInsensitiveContains(searchText) }
+			decksToFilter = decks.filter {
+				$0.name.localizedCaseInsensitiveContains(searchText)
+			}
 		}
+		return decksToFilter.sorted { ($0.lastOpenedAt ?? $0.createdAt) > ($1.lastOpenedAt ?? $1.createdAt) }
 	}
 	
 	var body: some View {
