@@ -13,8 +13,6 @@ import PhotosUI
 /// External Dependencies: Deck, Errors, FileImageStorage
 struct NewDeckView: View {
 	
-	let rectangle: RoundedRectangle = RoundedRectangle(cornerRadius: 10, style: .continuous)
-	
 	@Environment(FileImageStorage.self) private var storage
 	@Environment(\.modelContext) private var modelContext
 	@Environment(\.dismiss) private var dismiss
@@ -22,8 +20,10 @@ struct NewDeckView: View {
 	@State private var selectedPhotoItem: PhotosPickerItem?
 	@State private var selectedUIImage: UIImage?
 	@State private var deckName: String = ""
-	@State private var showCancelAlert: Bool = false
+	@State private var showCancel: Bool = false
 	@State private var showPhotoPicker: Bool = false
+	
+	let rectangle: RoundedRectangle = RoundedRectangle(cornerRadius: 10, style: .continuous)
 	
 	var body: some View {
 		NavigationStack {
@@ -86,8 +86,13 @@ struct NewDeckView: View {
 					}
 				}
 			}
+			.onDisappear {
+				selectedUIImage = nil
+				selectedPhotoItem = nil
+			}
+			.toolbar { toolbar }
 			.photosPicker(isPresented: $showPhotoPicker, selection: $selectedPhotoItem, matching: .images)
-			.alert("New Deck", isPresented: $showCancelAlert) {
+			.alert("New Deck", isPresented: $showCancel) {
 				Button("Discard Changes", role: .destructive) {
 					dismiss()
 				}
@@ -95,11 +100,6 @@ struct NewDeckView: View {
 			} message: {
 				Text("Are you sure you want to discard this new deck?")
 			}
-			.onDisappear {
-				selectedUIImage = nil
-				selectedPhotoItem = nil
-			}
-			.toolbar { toolbar }
 			.scrollDismissesKeyboard(.interactively)
 			.scrollIndicators(.hidden)
 		}
@@ -110,10 +110,11 @@ struct NewDeckView: View {
 fileprivate extension NewDeckView {
 	
 	@ToolbarContentBuilder private var toolbar: some ToolbarContent {
+		let name = deckName.trimmingCharacters(in: .whitespacesAndNewlines)
 		ToolbarItem(placement: .topBarLeading) {
 			Button {
-				if !deckName.isEmpty || selectedUIImage != nil {
-					return showCancelAlert.toggle()
+				if !name.isEmpty || selectedUIImage != nil {
+					return showCancel.toggle()
 				}
 				dismiss()
 			} label: {
@@ -125,10 +126,6 @@ fileprivate extension NewDeckView {
 		}
 		ToolbarItem(placement: .topBarTrailing) {
 			Button {
-				let newDeckName = deckName.trimmingCharacters(in: .whitespacesAndNewlines)
-				if newDeckName.isEmpty {
-					return showCancelAlert.toggle()
-				}
 				var image = "deck"
 				if let uiimage = selectedUIImage {
 					do {
@@ -137,13 +134,13 @@ fileprivate extension NewDeckView {
 						print(Errors.ImageError)
 					}
 				}
-				modelContext.insert(Deck(name: newDeckName, image: image))
+				modelContext.insert(Deck(name: name, image: image))
 				dismiss()
 			} label: {
 				Label("Done", systemImage: "checkmark")
 			}
 			.buttonStyle(.borderedProminent)
-			.disabled(deckName.isEmpty)
+			.disabled(name.isEmpty)
 		}
 	}
 }

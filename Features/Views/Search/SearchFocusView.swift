@@ -18,8 +18,8 @@ struct SearchFocusView: View {
 	let onOpenDeck: (Deck) -> Void
 	let onOpenDraft: (Draft) -> Void
 	
-	@Environment(\.isSearching) private var isSearching
 	@Environment(FileImageStorage.self) private var storage
+	@Environment(\.isSearching) private var isSearching
 	@Environment(\.modelContext) private var modelContext
 	@Namespace private var namespace
 	
@@ -27,7 +27,7 @@ struct SearchFocusView: View {
 	@Query(filter: #Predicate<Deck> { $0.lastViewedAt != nil }, sort: \Deck.lastViewedAt, order: .reverse) private var decks: [Deck]
 	@Query(sort: \Draft.createdAt, order: .reverse) private var drafts: [Draft]
 	
-	@State private var showClearAllAlert: Bool = false
+	@State private var showClearAll: Bool = false
 	
 	private var recentItems: [Search] {
 		
@@ -35,8 +35,7 @@ struct SearchFocusView: View {
 		let decks = decks.map(Search.deck)
 		let drafts = drafts.map(Search.draft)
 		
-		return (cards + decks + drafts)
-			.sorted { $0.date > $1.date }
+		return (cards + decks + drafts).sorted { $0.date > $1.date }
 	}
 	
 	var body: some View {
@@ -52,11 +51,10 @@ struct SearchFocusView: View {
 							} label: {
 								VStack(alignment: .leading, spacing: 5) {
 									Text(card.frontEntry)
-										.font(.subheadline)
 									Text(card.backEntry)
-										.font(.subheadline)
 										.foregroundStyle(.secondary)
 								}
+								.font(.subheadline)
 							}
 							.swipeActions {
 								Button {
@@ -80,11 +78,10 @@ struct SearchFocusView: View {
 										.clipShape(RoundedRectangle(cornerRadius: 4))
 									VStack(alignment: .leading, spacing: 2) {
 										Text(deck.name)
-											.font(.system(size: 15, weight: .regular, design: .default))
 										Text(deck.depiction)
-											.font(.system(size: 15, weight: .regular, design: .default))
 											.foregroundStyle(.secondary)
 									}
+									.font(.system(size: 15))
 								}
 							}
 							.swipeActions {
@@ -101,8 +98,8 @@ struct SearchFocusView: View {
 								onOpenDraft(draft)
 								trimRecentsGlobal()
 							} label: {
-								Text("\(draft.entry)")
-									.font(.system(size: 15, weight: .regular, design: .default))
+								Text(draft.entry)
+									.font(.system(size: 15))
 							}
 							.swipeActions {
 								Button {
@@ -127,14 +124,14 @@ struct SearchFocusView: View {
 					Text("Recently Searched")
 					Spacer()
 					Button {
-						showClearAllAlert.toggle()
+						showClearAll.toggle()
 					} label: {
 						Text("Clear All")
 					}
 					.disabled(recentItems.isEmpty)
 				}
 			}
-			.alert("Clear Searches?", isPresented: $showClearAllAlert) {
+			.alert("Clear Searches?", isPresented: $showClearAll) {
 				Button("Clear All", role: .destructive) {
 					cards.forEach { $0.lastViewedAt = nil }
 					decks.forEach { $0.lastViewedAt = nil }
@@ -154,18 +151,16 @@ fileprivate extension SearchFocusView {
 	private func trimRecentsGlobal() {
 		
 		let all = recentItems
-		guard all.count > Constants.maxRecentSearches else { return }
-		let toRemove = all.dropFirst(Constants.maxRecentSearches)
+		let maxRecents = Constants.maxRecentSearches
+		guard all.count > maxRecents else { return }
+		let toRemove = all.dropFirst(maxRecents)
+		
 		for item in toRemove {
 			switch item {
-			case .card(let card, _):
-				card.lastViewedAt = nil
-			case .deck(let deck):
-				deck.lastViewedAt = nil
-			case .draft(let draft):
-				modelContext.delete(draft)
-			case .match:
-				break
+			case .card(let card, _): card.lastViewedAt = nil
+			case .deck(let deck): deck.lastViewedAt = nil
+			case .draft(let draft): modelContext.delete(draft)
+			case .match: break
 			}
 		}
 	}

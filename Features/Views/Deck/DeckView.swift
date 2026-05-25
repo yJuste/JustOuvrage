@@ -15,21 +15,21 @@ struct DeckView: View {
 	let deck: Deck
 	var namespace: Namespace.ID?
 	
-	@Environment(\.modelContext) private var modelContext
 	@Environment(FileImageStorage.self) private var storage
+	@Environment(\.modelContext) private var modelContext
 	@Environment(\.dismiss) private var dismiss
 	
 	@Query(sort: \Card.createdAt, order: .reverse) private var cards: [Card]
 	
 	@Bindable private var preferences: Preferences = .unique
 	@State private var selectedCard: Card?
+	@State private var argument: Argument?
 	@State private var showCard: Bool = false
 	@State private var showToolbar: Bool = false
 	@State private var showDepiction: Bool = false
 	@State private var showCardsToDeck: Bool = false
 	@State private var showDeleteDeck: Bool = false
 	@State private var showEditDeck: Bool = false
-	@State private var argument: Argument?
 	@State private var showTimeTrial: Bool = false
 	@State private var showNoCards: Bool = false
 	@State private var showDownload: Bool = false
@@ -42,7 +42,7 @@ struct DeckView: View {
 		NavigationStack {
 			ScrollView {
 				VStack {
-					Section { /// ``header``
+					Section {
 						Image(image: deck.image, storage: storage)
 							.resizable()
 							.scaledToFill()
@@ -103,7 +103,8 @@ struct DeckView: View {
 							}
 							.tint(.primary)
 							.padding(.top, 10)
-							Text(deck.depiction)
+							let depiction = deck.depiction
+							Text(depiction)
 								.foregroundStyle(.secondary)
 								.lineLimit(2)
 								.multilineTextAlignment(.leading)
@@ -112,16 +113,14 @@ struct DeckView: View {
 								}
 								.sheet(isPresented: $showDepiction) {
 									ScrollView {
-										Text(deck.depiction)
-											.padding(.vertical, 20)
-											.padding(.horizontal, 20)
+										Text(depiction)
+											.padding(20)
 									}
 								}
 						}
-						.padding(.horizontal)
-						.padding(.top, 10)
-					}
-					Section { /// ``items``
+						.padding(EdgeInsets(top: 10, leading: 10, bottom: 0, trailing: 10))
+					} /// ``header``
+					Section {
 						Divider()
 							.padding(.horizontal)
 						LazyVStack(alignment: .leading) {
@@ -131,7 +130,7 @@ struct DeckView: View {
 									showCard = true
 								} label: {
 									HStack(spacing: 10) {
-										Text("\(index + 1)")
+										Text(index + 1, format: .number)
 											.font(.callout)
 											.foregroundStyle(.secondary)
 											.frame(width: 30, alignment: .center)
@@ -143,8 +142,7 @@ struct DeckView: View {
 										.font(.subheadline)
 										.frame(maxWidth: .infinity, alignment: .leading)
 									}
-									.padding(.vertical, 3)
-									.padding(.horizontal, 15)
+									.padding(EdgeInsets(top: 3, leading: 15, bottom: 3, trailing: 15))
 									.contentShape(Rectangle())
 								}
 								.buttonStyle(.plain)
@@ -163,7 +161,7 @@ struct DeckView: View {
 							VStack(alignment: .leading) {
 								Text(deck.createdAt, format: .dateTime.year().month().day())
 								Text("\(deck.cards.count) cards")
-								Text("\(deck.author)")
+								Text(deck.author)
 								Text(Set(deck.cards.flatMap {[$0.frontLanguage, $0.backLanguage]}).sorted { $0.language < $1.language }.map { $0.language }.joined(separator: " ⋅ "))
 									.font(.caption)
 							}
@@ -171,24 +169,24 @@ struct DeckView: View {
 							.frame(maxWidth: .infinity, alignment: .leading)
 							.padding()
 						}
-					}
+					} /// ``items``
 				}
 				.frame(maxWidth: .infinity)
 				.padding(.top, 17)
 			}
 			.toolbar { toolbar }
-			.sheet(isPresented: $showEditDeck) {
-				EditDeckView(title: "Edit Deck", deck: deck)
-			}
-			.sheet(isPresented: $showCardsToDeck) {
-				CardsToDeck(deck: deck)
-			}
 			.navigationDestination(isPresented: $showTimeTrial) {
 				if let argument = argument {
 					TimeTrialView(argument: argument)
 						.navigationBarBackButtonHidden(true)
 						.navigationAllowDismissalGestures(.none)
 				}
+			}
+			.sheet(isPresented: $showEditDeck) {
+				EditDeckView(title: "Edit Deck", deck: deck)
+			}
+			.sheet(isPresented: $showCardsToDeck) {
+				CardsToDeck(deck: deck)
 			}
 			.alert("Delete Deck", isPresented: $showDeleteDeck) {
 				Button("Remove", role: .destructive) {

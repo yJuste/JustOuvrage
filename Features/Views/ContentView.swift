@@ -19,17 +19,17 @@ struct ContentView: View {
 	var body: some View {
 		if #available(iOS 26, *) {
 			NativeTabView()
-				//.tabViewBottomAccessory { EmptyView() }
+			//.tabViewBottomAccessory { EmptyView() }
 		} else {
 			NativeTabView()
 		}
 	}
 }
 
-/// An extension that creates the native tab view nowadays. (iOS 26.4.1)
+/// An extension that creates the native tab view nowadays. (iOS 26.5)
 fileprivate extension ContentView {
 	
-	@ViewBuilder func NativeTabView() -> some View {
+	@ViewBuilder private func NativeTabView() -> some View {
 		TabView(selection: Bindable(navigation).selectedTab) {
 			Tab("New", systemImage: "plus.rectangle.portrait", value: .new) {
 				NewCardView()
@@ -57,7 +57,12 @@ fileprivate extension ContentView {
 	}
 }
 
+@Observable final class Navigation {
+	
+	var selectedTab: TabBar = .new
+}
+
 #Preview {
-    ContentView()
+	ContentView()
 		.environment(FileImageStorage())
 }

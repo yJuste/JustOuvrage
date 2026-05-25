@@ -27,7 +27,7 @@ struct NewCardView: View {
 	@State private var showBackLanguage: Bool = false
 	@State private var showAddedCard: Bool = false
 	@State private var showAddedBanner: Bool = false
-	@State private var showCancelAlert: Bool = false
+	@State private var showCancel: Bool = false
 	
 	var body: some View {
 		NavigationStack {
@@ -103,7 +103,10 @@ struct NewCardView: View {
 				if focusField == .front {
 					focusField = .back
 				} else {
-					addCard()
+					addCard(
+						front: frontEntry.trimmingCharacters(in: .whitespacesAndNewlines),
+						back: backEntry.trimmingCharacters(in: .whitespacesAndNewlines)
+					)
 				}
 			}
 			.onTapGesture {
@@ -111,16 +114,13 @@ struct NewCardView: View {
 			}
 			.overlay(alignment: .top) {
 				if showAddedBanner {
-					HStack(spacing: 6) {
-						Text("Added")
-						Image(systemName: "checkmark.circle.fill")
-					}
-					.font(.subheadline.weight(.medium))
-					.padding(.horizontal, 14)
-					.padding(.vertical, 10)
-					.background(.regularMaterial)
-					.clipShape(Capsule())
-					.transition(.move(edge: .top).combined(with: .opacity))
+					Label("Added", systemImage: "checkmark.circle.fill")
+						.environment(\.layoutDirection, .rightToLeft)
+						.font(.subheadline.weight(.medium))
+						.padding(EdgeInsets(top: 10, leading: 14, bottom: 10, trailing: 14))
+						.background(.regularMaterial)
+						.clipShape(Capsule())
+						.transition(.move(edge: .top).combined(with: .opacity))
 				}
 			}
 			.alert("Missing Information", isPresented: $showAddedCard) {
@@ -128,7 +128,7 @@ struct NewCardView: View {
 			} message: {
 				Text("Please fill in both sides before saving.")
 			}
-			.alert("New Card", isPresented: $showCancelAlert) {
+			.alert("New Card", isPresented: $showCancel) {
 				Button("Discard Changes", role: .destructive) {
 					frontEntry = ""
 					backEntry = ""
@@ -156,13 +156,11 @@ fileprivate extension NewCardView {
 		}
 	}
 	
-	private func addCard() {
-		let newFrontEntry = frontEntry.trimmingCharacters(in: .whitespacesAndNewlines)
-		let newBackEntry = backEntry.trimmingCharacters(in: .whitespacesAndNewlines)
-		if newFrontEntry.isEmpty || newBackEntry.isEmpty {
+	private func addCard(front: String, back: String) {
+		if front.isEmpty || back.isEmpty {
 			showAddedCard.toggle()
 		} else {
-			modelContext.insert(Card(frontEntry: newFrontEntry, backEntry: newBackEntry, frontLanguage: frontLanguage, backLanguage: backLanguage))
+			modelContext.insert(Card(frontEntry: front, backEntry: back, frontLanguage: frontLanguage, backLanguage: backLanguage))
 			preferences.frontLanguage = frontLanguage
 			preferences.backLanguage = backLanguage
 			frontEntry = ""
@@ -174,28 +172,18 @@ fileprivate extension NewCardView {
 	}
 }
 
-/// An interface to use to toggle a focusState.
-fileprivate extension NewCardView {
-	
-	private enum FocusField: Hashable {
-		
-		case front
-		case back
-	}
-}
-
 /// Toolbar.
 fileprivate extension NewCardView {
 	
 	@ToolbarContentBuilder private var toolbar: some ToolbarContent {
+		let frontEntry = frontEntry.trimmingCharacters(in: .whitespacesAndNewlines)
+		let backEntry = backEntry.trimmingCharacters(in: .whitespacesAndNewlines)
 		ToolbarItem(placement: .topBarLeading) {
 			Button {
-				let newFrontEntry = frontEntry.trimmingCharacters(in: .whitespacesAndNewlines)
-				let newBackEntry = backEntry.trimmingCharacters(in: .whitespacesAndNewlines)
-				if newFrontEntry.isEmpty && newBackEntry.isEmpty {
+				if frontEntry.isEmpty && backEntry.isEmpty {
 					dismiss()
 				} else {
-					showCancelAlert.toggle()
+					showCancel.toggle()
 				}
 			} label: {
 				Text("Cancel")
@@ -212,7 +200,7 @@ fileprivate extension NewCardView {
 		}
 		ToolbarItem(placement: .topBarTrailing) {
 			Button {
-				addCard()
+				addCard(front: frontEntry, back: backEntry)
 			} label: {
 				Label("Done", systemImage: "checkmark")
 			}

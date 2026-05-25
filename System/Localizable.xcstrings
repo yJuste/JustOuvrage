@@ -213,6 +213,15 @@
     "Clear Image" : {
 
     },
+    "Clear Recordings" : {
+
+    },
+    "Clear recordings in the card" : {
+
+    },
+    "Clear recordings to the selection?" : {
+
+    },
     "Clear Searches?" : {
 
     },
@@ -333,9 +342,6 @@
     "Keep Editing" : {
 
     },
-    "Language" : {
-
-    },
     "Languages" : {
 
     },
@@ -364,9 +370,6 @@
 
     },
     "Metadata" : {
-
-    },
-    "Metadata for decks is not implemented yet." : {
 
     },
     "Missing Information" : {
@@ -408,16 +411,10 @@
     "Oldest to Newest" : {
 
     },
-    "On Deck" : {
-
-    },
     "Only Cards" : {
 
     },
     "Only Decks" : {
-
-    },
-    "Open Design+Code in Safari" : {
 
     },
     "Options" : {
@@ -510,9 +507,6 @@
     "Stop" : {
 
     },
-    "Success" : {
-
-    },
     "Take Photo" : {
 
     },
@@ -520,6 +514,9 @@
 
     },
     "The timer is currently paused." : {
+
+    },
+    "This will delete both recordings for this card." : {
 
     },
     "Time Trial" : {

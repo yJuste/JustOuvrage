@@ -8,6 +8,7 @@
 import UIKit
 
 // MARK: When VIewModel will be added, Use Data over UIImage
+// MARK: (load) This is not an error, I should change this later on.
 
 /// An Interface that handles `local file image storage` within the App Sandbox ( -> Documents/Image ).
 /// Handles `file storage cache` as well.
@@ -38,7 +39,6 @@ import UIKit
 	
 	func load(image name: String, size: CGFloat = 1024) throws -> UIImage {
 		
-		// MARK: This is not an error, I should change this later on.
 		if name == Constants.defaultDeckImage { throw Errors.ImageError }
 		
 		if let cached = cache.object(forKey: name as NSString) { return cached }

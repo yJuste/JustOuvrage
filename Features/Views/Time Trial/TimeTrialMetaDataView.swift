@@ -17,39 +17,21 @@ struct TimeTrialMetaDataView: View {
 		NavigationStack {
 			ScrollView {
 				VStack(alignment: .leading) {
-					HStack {
-						Text("Date")
-							.foregroundStyle(.secondary)
-						Spacer()
-						Text("\(timeTrial.createdAt, format: .dateTime.year().month().day().hour().minute())")
+					LeadingLabel(title: "Date") {
+						Text(timeTrial.createdAt, format: .dateTime.year().month().day().hour().minute())
 					}
-					HStack {
-						Text("On Deck")
-							.foregroundStyle(.secondary)
-						Spacer()
-						Text("\(timeTrial.deck?.name ?? "Every Card")")
+					LeadingLabel(title: "On Deck") {
+						Text(timeTrial.deck?.name ?? "Every Card")
 					}
-					HStack {
-						Text("Mode")
-							.foregroundStyle(.secondary)
-						Spacer()
+					LeadingLabel(title: "Mode") {
 						Text(timeTrial.mode.mode)
 					}
-					HStack {
-						Text("Success")
-							.foregroundStyle(.secondary)
-						Spacer()
-						Text("\((timeTrial.success), format: .percent.precision(.fractionLength(0...2)))")
+					LeadingLabel(title: "Success") {
+						Text(timeTrial.success, format: .percent.precision(.fractionLength(0...2)))
 					}
-					HStack {
-						Text("Language")
-							.foregroundStyle(.secondary)
-						Spacer()
+					LeadingLabel(title: "Language") {
 						Text(
-							Set(timeTrial.cards.flatMap { [$0.frontLanguage, $0.backLanguage] })
-								.sorted()
-								.map(\.language)
-								.joined(separator: " ⋅ ")
+							Set(timeTrial.cards.flatMap { [$0.frontLanguage, $0.backLanguage] }).sorted().map(\.language).joined(separator: " ⋅ ")
 						)
 						.font(.caption)
 					}

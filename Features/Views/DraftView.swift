@@ -19,13 +19,16 @@ struct DraftView: View {
 	@Query(sort: \Card.createdAt, order: .reverse) private var cards: [Card]
 	
 	@Bindable private var preferences: Preferences = .unique
+	@State private var card: Card?
 	@State private var destination: Destination?
 	@State private var showLanguage: Bool = false
 	@State private var showNewCard: Bool = false
 	@State private var showAddedBanner: Bool = false
-	@State private var card: Card?
 	
-	var cleanEntry: [String] { cleanWords(expression: draft.entry) }
+	var cleanEntry: [String] {
+		cleanWords(expression: draft.entry)
+	}
+	
 	var selectedLanguage: Language {
 		get { preferences.exactMatch }
 		set { preferences.exactMatch = newValue }
@@ -62,18 +65,19 @@ struct DraftView: View {
 			}
 			.overlay(alignment: .top) {
 				if showAddedBanner {
-					HStack(spacing: 6) {
-						Text("Added")
-						Image(systemName: "checkmark.circle.fill")
-					}
-					.font(.subheadline.weight(.medium))
-					.padding(.horizontal, 14)
-					.padding(.vertical, 10)
-					.background(.regularMaterial)
-					.clipShape(Capsule())
-					.offset(y: -55)
-					.transition(.move(edge: .top).combined(with: .opacity))
+					Label("Added", systemImage: "checkmark.circle.fill")
+						.environment(\.layoutDirection, .rightToLeft)
+						.font(.subheadline.weight(.medium))
+						.padding(EdgeInsets(top: 10, leading: 14, bottom: 10, trailing: 14))
+						.background(.regularMaterial)
+						.clipShape(Capsule())
+						.offset(y: -55)
+						.transition(.move(edge: .top).combined(with: .opacity))
 				}
+			}
+			.toolbar { toolbar }
+			.fullScreenCover(item: $destination) { destination in
+				SFSafariViewWrapper(url: destination.url)
 			}
 			.sheet(item: $card) { card in
 				EditCardView(
@@ -90,11 +94,31 @@ struct DraftView: View {
 				])
 				.presentationDragIndicator(.visible)
 			}
-			.fullScreenCover(item: $destination) { destination in
-				SFSafariViewWrapper(url: destination.url)
-			}
-			.toolbar { toolbar }
 			.scrollIndicators(.hidden)
+		}
+	}
+}
+
+/// Methods of CardView.
+fileprivate extension DraftView {
+	
+	private func cleanWords(expression: String) -> [String] {
+		return expression
+			.components(separatedBy: ",")
+			.map {
+				$0.unicodeScalars.filter { !($0.properties.isEmoji && $0.properties.isEmojiPresentation) }.map { String($0) }.joined()
+					.trimmingCharacters(in: .whitespacesAndNewlines)
+			}
+			.filter { !$0.isEmpty }
+	}
+	
+	@MainActor private func showAdded() async {
+		withAnimation(.snappy) {
+			showAddedBanner.toggle()
+		}
+		try? await Task.sleep(for: .seconds(1.5))
+		withAnimation(.snappy) {
+			showAddedBanner.toggle()
 		}
 	}
 }
@@ -138,30 +162,6 @@ fileprivate extension DraftView {
 		ToolbarItem(placement: .principal) {
 			Text("Recent searches")
 				.font(.caption)
-		}
-	}
-}
-
-/// Methods of CardView.
-fileprivate extension DraftView {
-	
-	private func cleanWords(expression: String) -> [String] {
-		return expression
-			.components(separatedBy: ",")
-			.map {
-				$0.unicodeScalars.filter { !($0.properties.isEmoji && $0.properties.isEmojiPresentation) }.map { String($0) }.joined()
-					.trimmingCharacters(in: .whitespacesAndNewlines)
-			}
-			.filter { !$0.isEmpty }
-	}
-	
-	@MainActor private func showAdded() async {
-		withAnimation(.snappy) {
-			showAddedBanner.toggle()
-		}
-		try? await Task.sleep(for: .seconds(1.5))
-		withAnimation(.snappy) {
-			showAddedBanner.toggle()
 		}
 	}
 }

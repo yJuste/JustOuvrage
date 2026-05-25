@@ -22,6 +22,7 @@ struct LibraryView: View {
 	]) private var decks: [Deck]
 	
 	@State private var selectedDeck: Deck?
+	@State private var profilePicture: ImageResource = .yellowflower
 	@State private var showNewCard: Bool = false
 	@State private var showNewDeck: Bool = false
 	@State private var showProfile: Bool = false
@@ -44,11 +45,7 @@ struct LibraryView: View {
 				Section {
 					Text("Recently Opened")
 						.font(.system(size: 23, weight: .semibold))
-						.foregroundStyle(.primary)
-						.listRowSeparator(.hidden)
-						.padding(.top, 5)
-						.padding(.bottom, -20)
-						.padding(.leading, 3)
+						.padding(EdgeInsets(top: 5, leading: 3, bottom: -20, trailing: 0))
 					LazyVGrid(columns: [GridItem(.adaptive(minimum: 140), spacing: 10)], spacing: 10) {
 						ForEach(decks) { deck in
 							Button {
@@ -66,11 +63,10 @@ struct LibraryView: View {
 										.matchedTransitionSource(id: deck.id, in: namespace)
 									VStack(alignment: .leading) {
 										Text(deck.name)
-											.font(.system(size: 16, weight: .semibold, design: .default))
 										Text(deck.depiction)
-											.font(.system(size: 16, weight: .regular, design: .default))
 											.foregroundStyle(.secondary)
 									}
+									.font(.system(size: 16))
 									.lineLimit(1)
 									.padding(.bottom, 9)
 								}
@@ -79,10 +75,10 @@ struct LibraryView: View {
 						}
 					}
 					.listRowSeparator(.hidden)
-					.padding(.horizontal, 4)
-					.padding(.top, -3)
+					.padding(EdgeInsets(top: -3, leading: 4, bottom: 0, trailing: 4))
 				} /// ``recent decks``
 			}
+			.toolbar { toolbar }
 			.navigationDestination(item: $selectedDeck) { deck in
 				DeckView(deck: deck, namespace: namespace)
 			}
@@ -97,11 +93,10 @@ struct LibraryView: View {
 					.presentationDragIndicator(.visible)
 			}
 			.sheet(isPresented: $showProfile) {
-				ProfileView()
+				ProfileView(profile: profilePicture)
 					.presentationDetents([.large])
 					.presentationDragIndicator(.hidden)
 			}
-			.toolbar { toolbar }
 			.navigationTitle("Library")
 			.toolbarTitleDisplayMode(.inlineLarge)
 			.listStyle(.plain)
@@ -131,7 +126,7 @@ fileprivate extension LibraryView {
 		}
 		ToolbarSpacer(.fixed, placement: .topBarTrailing)
 		ToolbarItem(placement: .topBarTrailing) {
-			Image(.yellowflower)
+			Image(profilePicture)
 				.resizable()
 				.frame(width: 36, height: 36)
 				.clipShape(Circle())

@@ -13,19 +13,23 @@ struct SessionRecordingView: View {
 	let id: UUID
 	let namespace: Namespace.ID
 	
+	@Environment(Recording.self) private var storage
 	@Environment(\.dismiss) private var dismiss
 	
 	@Query(sort: \Card.createdAt, order: .reverse) private var cards: [Card]
 	
 	@State private var verticalOffset: CGFloat = 0
 	@State private var selectedCard: Card?
-	@State private var selection: Set<Card> = []
 	@State private var editMode: EditMode = .inactive
+	@State private var selection: Set<UUID> = []
+	@State private var showEditMode: Bool = false
 	@State private var showDepiction: Bool = false
 	@State private var showCard: Bool = false
 	@State private var showRecording: Bool = false
+	@State private var showSelectedRecording: Bool = false
 	@State private var showDownload: Bool = false
 	@State private var showDone: Bool = false
+	@State private var showClearRecording: Bool = false
 	
 	private let session: RecordingSession = Session.unique.audioRecording
 	
@@ -56,11 +60,9 @@ struct SessionRecordingView: View {
 	var body: some View {
 		NavigationStack {
 			GeometryReader { geo in
-				
 				let width = geo.size.width
 				let height = geo.size.height
 				let isPortrait = height > width
-				
 				ScrollView {
 					VStack {
 						Image(session.banner)
@@ -79,20 +81,24 @@ struct SessionRecordingView: View {
 							}
 						LazyVStack(alignment: .leading, spacing: 15) {
 							ForEach(cards) { card in
+								let isSelected = selection.contains(card.id)
 								HStack(spacing: 8) {
+									if editMode == .active {
+										Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
+											.font(.title3)
+											.foregroundStyle(isSelected ? .accent : .secondary)
+									}
 									VStack(alignment: .leading, spacing: 5) {
 										Text(card.frontEntry)
-											.font(.subheadline)
 										Text(card.backEntry)
-											.font(.subheadline)
 											.foregroundStyle(.secondary)
 									}
+									.font(.subheadline)
 									Spacer()
 									ZStack(alignment: .bottom) {
 										Button {
 											selectedCard = card
-											showCard = false
-											showRecording = true
+											show($showRecording)
 										} label: {
 											Image(systemName: "waveform")
 												.font(.system(size: 28))
@@ -113,11 +119,31 @@ struct SessionRecordingView: View {
 									}
 								}
 								.padding()
-								.background(RoundedRectangle(cornerRadius: 18).fill(.secondary.opacity(0.2)))
+								.background(
+									RoundedRectangle(cornerRadius: 18).fill(isSelected ? .accent.opacity(0.3) : .secondary.opacity(0.2))
+								)
 								.onTapGesture {
-									selectedCard = card
-									showRecording = false
-									showCard = true
+									let id = card.id
+									if editMode == .active {
+										withAnimation(.easeInOut(duration: 0.2)) {
+											if isSelected {
+												selection.remove(id)
+											} else {
+												selection.insert(id)
+											}
+										}
+									} else {
+										selectedCard = card
+										show($showCard)
+									}
+								}
+								.contextMenu {
+									Button(role: .destructive) {
+										selectedCard = card
+										showClearRecording.toggle()
+									} label: {
+										Label("Clear recordings in the card", systemImage: "trash")
+									}
 								}
 							}
 						}
@@ -127,13 +153,7 @@ struct SessionRecordingView: View {
 				.scrollIndicators(.hidden)
 				.scrollContentBackground(.hidden)
 				.ignoresSafeArea(.container, edges: [.horizontal, .top])
-				.onScrollGeometryChange(
-					for: CGFloat.self,
-					of: { $0.contentOffset.y + $0.contentInsets.top },
-					action: { _, newValue in
-						verticalOffset = -newValue
-					}
-				)
+				.onScrollGeometryChange(for: CGFloat.self, of: { $0.contentOffset.y + $0.contentInsets.top }, action: { _, newValue in verticalOffset = -newValue })
 			}
 			.toolbar { toolbar }
 			.sheet(isPresented: $showCard) {
@@ -156,6 +176,22 @@ struct SessionRecordingView: View {
 						.presentationBackgroundInteraction(.enabled)
 				}
 			}
+			.alert("Clear recordings to the selection?", isPresented: $showSelectedRecording) {
+				Button("Clear", role: .destructive) {
+					clearSelection()
+				}
+				Button("Cancel", role: .cancel) { }
+			}
+			.alert("Clear Recordings", isPresented: $showClearRecording) {
+				Button("Clear", role: .destructive) {
+					if let card = selectedCard {
+						clearRecordings(for: card)
+					}
+				}
+				Button("Cancel", role: .cancel) { }
+			} message: {
+				Text("This will delete both recordings for this card.")
+			}
 			.alert("You completed every recording.", isPresented: $showDone) {
 				Button("OK", role: .cancel) { }
 			}
@@ -163,21 +199,23 @@ struct SessionRecordingView: View {
 				Button("OK", role: .cancel) { }
 			}
 		}
+		.environment(\.editMode, $editMode)
 	}
+}
+
+/// Methods of SessionRecordingView.
+fileprivate extension SessionRecordingView {
 	
 	@ViewBuilder private func mainInformation(paddingText: CGFloat) -> some View {
+		
 		VStack(alignment: .center, spacing: 6) {
 			Text(session.title)
 				.font(.system(size: 50, weight: .black))
-				.foregroundStyle(Color(.label))
 			Text(session.subtitle)
 				.font(.system(size: 20, weight: .semibold))
-				.foregroundStyle(Color(.label))
 			Text("\(audioLeft) left ⋅ \(percentageLeft)% done")
-				.font(.callout)
-				.fontWeight(.semibold)
+				.font(.system(size: 16, weight: .semibold))
 				.padding(.top, 10)
-				.foregroundStyle(Color(.label))
 			GlassEffectContainer {
 				HStack(alignment: .center, spacing: 15) {
 					Button {
@@ -186,8 +224,7 @@ struct SessionRecordingView: View {
 							Task {
 								try? await Task.sleep(for: .milliseconds(1))
 								selectedCard = card
-								showCard = false
-								showRecording = true
+								show($showRecording)
 							}
 						} else {
 							showDone.toggle()
@@ -206,51 +243,109 @@ struct SessionRecordingView: View {
 					}
 				}
 				.font(.system(size: 20, weight: .semibold))
-				.foregroundStyle(Color(.label))
 			}
 			.tint(.primary)
 			.padding(.top, 10)
 			Text(session.depiction)
-				.foregroundStyle(Color(.label))
 				.lineLimit(2)
 				.multilineTextAlignment(.leading)
 				.padding(.horizontal, paddingText)
 				.onTapGesture {
-					showDepiction.toggle()
+					show($showDepiction)
 				}
-				.padding(.horizontal)
 				.sheet(isPresented: $showDepiction) {
 					NavigationStack {
 						ScrollView {
-							Text(session.title)
-								.font(.title)
-								.bold()
-								.foregroundStyle(.accent)
-								.padding(.horizontal, 20)
-								.padding(.top, 20)
-							Text(session.subtitle)
-								.font(.title3)
-								.bold()
-								.foregroundStyle(Color(.label).opacity(0.7))
-								.padding(.horizontal, 20)
-								.padding(.bottom, 20)
-							Text(session.depiction)
-								.foregroundStyle(Color(.label))
-								.padding(.horizontal, 20)
-							Image(session.recordingExample)
-							Text(session.depiction2)
-								.foregroundStyle(Color(.label))
-								.padding(.horizontal, 20)
-							Image(session.cardExample)
-							Text(session.depiction3)
-								.foregroundStyle(Color(.label))
-								.padding(.horizontal, 20)
+							VStack {
+								Text(session.title)
+									.font(.system(size: 28, weight: .bold))
+									.foregroundStyle(.accent)
+									.padding(.top, 20)
+								Text(session.subtitle)
+									.font(.system(size: 20, weight: .bold))
+									.padding(.bottom, 20)
+								Text(session.depiction)
+								Image(session.recordingExample)
+									.resizable()
+									.scaledToFit()
+								Text(session.depiction2)
+								Image(session.cardExample)
+									.resizable()
+									.scaledToFit()
+								Text(session.depiction3)
+							}
+							.padding(.horizontal, 15)
 						}
 					}
 				}
 		}
-		.foregroundStyle(.white)
 		.padding(.bottom, 40)
+	}
+}
+
+/// Methods of SessionRecordingView.
+fileprivate extension SessionRecordingView {
+	
+	private func show(_ item: Binding<Bool>) {
+		showEditMode = false
+		showDepiction = false
+		showCard = false
+		showRecording = false
+		item.wrappedValue = true
+	}
+	
+	private func toggle(for item: Binding<Bool>) {
+		let newValue = !item.wrappedValue
+		showEditMode = false
+		showDepiction = false
+		showCard = false
+		showRecording = false
+		item.wrappedValue = newValue
+	}
+	
+	private func clearSelection() {
+		for card in cards where selection.contains(card.id) {
+			if let front = card.frontRecording {
+				storage.delete(front)
+				card.frontRecording = nil
+			}
+			if let back = card.backRecording {
+				storage.delete(back)
+				card.backRecording = nil
+			}
+		}
+		withAnimation(.smooth(duration: 0.25)) {
+			selection.removeAll()
+			editMode = .inactive
+		}
+	}
+	
+	private func clearRecordings(for card: Card) {
+		if let front = card.frontRecording {
+			storage.delete(front)
+			card.frontRecording = nil
+		}
+		if let back = card.backRecording {
+			storage.delete(back)
+			card.backRecording = nil
+		}
+	}
+	
+	private func toggleEditMode() {
+		guard !showEditMode else { return }
+		toggle(for: $showEditMode)
+		withAnimation(.smooth(duration: 0.25)) {
+			if editMode == .active {
+				editMode = .inactive
+				selection.removeAll()
+			} else {
+				editMode = .active
+			}
+		}
+		Task {
+			try? await Task.sleep(for: .milliseconds(250))
+			toggle(for: $showEditMode)
+		}
 	}
 }
 
@@ -258,6 +353,27 @@ struct SessionRecordingView: View {
 fileprivate extension SessionRecordingView {
 	
 	@ToolbarContentBuilder private var toolbar: some ToolbarContent {
+		ToolbarItem(placement: .topBarLeading) {
+			if !selection.isEmpty {
+				Button(role: .destructive) {
+					showSelectedRecording.toggle()
+				} label: {
+					Text("Delete (\(selection.count))")
+						.foregroundStyle(.red)
+				}
+			}
+		}
+		ToolbarItem(placement: .topBarTrailing) {
+			Button {
+				toggleEditMode()
+			} label: {
+				if editMode.isEditing {
+					Text("Cancel")
+				} else {
+					Text("Select")
+				}
+			}
+		}
 		ToolbarItem(placement: .principal) {
 			Text("Audio Recording")
 		}

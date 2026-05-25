@@ -20,9 +20,7 @@ struct TimeTrialDeckSelectionView: View {
 		if searchText.isEmpty {
 			return decks
 		} else {
-			return decks.filter {
-				$0.name.localizedCaseInsensitiveContains(searchText)
-			}
+			return decks.filter { $0.name.localizedCaseInsensitiveContains(searchText) }
 		}
 	}
 	
@@ -58,8 +56,8 @@ struct TimeTrialDeckSelectionView: View {
 					}
 				}
 			}
-			.searchable(text: $searchText, prompt: "Search a deck")
 			.navigationTitle("Select Deck")
+			.searchable(text: $searchText, prompt: "Search a deck")
 		}
 	}
 }

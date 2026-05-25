@@ -15,10 +15,9 @@ struct SettingsView: View {
 	
 	@Bindable private var preferences: Preferences = .unique
 	@State private var state: CleaningState = .idle
-	@State private var isCleaning = false
+	@State private var isCleaning: Bool = false
 	
 	var body: some View {
-		
 		NavigationStack {
 			List {
 				Section {
@@ -121,7 +120,6 @@ fileprivate extension SettingsView {
 		ToolbarItem(placement: .principal) {
 			Text("Settings")
 				.font(.headline)
-				.foregroundStyle(.secondary)
 		}
 	}
 }
@@ -137,7 +135,7 @@ fileprivate extension SettingsView {
 		case failure
 	}
 	
-	var title: String {
+	private var title: String {
 		switch state {
 		case .idle: return "Clean Duplicate"
 		case .running: return "Cleaning duplicates ..."
@@ -146,7 +144,7 @@ fileprivate extension SettingsView {
 		}
 	}
 	
-	var icon: String {
+	private var icon: String {
 		switch state {
 		case .idle: return "trash"
 		case .running: return "hourglass"
@@ -155,7 +153,7 @@ fileprivate extension SettingsView {
 		}
 	}
 	
-	var color: Color {
+	private var color: Color {
 		switch state {
 		case .idle: return .primary
 		case .running: return .blue

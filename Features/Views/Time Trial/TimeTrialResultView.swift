@@ -28,11 +28,10 @@ struct TimeTrialResultView: View {
 							HStack {
 								VStack(alignment: .leading, spacing: 5) {
 									Text(card.frontEntry)
-										.font(.subheadline)
 									Text(card.backEntry)
-										.font(.subheadline)
 										.foregroundStyle(.secondary)
 								}
+								.font(.subheadline)
 								Spacer()
 								if result == .left {
 									Image(systemName: "xmark.diamond.fill")
@@ -58,22 +57,22 @@ struct TimeTrialResultView: View {
 				} /// ``list card``
 				.listRowSeparator(.hidden)
 				.listRowInsets(EdgeInsets(top: 6, leading: 15, bottom: 6, trailing: 15))
-				Section { /// ``metadata``
+				Section {
 					VStack(alignment: .leading) {
-						Text("\(timeTrial.createdAt, format: .dateTime.year().month().day())")
-						Text("\(timeTrial.deck?.name ?? "Every Card")")
+						Text(timeTrial.createdAt, format: .dateTime.year().month().day())
+						Text(timeTrial.deck?.name ?? "Every Card")
 						Text(timeTrial.mode.mode)
 						Text("\((timeTrial.success), format: .percent.precision(.fractionLength(0...1))) success")
 					}
 					.foregroundStyle(.secondary)
 					.frame(maxWidth: .infinity, alignment: .leading)
-				}
+				} /// ``metadata``
 				.listRowSeparator(.hidden)
 			}
 			.toolbar { toolbar }
 			.listStyle(.plain)
+			.navigationBarBackButtonHidden(true)
 		}
-		.navigationBarBackButtonHidden(true)
 	}
 }
 

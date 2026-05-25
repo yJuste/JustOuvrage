@@ -10,6 +10,8 @@ import SwiftData
 
 struct ProfileView: View {
 	
+	let profile: ImageResource
+	
 	@Environment(\.dismiss) private var dismiss
 	
 	@State private var showLogOut: Bool = false
@@ -22,18 +24,17 @@ struct ProfileView: View {
 						//
 					} label: {
 						HStack(spacing: 12) {
-							Image(.yellowflower)
+							Image(profile)
 								.resizable()
 								.scaledToFill()
 								.frame(width: 58, height: 58)
 								.clipShape(Circle())
 							VStack(alignment: .leading, spacing: 2) {
 								Text("Hello")
-									.font(.system(size: 15, weight: .regular, design: .default))
 								Text("My friend")
-									.font(.system(size: 15, weight: .regular, design: .default))
 									.foregroundStyle(.secondary)
 							}
+							.font(.system(size: 15))
 							Spacer()
 						}
 					}
@@ -82,11 +83,10 @@ fileprivate extension ProfileView {
 		ToolbarItem(placement: .principal) {
 			Text("Just Account")
 				.font(.headline)
-				.foregroundStyle(.secondary)
 		}
 	}
 }
 
 #Preview {
-	ProfileView()
+	ProfileView(profile: .yellowflower)
 }

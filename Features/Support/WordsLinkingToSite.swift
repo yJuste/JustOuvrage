@@ -27,8 +27,7 @@ struct WordsLinkingToSite: View {
 				} label: {
 					Text(item)
 						.font(.system(size: 15, weight: .medium))
-						.padding(.vertical, 10)
-						.padding(.horizontal, 10)
+						.padding(10)
 						.glassEffect(.regular.interactive())
 				}
 			}

@@ -14,21 +14,20 @@ import SwiftData
 /// External Dependencies: Deck, FileImageStorage, DeckView, NewCardView, NewDeckView
 struct DecksView: View {
 	
-	@Environment(\.modelContext) private var modelContext
 	@Environment(FileImageStorage.self) private var storage
+	@Environment(\.modelContext) private var modelContext
 	@Environment(\.dismiss) private var dismiss
 	@Namespace private var namespace
 	
 	@Query(sort: \Deck.createdAt, order: .reverse) private var decks: [Deck]
 	
 	@Bindable private var preferences: Preferences = .unique
-	@State private var item: Deck?
-	@State private var selection: Set<Deck> = []
 	@State private var selectedDeck: Deck?
-	@State private var showDeck: Bool = false
+	@State private var selection: Set<Deck> = []
 	@State private var editMode: EditMode = .inactive
 	@State private var sorts: [SortDeck] = Preferences.unique.sortDecks
-	@State private var showDepiction: Bool = Preferences.unique.visibleDecks
+	@State private var filterVisible: Bool = Preferences.unique.visibleDecks
+	@State private var showDeck: Bool = false
 	@State private var showEditMode: Bool = false
 	@State private var showNewCard: Bool = false
 	@State private var showNewDeck: Bool = false
@@ -44,24 +43,27 @@ struct DecksView: View {
 		NavigationStack {
 			List(selection: $selection) {
 				ForEach(filteredDecks) { deck in
+					let name = deck.name
+					let image = deck.image
+					let depiction = deck.depiction
 					VStack(alignment: .leading) {
 						Button {
 							selectedDeck = deck
-							showDeck = true
 							deck.lastOpenedAt = .now
+							show($showDeck)
 						} label: {
 							HStack(spacing: 12) {
-								Image(image: deck.image, storage: storage)
+								Image(image: image, storage: storage)
 									.resizable()
 									.scaledToFill()
 									.frame(width: 58, height: 58)
 									.clipShape(RoundedRectangle(cornerRadius: 4))
 								VStack(alignment: .leading, spacing: 2) {
-									Text(deck.name)
-										.font(.system(size: 15, weight: .regular, design: .default))
-									if !showDepiction {
-										Text(deck.depiction)
-											.font(.system(size: 15, weight: .regular, design: .default))
+									Text(name)
+										.font(.system(size: 15))
+									if !filterVisible {
+										Text(depiction)
+											.font(.system(size: 15))
 											.foregroundStyle(.secondary)
 											.lineLimit(2)
 									}
@@ -69,14 +71,10 @@ struct DecksView: View {
 								Spacer()
 								Menu {
 									Button {
-										showMetaData.toggle()
+										selectedDeck = deck
+										show($showMetaData)
 									} label: {
-										Label {
-											Text("View Metadata")
-										} icon: {
-											Image(systemName: "info.circle")
-										}
-										
+										Label("View Metadata", systemImage: "info.circle")
 									}
 								} label: {
 									Image(systemName: "ellipsis")
@@ -90,23 +88,23 @@ struct DecksView: View {
 						}
 						.contextMenu {
 							Button(role: .destructive) {
-								item = deck
-								showDeleteDeck.toggle()
+								selectedDeck = deck
+								show($showDeleteDeck)
 							} label: {
 								Label("Delete from Library", systemImage: "trash")
 							}
 						} preview: {
 							VStack(alignment: .leading, spacing: 10) {
-								Image(image: deck.image, storage: storage)
+								Image(image: image, storage: storage)
 									.resizable()
 									.scaledToFill()
 									.frame(width: 280, height: 280)
 									.clipShape(RoundedRectangle(cornerRadius: 15))
 								VStack(alignment: .leading, spacing: 2) {
-									Text(deck.name)
-										.font(.system(size: 20, weight: .bold, design: .default))
-									Text(deck.depiction)
-										.font(.system(size: 20, weight: .regular, design: .default))
+									Text(name)
+										.font(.system(size: 20, weight: .bold))
+									Text(depiction)
+										.font(.system(size: 20))
 										.foregroundStyle(.secondary)
 								}
 								.lineLimit(1)
@@ -115,20 +113,30 @@ struct DecksView: View {
 							.frame(width: 320, height: 370)
 						}
 					}
-					.listRowInsets(EdgeInsets(top: 11, leading: 15, bottom: 11, trailing: 15))
 					.tag(deck)
+					.listRowInsets(EdgeInsets(top: 11, leading: 15, bottom: 11, trailing: 15))
 				}
 			}
+			.listStyle(.plain)
 			.toolbar { toolbar }
 			.animation(.easeInOut(duration: 0.15), value: selection.isEmpty)
 			.animation(.easeInOut(duration: 0.15), value: editMode)
-			.environment(\.editMode, $editMode)
 			.sheet(isPresented: $showDeck) {
 				if let deck = selectedDeck {
 					DeckView(deck: deck, namespace: namespace)
 						.presentationDetents([.fraction(Constants.heightOfADeck[0]), .large])
 						.presentationBackgroundInteraction(.enabled)
 						.presentationDragIndicator(.visible)
+				}
+			}
+			.sheet(isPresented: $showMetaData) {
+				if let deck = selectedDeck {
+					DeckMetaDataView(deck: deck)
+						.presentationDetents([
+							.fraction(Constants.heightOfAMetaData[0]),
+							.fraction(Constants.heightOfAMetaData[1])
+						])
+						.presentationBackgroundInteraction(.enabled)
 				}
 			}
 			.sheet(isPresented: $showNewCard) {
@@ -143,8 +151,8 @@ struct DecksView: View {
 			}
 			.alert("Delete Deck", isPresented: $showDeleteDeck) {
 				Button("Remove", role: .destructive) {
-					if let item {
-						modelContext.delete(item)
+					if let selectedDeck {
+						modelContext.delete(selectedDeck)
 					}
 				}
 				Button("Cancel", role: .cancel) { }
@@ -156,10 +164,7 @@ struct DecksView: View {
 			} message: {
 				Text("Are you sure you want to delete all the selection?")
 			}
-			.alert("Metadata for decks is not implemented yet.", isPresented: $showMetaData) {
-				Button("OK", role: .cancel) { }
-			}
-			.listStyle(.plain)
+			.environment(\.editMode, $editMode)
 		}
 	}
 }
@@ -173,10 +178,37 @@ fileprivate extension DecksView {
 		}
 		selection.removeAll()
 	}
+}
+
+/// Methods of DecksView. (toggle)
+fileprivate extension DecksView {
+	
+	private func show(_ item: Binding<Bool>) {
+		showDeck = false
+		showEditMode = false
+		showNewCard = false
+		showNewDeck = false
+		showDeleteDeck = false
+		showSelectedDecks = false
+		showMetaData = false
+		item.wrappedValue = true
+	}
+	
+	private func toggle(for item: Binding<Bool>) {
+		let newValue = !item.wrappedValue
+		showDeck = false
+		showEditMode = false
+		showNewCard = false
+		showNewDeck = false
+		showDeleteDeck = false
+		showSelectedDecks = false
+		showMetaData = false
+		item.wrappedValue = newValue
+	}
 	
 	private func toggleEditMode() {
 		guard !showEditMode else { return }
-		showEditMode.toggle()
+		toggle(for: $showEditMode)
 		if editMode == .active {
 			editMode = .inactive
 			selection.removeAll()
@@ -185,15 +217,11 @@ fileprivate extension DecksView {
 		}
 		Task {
 			try? await Task.sleep(for: .milliseconds(250))
-			showEditMode.toggle()
+			toggle(for: $showEditMode)
 		}
 	}
-}
-
-fileprivate extension DecksView {
 	
-	func toggleSort(first: SortDeck, second: SortDeck) {
-		
+	private func toggleSort(first: SortDeck, second: SortDeck) {
 		if sorts.contains(first) {
 			sorts.removeAll { $0 == first }
 			if !sorts.contains(second) {
@@ -216,7 +244,7 @@ fileprivate extension DecksView {
 		ToolbarItem(placement: .topBarLeading) {
 			if !selection.isEmpty {
 				Button(role: .destructive) {
-					showSelectedDecks.toggle()
+					show($showSelectedDecks)
 				} label: {
 					Text("Delete (\(selection.count))")
 						.foregroundStyle(.red)
@@ -227,7 +255,7 @@ fileprivate extension DecksView {
 			Button {
 				toggleEditMode()
 			} label: {
-				if editMode.isEditing == true {
+				if editMode.isEditing {
 					Text("Cancel")
 				} else {
 					Text("Select")
@@ -238,22 +266,22 @@ fileprivate extension DecksView {
 		ToolbarItem(placement: .topBarTrailing) {
 			Menu {
 				Button {
-					showNewCard.toggle()
+					show($showNewCard)
 				} label: {
 					Label("New Card", systemImage: "plus.square.fill.on.square.fill")
 				}
 				Button {
-					showNewDeck.toggle()
+					show($showNewDeck)
 				} label: {
 					Label("New Deck", systemImage: "rectangle.stack.badge.play")
 				}
 				Section {
 					Button {
-						showDepiction.toggle()
-						preferences.visibleDecks = showDepiction
+						filterVisible.toggle()
+						preferences.visibleDecks = filterVisible
 					} label: {
-						Label("Hide", systemImage: showDepiction ? "eye.slash" : "eye")
-						Text(showDepiction ? "Hidden" : "Visible")
+						Label("Hide", systemImage: filterVisible ? "eye.slash" : "eye")
+						Text(filterVisible ? "Hidden" : "Visible")
 							.font(.caption)
 					}
 				}

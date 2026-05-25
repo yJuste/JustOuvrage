@@ -23,21 +23,15 @@ struct WordReferenceSite: SiteService {
 	/// Attention, wordReference is an online word traductor. So this function will return the definition.
 	func link(for expression: String, in language: Language) -> Destination? {
 		
-		let expressionEncoded = expression.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? expression
-		let link = "https://www.wordreference.com/definition/\(expressionEncoded)"
+		guard let url = URL(string: "https://www.wordreference.com/definition/\(expression.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? expression)") else { return nil }
 		
-		guard let url = URL(string: link) else { return nil }
 		return Destination(url: url)
 	}
 	
 	func link(for expression: String, in language: (Language, Language)) -> Destination? {
 		
-		let firstLanguageCode = specificLanguage(language: language.0)
-		let secondLanguageCode = specificLanguage(language: language.1)
-		let expressionEncoded = expression.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? expression
-		let link = "https://www.wordreference.com/\(firstLanguageCode)\(secondLanguageCode)/\(expressionEncoded)"
+		guard let url = URL(string: "https://www.wordreference.com/\(specificLanguage(language: language.0))\(specificLanguage(language: language.1))/\(expression.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? expression)") else { return nil }
 		
-		guard let url = URL(string: link) else { return nil }
 		return Destination(url: url)
 	}
 }

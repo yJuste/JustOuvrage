@@ -7,7 +7,6 @@
 
 import SwiftUI
 import SwiftData
-import os /// `debug`
 
 /// A view where all the cards are displayed.
 /// External Dependencies: Card, Constants, CardView, NewCardView, NewDeckView
@@ -19,31 +18,26 @@ struct CardsView: View {
 	@Query(sort: \Card.createdAt, order: .reverse) private var cards: [Card]
 	
 	@Bindable private var preferences: Preferences = .unique
-	@State private var item: Card?
-	@State private var selection: Set<Card> = []
 	@State private var selectedCard: Card?
-	@State private var showCard: Bool = false
+	@State private var selection: Set<Card> = []
 	@State private var editMode: EditMode = .inactive
-	@State private var sorts: [SortCard] = Preferences.unique.sortCards
-	@State private var showBackLanguage: Bool = Preferences.unique.visibleCards
-	@State private var showInvert: Bool = Preferences.unique.invertCards
 	@State private var selectedLanguages: Set<String> = []
+	@State private var sorts: [SortCard] = Preferences.unique.sortCards
+	@State private var filterVisible: Bool = Preferences.unique.visibleCards
+	@State private var filterInvert: Bool = Preferences.unique.invertCards
+	@State private var showCard: Bool = false
 	@State private var showEditMode: Bool = false
 	@State private var showNewCard: Bool = false
 	@State private var showNewDeck: Bool = false
 	@State private var showDeleteCard: Bool = false
 	@State private var showSelectedCards: Bool = false
-	@State private var showSafariExtension: Bool = false
 	
 	private var filteredCards: [Card] {
-		
 		let filtered: [Card]
-		
 		if selectedLanguages.isEmpty {
 			filtered = cards
 		} else {
-			filtered = cards.filter { selectedLanguages.contains($0.frontLanguage.code) || selectedLanguages.contains($0.backLanguage.code)
-			}
+			filtered = cards.filter { selectedLanguages.contains($0.frontLanguage.code) || selectedLanguages.contains($0.backLanguage.code) }
 		}
 		return filtered.sorted(using: sorts.map(\.descriptor))
 	}
@@ -52,17 +46,18 @@ struct CardsView: View {
 		NavigationStack {
 			List(selection: $selection) {
 				ForEach(filteredCards) { card in
+					let front = card.frontEntry
+					let back = card.backEntry
 					VStack(alignment: .leading) {
 						Button {
-							Debug.print(level: .info, card: card)
 							selectedCard = card
-							showCard = true
+							show($showCard)
 						} label: {
 							VStack(alignment: .leading, spacing: 5) {
-								Text(showInvert ? card.backEntry : card.frontEntry)
+								Text(filterInvert ? back : front)
 									.font(.subheadline)
-								if !showBackLanguage {
-									Text(showInvert ? card.frontEntry : card.backEntry)
+								if !filterVisible {
+									Text(filterInvert ? front : back)
 										.font(.subheadline)
 										.foregroundStyle(.secondary)
 								}
@@ -70,21 +65,21 @@ struct CardsView: View {
 						}
 						.contextMenu {
 							Button(role: .destructive) {
-								item = card
-								showDeleteCard.toggle()
+								selectedCard = card
+								show($showDeleteCard)
 							} label: {
 								Label("Delete from Library", systemImage: "trash")
 							}
 						}
 					}
-					.listRowInsets(EdgeInsets(top: 11, leading: 15, bottom: 11, trailing: 15))
 					.tag(card)
+					.listRowInsets(EdgeInsets(top: 11, leading: 15, bottom: 11, trailing: 15))
 				}
 			}
+			.listStyle(.plain)
 			.toolbar { toolbar }
 			.animation(.easeInOut(duration: 0.15), value: selection.isEmpty)
 			.animation(.easeInOut(duration: 0.15), value: editMode)
-			.environment(\.editMode, $editMode)
 			.sheet(isPresented: $showCard) {
 				if let card = selectedCard {
 					CardView(card: card)
@@ -107,8 +102,8 @@ struct CardsView: View {
 			}
 			.alert("Are you sure you want to delete this card from your library?", isPresented: $showDeleteCard) {
 				Button("Remove", role: .destructive) {
-					if let item {
-						modelContext.delete(item)
+					if let selectedCard {
+						modelContext.delete(selectedCard)
 					}
 				}
 				Button("Cancel", role: .cancel) { }
@@ -121,7 +116,7 @@ struct CardsView: View {
 			} message: {
 				Text("Are you sure you want to delete the selection?")
 			}
-			.listStyle(.plain)
+			.environment(\.editMode, $editMode)
 		}
 	}
 }
@@ -135,10 +130,35 @@ fileprivate extension CardsView {
 		}
 		selection.removeAll()
 	}
+}
+
+/// Methods of CardsView. (toggle)
+fileprivate extension CardsView {
+	
+	private func show(_ item: Binding<Bool>) {
+		showCard = false
+		showEditMode = false
+		showNewCard = false
+		showNewDeck = false
+		showDeleteCard = false
+		showSelectedCards = false
+		item.wrappedValue = true
+	}
+	
+	private func toggle(for item: Binding<Bool>) {
+		let newValue = !item.wrappedValue
+		showCard = false
+		showEditMode = false
+		showNewCard = false
+		showNewDeck = false
+		showDeleteCard = false
+		showSelectedCards = false
+		item.wrappedValue = newValue
+	}
 	
 	private func toggleEditMode() {
 		guard !showEditMode else { return }
-		showEditMode.toggle()
+		toggle(for: $showEditMode)
 		if editMode == .active {
 			editMode = .inactive
 			selection.removeAll()
@@ -147,15 +167,11 @@ fileprivate extension CardsView {
 		}
 		Task {
 			try? await Task.sleep(for: .milliseconds(250))
-			showEditMode.toggle()
+			toggle(for: $showEditMode)
 		}
 	}
-}
-
-fileprivate extension CardsView {
 	
-	func toggleSort(first: SortCard, second: SortCard) {
-		
+	private func toggleSort(first: SortCard, second: SortCard) {
 		if sorts.contains(first) {
 			sorts.removeAll { $0 == first }
 			if !sorts.contains(second) {
@@ -178,7 +194,7 @@ fileprivate extension CardsView {
 		ToolbarItem(placement: .topBarLeading) {
 			if !selection.isEmpty {
 				Button(role: .destructive) {
-					showSelectedCards.toggle()
+					show($showSelectedCards)
 				} label: {
 					Text("Delete (\(selection.count))")
 						.foregroundStyle(.red)
@@ -189,7 +205,7 @@ fileprivate extension CardsView {
 			Button {
 				toggleEditMode()
 			} label: {
-				if editMode.isEditing == true {
+				if editMode.isEditing {
 					Text("Cancel")
 				} else {
 					Text("Select")
@@ -200,30 +216,30 @@ fileprivate extension CardsView {
 		ToolbarItem(placement: .topBarTrailing) {
 			Menu {
 				Button {
-					showNewCard.toggle()
+					show($showNewCard)
 				} label: {
 					Label("New Card", systemImage: "plus.square.fill.on.square.fill")
 				}
 				Button {
-					showNewDeck.toggle()
+					show($showNewDeck)
 				} label: {
 					Label("New Deck", systemImage: "rectangle.stack.badge.play")
 				}
 				Section {
 					Button {
-						showInvert.toggle()
-						preferences.invertCards = showInvert
+						filterInvert.toggle()
+						preferences.invertCards = filterInvert
 					} label: {
-						Label("Invert", systemImage: showInvert ? "square.2.layers.3d.bottom.filled" : "square.2.layers.3d.top.filled")
-						Text(showInvert ? "Inverted" : "Normal")
+						Label("Invert", systemImage: filterInvert ? "square.2.layers.3d.bottom.filled" : "square.2.layers.3d.top.filled")
+						Text(filterInvert ? "Inverted" : "Normal")
 							.font(.caption)
 					}
 					Button {
-						showBackLanguage.toggle()
-						preferences.visibleCards = showBackLanguage
+						filterVisible.toggle()
+						preferences.visibleCards = filterVisible
 					} label: {
-						Label("Hide", systemImage: showBackLanguage ? "eye.slash" : "eye")
-						Text(showBackLanguage ? "Hidden" : "Visible")
+						Label("Hide", systemImage: filterVisible ? "eye.slash" : "eye")
+						Text(filterVisible ? "Hidden" : "Visible")
 							.font(.caption)
 					}
 				}
@@ -231,30 +247,33 @@ fileprivate extension CardsView {
 					Button {
 						toggleSort(first: .newestToOldest, second: .oldestToNewest)
 					} label: {
-						Label("Date", systemImage: sorts.contains(.newestToOldest) ? "text.line.first.and.arrowtriangle.forward" : "text.line.last.and.arrowtriangle.forward")
-						Text(sorts.contains(.newestToOldest) ? "Newest to Oldest" : "Oldest to Newest")
+						let contain = sorts.contains(.newestToOldest)
+						Label("Date", systemImage: contain ? "text.line.first.and.arrowtriangle.forward" : "text.line.last.and.arrowtriangle.forward")
+						Text(contain ? "Newest to Oldest" : "Oldest to Newest")
 					}
 					Button {
 						toggleSort(first: .alphabeticalAscending, second: .alphabeticalDescending)
 					} label: {
-						Label("Name", systemImage: sorts.contains(.alphabeticalAscending) ? "text.line.first.and.arrowtriangle.forward" : "text.line.last.and.arrowtriangle.forward")
-						Text(sorts.contains(.alphabeticalAscending) ? "Ascending" : "Descending")
+						let contain = sorts.contains(.alphabeticalAscending)
+						Label("Name", systemImage: contain ? "text.line.first.and.arrowtriangle.forward" : "text.line.last.and.arrowtriangle.forward")
+						Text(contain ? "Ascending" : "Descending")
 					}
 				}
 				Menu {
 					ForEach(Language.codes, id: \.self) { language in
+						let contain = selectedLanguages.contains(language)
 						Button {
-							if selectedLanguages.contains(language) {
+							if contain {
 								selectedLanguages.remove(language)
 							} else {
 								selectedLanguages.insert(language)
 							}
 						} label: {
 							Label {
-								Text("\(language)")
+								Text(language)
 							} icon: {
 								Image(systemName: "checkmark")
-									.hidden(!selectedLanguages.contains(language))
+									.hidden(!contain)
 							}
 						}
 					}

@@ -15,6 +15,8 @@ struct SessionBanner: View {
 	let image: ImageResource
 	let action: () -> Void
 	
+	let rectangle = RoundedRectangle(cornerRadius: 8)
+	
 	var body: some View {
 		Button {
 			action()
@@ -29,8 +31,8 @@ struct SessionBanner: View {
 					.glassEffect(.clear.interactive())
 			}
 			.frame(height: 120)
-			.clipShape(RoundedRectangle(cornerRadius: 8))
-			.contentShape(RoundedRectangle(cornerRadius: 8))
+			.clipShape(rectangle)
+			.contentShape(rectangle)
 			.matchedTransitionSource(id: id, in: namespace)
 		}
 		.buttonStyle(.plain)
@@ -41,7 +43,5 @@ struct SessionBanner: View {
 	
 	@Previewable @Namespace var namespace
 	let id: UUID = UUID()
-	SessionBanner(id: id, namespace: namespace, title: "Hello Girl", image: .yellowflower) {
-		//
-	}
+	SessionBanner(id: id, namespace: namespace, title: "Hello Girl", image: .yellowflower) { }
 }

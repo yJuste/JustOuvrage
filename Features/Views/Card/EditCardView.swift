@@ -92,17 +92,17 @@ struct EditCardView: View {
 								.id(FocusField.back)
 								.focused($focusField, equals: .back)
 						}
-						Section { /// ``Leitner Score``
+						Section {
 							LabelTrailing(title: "Leitner Score") {
 								Picker("Leitner Score", selection: $leitnerScore) {
 									ForEach(1...7, id: \.self) { value in
-										Text("\(value)")
+										Text(value, format: .number)
 											.tag(value)
 									}
 								}
 								.pickerStyle(.navigationLink)
 							}
-						}
+						} /// ``Leitner Score``
 					}
 					.padding(30)
 				}
@@ -126,6 +126,7 @@ struct EditCardView: View {
 			.onTapGesture {
 				focusField = nil
 			}
+			.toolbar { toolbar }
 			.alert("Edit Card", isPresented: $showCancelAlert) {
 				Button("Discard Changes", role: .destructive) {
 					frontEntry = ""
@@ -138,7 +139,6 @@ struct EditCardView: View {
 			} message: {
 				Text("Are you sure you want to discard changes to this card?")
 			}
-			.toolbar { toolbar }
 		}
 	}
 }
@@ -146,10 +146,7 @@ struct EditCardView: View {
 /// Methods of EditCardView.
 fileprivate extension EditCardView {
 	
-	private func editCard() {
-		
-		let front = frontEntry.trimmingCharacters(in: .whitespacesAndNewlines)
-		let back = backEntry.trimmingCharacters(in: .whitespacesAndNewlines)
+	private func editCard(front: String, back: String) {
 		
 		guard !front.isEmpty, !back.isEmpty else { return }
 		
@@ -167,24 +164,16 @@ fileprivate extension EditCardView {
 	}
 }
 
-/// An interface to use to toggle a focusState.
-fileprivate extension EditCardView {
-	
-	private enum FocusField: Hashable {
-		
-		case front
-		case back
-	}
-}
-
 /// Toolbar.
 fileprivate extension EditCardView {
 	
 	@ToolbarContentBuilder private var toolbar: some ToolbarContent {
+		let frontEntry = frontEntry.trimmingCharacters(in: .whitespacesAndNewlines)
+		let backEntry = backEntry.trimmingCharacters(in: .whitespacesAndNewlines)
 		ToolbarItem(placement: .topBarLeading) {
 			Button {
-				if frontEntry.trimmingCharacters(in: .whitespacesAndNewlines) == card.frontEntry
-					&& backEntry.trimmingCharacters(in: .whitespacesAndNewlines) == card.backEntry {
+				if frontEntry == card.frontEntry
+					&& backEntry == card.backEntry {
 					dismiss()
 				} else {
 					showCancelAlert.toggle()
@@ -194,18 +183,18 @@ fileprivate extension EditCardView {
 			}
 		}
 		ToolbarItem(placement: .principal) {
-			Text("\(title)")
+			Text(title)
 				.font(.headline)
 		}
 		ToolbarItem(placement: .topBarTrailing) {
 			Button {
-				editCard()
+				editCard(front: frontEntry, back: backEntry)
 				dismiss()
 			} label: {
 				Label("Done", systemImage: "checkmark")
 			}
 			.buttonStyle(.borderedProminent)
-			.disabled(frontEntry.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || backEntry.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+			.disabled(frontEntry.isEmpty || backEntry.isEmpty
 			)
 		}
 	}

@@ -41,6 +41,8 @@ struct TimeTrialView: View {
 		decks.first { $0.id == argument.deck?.id }
 	}
 	
+	private let rectangle: RoundedRectangle = RoundedRectangle(cornerRadius: 35, style: .continuous)
+	
 	init(argument: Argument) {
 		_argument = State(initialValue: argument)
 		_remainingTime = State(initialValue: argument.timeInterval)
@@ -49,25 +51,26 @@ struct TimeTrialView: View {
 	var body: some View {
 		NavigationStack {
 			GeometryReader { geo in
-				let isPortrait: Bool = geo.size.height > geo.size.width
+				let height = geo.size.height
+				let width = geo.size.width
+				let isPortrait: Bool = height > width
 				ZStack {
 					//backgroundGradient
-					VStack(spacing: isPortrait ? geo.size.height * 0.05 : geo.size.height * 1.0) {
+					VStack(spacing: isPortrait ? height * 0.05 : height * 1.0) {
 						if let card = currentCard {
 							ZStack {
-								flashcard(card: card, geo: geo, isPortrait: isPortrait)
+								flashcard(card: card, height: height, width: width, isPortrait: isPortrait)
 									.background(
-										RoundedRectangle(cornerRadius: 35)
+										rectangle
 											.fill(.primary.opacity(0.05))
-											.frame(width: geo.size.width * (isPortrait ? 0.83 : 0.86), height: geo.size.height * (isPortrait ? 0.8 : 0.89))
+											.frame(width: width * (isPortrait ? 0.83 : 0.86), height: height * (isPortrait ? 0.8 : 0.89))
 									)
 							}
-							HStack(spacing: geo.size.width * 0.15) {
+							HStack(spacing: width * 0.15) {
 								Button {
 									swipe(.left)
 								} label: {
 									Image(systemName: "xmark")
-										.font(.system(size: 35, weight: .semibold))
 										.foregroundStyle(.red)
 										.frame(width: 70, height: 70)
 										.glassEffect(.regular.interactive())
@@ -76,12 +79,12 @@ struct TimeTrialView: View {
 									swipe(.right)
 								} label: {
 									Image(systemName: "checkmark")
-										.font(.system(size: 35, weight: .semibold))
 										.foregroundStyle(.green)
 										.frame(width: 70, height: 70)
 										.glassEffect(.regular.interactive())
 								}
 							}
+							.font(.system(size: 35, weight: .semibold))
 							.disabled(isSwiping)
 						}
 					}
@@ -95,7 +98,6 @@ struct TimeTrialView: View {
 			.onReceive(timer) { _ in
 				guard !hasTimerPaused else { return }
 				guard currentCard != nil else { return }
-				
 				if remainingTime > 0 {
 					remainingTime = max(remainingTime - preferences.trialRefreshTimer, 0)
 				} else {
@@ -120,22 +122,22 @@ struct TimeTrialView: View {
 		}
 	}
 	
-	private func flashcard(card: Card, geo: GeometryProxy, isPortrait: Bool) -> some View {
+	private func flashcard(card: Card, height: CGFloat, width: CGFloat, isPortrait: Bool) -> some View {
 		
 		ZStack {
-			RoundedRectangle(cornerRadius: 35, style: .continuous)
+			rectangle
 				.fill(.clear)
-				.contentShape(RoundedRectangle(cornerRadius: 35, style: .continuous))
-			RoundedRectangle(cornerRadius: 35, style: .continuous)
+				.contentShape(rectangle)
+			rectangle
 				.stroke(.primary.opacity(0.1), lineWidth: 2)
 			VStack(spacing: 24) {
 				Spacer()
-				Text("\(card.frontEntry)")
-					.font(.system(size: geo.size.width * (isPortrait ? 0.06 : 0.04), weight: .semibold))
+				Text(card.frontEntry)
+					.font(.system(size: width * (isPortrait ? 0.06 : 0.04), weight: .semibold))
 					.foregroundStyle(.primary)
 				if isCardTapped && argument.mode != .death {
-					Text("\(card.backEntry)")
-						.font(.system(size: geo.size.width * (isPortrait ? 0.05 : 0.03), weight: .semibold))
+					Text(card.backEntry)
+						.font(.system(size: width * (isPortrait ? 0.05 : 0.03), weight: .semibold))
 						.foregroundStyle(.secondary)
 				}
 				if !isPortrait { Spacer() }
@@ -143,16 +145,16 @@ struct TimeTrialView: View {
 			}
 			.multilineTextAlignment(.center)
 			.animation(.easeInOut(duration: 0.1), value: isCardTapped)
-			RoundedRectangle(cornerRadius: 35, style: .continuous)
+			rectangle
 				.fill(LinearGradient(colors: [.red.opacity(Double(-dragOffset.width / 200)), .red.opacity(0.0)], startPoint: .leading, endPoint: .trailing))
 				.opacity(dragOffset.width < 0 ? 1 : 0)
-			RoundedRectangle(cornerRadius: 35, style: .continuous)
+			rectangle
 				.fill(LinearGradient(colors: [.green.opacity(Double(dragOffset.width / 200)), .green.opacity(0.0)], startPoint: .trailing, endPoint: .leading))
 				.opacity(dragOffset.width > 0 ? 1 : 0)
 			TimerView(size: (isPortrait ? 70 : 20), duration: argument.timeInterval, remainingTime: remainingTime, color: UIColor.label)
-				.offset(y: geo.size.height * 0.25)
+				.offset(y: height * 0.25)
 		}
-		.frame(width: geo.size.width * (isPortrait ? 0.9 : 0.9), height: geo.size.height * (isPortrait ? 0.85 : 1.0))
+		.frame(width: width * (isPortrait ? 0.9 : 0.9), height: height * (isPortrait ? 0.85 : 1.0))
 		.offset(x: dragOffset.width, y: dragOffset.height)
 		.rotationEffect(.degrees(rotation))
 		.gesture(
@@ -195,7 +197,7 @@ fileprivate extension TimeTrialView {
 			}
 		}
 		ToolbarItem(placement: .principal) {
-			Text("\(selectedDeck?.name ?? "Every Card")")
+			Text(selectedDeck?.name ?? "Every Card")
 				.font(.headline)
 		}
 		ToolbarItem(placement: .topBarTrailing) {

@@ -75,7 +75,7 @@ struct SearchView: View {
 								showCard = true
 							} label: {
 								Label {
-									Text("\(back ? card.backEntry : card.frontEntry)")
+									Text(back ? card.backEntry : card.frontEntry)
 										.font(.subheadline)
 								} icon: {
 									Image(systemName: "magnifyingglass")
@@ -102,11 +102,10 @@ struct SearchView: View {
 										.clipShape(RoundedRectangle(cornerRadius: 4))
 									VStack(alignment: .leading, spacing: 2) {
 										Text(deck.name)
-											.font(.system(size: 15, weight: .regular, design: .default))
 										Text(deck.depiction)
-											.font(.system(size: 15, weight: .regular, design: .default))
 											.foregroundStyle(.secondary)
 									}
+									.font(.system(size: 15))
 									Spacer()
 									Button {
 										//
@@ -145,14 +144,9 @@ struct SearchView: View {
 								showDeck = false
 								showMatch = true
 							} label: {
-								Label {
-									Text("\"\(match.entry)\"")
-								} icon: {
-									Image(systemName: "magnifyingglass.circle.fill")
-								}
-								.font(.headline)
-								.fontWeight(.medium)
-								.foregroundStyle(.accent)
+								Label("\"\(match.entry)\"", systemImage: "magnifyingglass.circle.fill")
+									.font(.system(size: 17, weight: .medium))
+									.foregroundStyle(.accent)
 							}
 						} /// ``Search for a Match``
 					}
@@ -170,8 +164,7 @@ struct SearchView: View {
 					}
 					.pickerStyle(.segmented)
 					.scaleEffect(1.2)
-					.padding(.horizontal, 40)
-					.padding(.vertical, 10)
+					.padding(EdgeInsets(top: 10, leading: 40, bottom: 10, trailing: 40))
 					.offset(y: hasSearch ? 0 : -20)
 					.opacity(hasSearch ? 1 : 0)
 					.animation(.easeInOut(duration: 0.15), value: hasSearch)
@@ -230,38 +223,27 @@ struct SearchView: View {
 fileprivate extension SearchView {
 	
 	private var filteredResults: [Search] {
+		
 		let trimmed = search.trimmingCharacters(in: .whitespacesAndNewlines)
 		guard !trimmed.isEmpty else { return [] }
 		
 		let exactResult: [Search] = [.match(Draft(entry: trimmed, language: .en_US))]
 		let cardResults = cards.compactMap { card -> Search? in
-			let matchFront = card.frontEntry.localizedCaseInsensitiveContains(trimmed)
-			let matchBack = card.backEntry.localizedCaseInsensitiveContains(trimmed)
-
-			switch (matchFront, matchBack) {
-			case (true, true):
-				return .card(card, back: false)
-			case (true, false):
-				return .card(card, back: false)
-			case (false, true):
-				return .card(card, back: true)
-			default:
-				return nil
+			switch (card.frontEntry.localizedCaseInsensitiveContains(trimmed), card.backEntry.localizedCaseInsensitiveContains(trimmed)) {
+			case (true, true): return .card(card, back: false)
+			case (true, false): return .card(card, back: false)
+			case (false, true): return .card(card, back: true)
+			default: return nil
 			}
 		}
-		let deckResults = decks
-			.filter { $0.name.localizedCaseInsensitiveContains(trimmed) }
-			.map { Search.deck($0) }
+		
+		let deckResults = decks.filter { $0.name.localizedCaseInsensitiveContains(trimmed) }.map { Search.deck($0) }
 		
 		switch selectPicker {
-		case 0:
-			return exactResult + cardResults + deckResults
-		case 1:
-			return exactResult + cardResults
-		case 2:
-			return exactResult + deckResults
-		default:
-			return exactResult + cardResults + deckResults
+		case 0: return exactResult + cardResults + deckResults
+		case 1: return exactResult + cardResults
+		case 2: return exactResult + deckResults
+		default: return exactResult + cardResults + deckResults
 		}
 	}
 }

@@ -9,12 +9,13 @@ import SwiftUI
 import SwiftData
 import PhotosUI
 
+// MARK: Add take photos and search from files.
+
 struct EditDeckView: View {
 	
 	let title: String
 	let deck: Deck
 	let onSave: (Deck) -> Void
-	let rectangle: RoundedRectangle = RoundedRectangle(cornerRadius: 10, style: .continuous)
 	
 	@Environment(FileImageStorage.self) private var storage
 	@Environment(\.modelContext) private var modelContext
@@ -25,11 +26,13 @@ struct EditDeckView: View {
 	@State private var depiction: String = ""
 	@State private var selectedPhotoItem: PhotosPickerItem?
 	@State private var selectedUIImage: UIImage?
-	@State private var showCancelAlert: Bool = false
+	@State private var showCancel: Bool = false
 	@State private var showPhotoPicker: Bool = false
 	@State private var showClearImage: Bool = false
 	@State private var isChangedImage: Bool = false
 	@State private var isInitialImage: Bool = false
+	
+	private let rectangle: RoundedRectangle = RoundedRectangle(cornerRadius: 10, style: .continuous)
 	
 	init(title: String, deck: Deck, onSave: @escaping (Deck) -> Void = { _ in }) {
 		self.title = title
@@ -92,8 +95,7 @@ struct EditDeckView: View {
 						ZStack(alignment: .top) {
 							TextEditor(text: $depiction)
 								.scrollContentBackground(.hidden)
-								.padding(.horizontal, 10)
-								.padding(.vertical, 5)
+								.padding(EdgeInsets(top: 5, leading: 10, bottom: 5, trailing: 10))
 								.frame(minHeight: 120)
 								.background(.thinMaterial)
 								.clipShape(RoundedRectangle(cornerRadius: 16))
@@ -121,6 +123,15 @@ struct EditDeckView: View {
 				.frame(maxWidth: .infinity, alignment: .bottom)
 				.padding(.bottom, 80)
 			}
+			.onChange(of: selectedPhotoItem) { _, newItem in
+				guard let newItem else { return }
+				Task {
+					if let data = try? await newItem.loadTransferable(type: Data.self) {
+						selectedUIImage = UIImage(data: data)
+						isChangedImage = true
+					}
+				}
+			}
 			.onAppear {
 				if selectedUIImage == nil {
 					if let image = try? storage.load(image: deck.image) {
@@ -132,21 +143,13 @@ struct EditDeckView: View {
 					}
 				}
 			}
-			.onChange(of: selectedPhotoItem) { _, newItem in
-				guard let newItem else { return }
-				Task {
-					if let data = try? await newItem.loadTransferable(type: Data.self) {
-						selectedUIImage = UIImage(data: data)
-						isChangedImage = true
-					}
-				}
-			}
 			.onDisappear {
 				selectedUIImage = nil
 				selectedPhotoItem = nil
 			}
+			.toolbar { toolbar }
 			.photosPicker(isPresented: $showPhotoPicker, selection: $selectedPhotoItem, matching: .images)
-			.alert("New Deck", isPresented: $showCancelAlert) {
+			.alert("New Deck", isPresented: $showCancel) {
 				Button("Discard Changes", role: .destructive) {
 					dismiss()
 				}
@@ -164,7 +167,6 @@ struct EditDeckView: View {
 			} message: {
 				Text("Are you sure you want to clear your image?")
 			}
-			.toolbar { toolbar }
 			.scrollDismissesKeyboard(.interactively)
 			.scrollIndicators(.hidden)
 		}
@@ -174,9 +176,7 @@ struct EditDeckView: View {
 /// Methods of EditCardView.
 fileprivate extension EditDeckView {
 	
-	private func editDeck() {
-		
-		let name = name.trimmingCharacters(in: .whitespacesAndNewlines)
+	private func editDeck(name: String) {
 		
 		guard !name.isEmpty else { return }
 		
@@ -212,21 +212,11 @@ fileprivate extension EditDeckView {
 	}
 }
 
-/// An interface to use to toggle a focusState.
-fileprivate extension EditDeckView {
-	
-	private enum FocusField: Hashable {
-		
-		case front
-		case back
-	}
-}
-
-
 /// Toolbar.
 fileprivate extension EditDeckView {
 	
 	@ToolbarContentBuilder private var toolbar: some ToolbarContent {
+		let name = name.trimmingCharacters(in: .whitespacesAndNewlines)
 		ToolbarItem(placement: .topBarLeading) {
 			Button {
 				//
@@ -235,18 +225,18 @@ fileprivate extension EditDeckView {
 			}
 		}
 		ToolbarItem(placement: .principal) {
-			Text("\(title)")
+			Text(title)
 				.font(.headline)
 		}
 		ToolbarItem(placement: .topBarTrailing) {
 			Button {
-				editDeck()
+				editDeck(name: name)
 				dismiss()
 			} label: {
 				Label("Done", systemImage: "checkmark")
 			}
 			.buttonStyle(.borderedProminent)
-			.disabled(name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+			.disabled(name.isEmpty)
 		}
 	}
 }

@@ -44,7 +44,7 @@ enum Language: String, Codable, CaseIterable, Comparable {
 		lhs.language < rhs.language
 	}
 	
-	/// Code.
+	/// The language without the country name. (code)
 	var code: String {
 		language.components(separatedBy: " - ").first ?? language
 	}

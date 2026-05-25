@@ -43,20 +43,16 @@ struct TimeTrialSetupView: View {
 	}
 	
 	var body: some View {
-		
 		NavigationStack {
 			Form {
 				Section {
 					NavigationLink {
-						TimeTrialDeckSelectionView(
-							selectedDeck: selectedDeck,
-							decks: decks
-						)
+						TimeTrialDeckSelectionView(selectedDeck: selectedDeck, decks: decks)
 					} label: {
 						HStack {
 							Text("Deck")
 							Spacer()
-							Text("\(deckName)")
+							Text(deckName)
 								.foregroundStyle(.secondary)
 						}
 					}
@@ -69,7 +65,7 @@ struct TimeTrialSetupView: View {
 							switch count {
 							case 0: Text("All")
 									.tag(count as Int)
-							default: Text("\(count)")
+							default: Text(count, format: .number)
 									.tag(count as Int)
 							}
 						}
@@ -167,21 +163,21 @@ struct TimeTrialSetupView: View {
 				}
 			}
 			.animation(.spring(response: 0.35, dampingFraction: 0.9), value: preferences.trialMode)
+			.toolbar { toolbar }
 			.navigationDestination(isPresented: $showTimeTrial) {
 				if let argument = argument {
 					TimeTrialView(argument: argument)
 						.navigationBarBackButtonHidden(true)
 				}
 			}
-			.toolbar { toolbar }
-			.navigationTitle("Time Trial")
-			.toolbarTitleDisplayMode(.inlineLarge)
-			.scrollIndicators(.hidden)
 			.alert("No cards selected", isPresented: $showNoCards) {
 				Button("OK", role: .cancel) { }
 			} message: {
 				Text("You can't start the Time Trial because there are no cards in the deck.")
 			}
+			.navigationTitle("Time Trial")
+			.toolbarTitleDisplayMode(.inlineLarge)
+			.scrollIndicators(.hidden)
 		}
 	}
 }

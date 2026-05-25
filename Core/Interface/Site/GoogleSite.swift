@@ -25,13 +25,10 @@ struct GoogleSite: SiteService {
 	func link(for expression: String, in language: Language) -> Destination? {
 		
 		let languageCode = specificLanguage(language: language).components(separatedBy: "_")
-		let query = "\(expression) \(languageCode[0])"
 		
-		guard let encodedQuery = query.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else { return nil }
+		guard let encodedQuery = "\(expression) \(languageCode[0])".addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else { return nil }
+		guard let url = URL(string: "https://www.google.com/search?q=\(encodedQuery)&hl=\(languageCode[1])&gl=\(languageCode[2])") else { return nil }
 		
-		let link = "https://www.google.com/search?q=\(encodedQuery)&hl=\(languageCode[1])&gl=\(languageCode[2])"
-		
-		guard let url = URL(string: link) else { return nil }
 		return Destination(url: url)
 	}
 	

@@ -31,11 +31,12 @@ struct DecksToCard: View {
 	var body: some View {
 		NavigationStack {
 			List(filteredDecks) { deck in
+				let id = deck.id
 				Button {
-					if selectedDecks.contains(deck.id) {
-						selectedDecks.remove(deck.id)
+					if selectedDecks.contains(id) {
+						selectedDecks.remove(id)
 					} else {
-						selectedDecks.insert(deck.id)
+						selectedDecks.insert(id)
 					}
 				} label: {
 					HStack {
@@ -45,16 +46,18 @@ struct DecksToCard: View {
 								.foregroundStyle(.secondary)
 						}
 						Spacer()
-						if selectedDecks.contains(deck.id) {
+						if selectedDecks.contains(id) {
 							Image(systemName: "checkmark")
 						}
 					}
 				}
 			}
-			.task { selectedDecks = Set(card.decks.map(\.id)) }
-			.searchable(text: $search)
-			.toolbar { toolbar }
+			.task {
+				selectedDecks = Set(card.decks.map(\.id))
+			}
 			.listStyle(.plain)
+			.toolbar { toolbar }
+			.searchable(text: $search)
 		}
 	}
 }

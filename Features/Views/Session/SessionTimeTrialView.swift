@@ -19,17 +19,17 @@ struct SessionTimeTrialView: View {
 	
 	@Query(sort: \TimeTrial.createdAt, order: .reverse) private var timeTrials: [TimeTrial]
 	
+	@State private var verticalOffset: CGFloat = 0
+	@State private var selectedTimeTrial: TimeTrial?
 	@State private var editMode: EditMode = .inactive
 	@State private var selection: Set<UUID> = []
 	@State private var showEditMode: Bool = false
-	@State private var verticalOffset: CGFloat = 0
-	@State private var selectedTimeTrial: TimeTrial?
 	@State private var showDepiction: Bool = false
 	@State private var showTimeTrial: Bool = false
+	@State private var showMetaData: Bool = false
 	@State private var showDownload: Bool = false
 	@State private var showDeleteTimeTrial: Bool = false
 	@State private var showSelectedTimeTrial: Bool = false
-	@State private var showMetaData: Bool = false
 	
 	private let session: TimeTrialSession = Session.unique.timeTrial
 	
@@ -41,11 +41,9 @@ struct SessionTimeTrialView: View {
 	var body: some View {
 		NavigationStack {
 			GeometryReader { geo in
-				
 				let width = geo.size.width
 				let height = geo.size.height
 				let isPortrait = height > width
-				
 				ScrollView {
 					VStack {
 						Image(session.banner)
@@ -74,22 +72,20 @@ struct SessionTimeTrialView: View {
 									HStack(spacing: 8) {
 										VStack(alignment: .leading, spacing: 5) {
 											Text(timeTrial.deck?.name ?? "Every Card")
-												.font(.subheadline)
 											Text(timeTrial.mode.mode)
-												.font(.subheadline)
 												.foregroundStyle(.secondary)
 										}
+										.font(.subheadline)
 										Spacer()
 										Text("\(timeTrial.cards.count) cards")
 											.font(.system(size: 15, weight: .semibold))
 										ZStack(alignment: .bottom) {
 											Button {
 												selectedTimeTrial = timeTrial
-												showTimeTrial = false
-												showMetaData = true
+												show($showMetaData)
 											} label: {
 												let score = Int((timeTrial.success * 100).rounded())
-												Text("\(score)")
+												Text(score, format: .number)
 													.font(.system(size: 20, weight: .semibold))
 													.foregroundStyle(.background)
 													.frame(width: 50, height: 50)
@@ -107,18 +103,18 @@ struct SessionTimeTrialView: View {
 								)
 								.contentShape(Rectangle())
 								.onTapGesture {
+									let id = timeTrial.id
 									if editMode == .active {
 										withAnimation(.easeInOut(duration: 0.2)) {
 											if isSelected {
-												selection.remove(timeTrial.id)
+												selection.remove(id)
 											} else {
-												selection.insert(timeTrial.id)
+												selection.insert(id)
 											}
 										}
 									} else {
 										selectedTimeTrial = timeTrial
-										showMetaData = false
-										showTimeTrial = true
+										show($showTimeTrial)
 									}
 								}
 								.contextMenu {
@@ -184,23 +180,18 @@ struct SessionTimeTrialView: View {
 	}
 	
 	@ViewBuilder private func mainInformation(paddingText: CGFloat) -> some View {
+		
 		VStack(alignment: .center, spacing: 6) {
 			Text(session.title)
 				.font(.system(size: 50, weight: .black))
-				.foregroundStyle(Color(.label))
 			Text(session.subtitle)
 				.font(.system(size: 20, weight: .semibold))
-				.foregroundStyle(Color(.label))
 			Text("\(timeTrials.count) sessions ⋅ \(averagePercentage)% success")
-				.font(.callout)
-				.fontWeight(.semibold)
+				.font(.system(size: 16, weight: .semibold))
 				.padding(.top, 10)
-				.foregroundStyle(Color(.label))
 			GlassEffectContainer {
 				HStack(alignment: .center, spacing: 15) {
 					Button {
-						showMetaData = false
-						showTimeTrial = false
 						navigation.selectedTab = .trial
 					} label: {
 						Label("Session", systemImage: "flag.pattern.checkered.2.crossed")
@@ -216,48 +207,57 @@ struct SessionTimeTrialView: View {
 					}
 				}
 				.font(.system(size: 20, weight: .semibold))
-				.foregroundStyle(Color(.label))
 			}
 			.tint(.primary)
 			.padding(.top, 10)
 			Text(session.depiction)
-				.foregroundStyle(Color(.label))
 				.lineLimit(2)
 				.multilineTextAlignment(.leading)
 				.padding(.horizontal, paddingText)
 				.onTapGesture {
-					showDepiction.toggle()
+					show($showDepiction)
 				}
-				.padding(.horizontal)
 				.sheet(isPresented: $showDepiction) {
 					NavigationStack {
 						ScrollView {
-							Text(session.title)
-								.font(.title)
-								.bold()
-								.foregroundStyle(.accent)
-								.padding(.horizontal, 20)
-								.padding(.top, 20)
-							Text(session.subtitle)
-								.font(.title3)
-								.bold()
-								.foregroundStyle(Color(.label).opacity(0.7))
-								.padding(.horizontal, 20)
-								.padding(.bottom, 20)
-							Text(session.depiction)
-								.foregroundStyle(Color(.label))
-								.padding(.horizontal, 20)
+							VStack {
+								Text(session.title)
+									.font(.system(size: 28, weight: .bold))
+									.foregroundStyle(.accent)
+									.padding(.top, 20)
+								Text(session.subtitle)
+									.font(.system(size: 20, weight: .bold))
+									.padding(.bottom, 20)
+								Text(session.depiction)
+							}
+							.padding(.horizontal, 15)
 						}
 					}
 				}
 		}
-		.foregroundStyle(.white)
 		.padding(.bottom, 40)
 	}
 }
 
 /// Methods of SessionTimeTrialView.
 fileprivate extension SessionTimeTrialView {
+	
+	private func show(_ item: Binding<Bool>) {
+		showEditMode = false
+		showDepiction = false
+		showTimeTrial = false
+		showMetaData = false
+		item.wrappedValue = true
+	}
+	
+	private func toggle(for item: Binding<Bool>) {
+		let newValue = !item.wrappedValue
+		showEditMode = false
+		showDepiction = false
+		showTimeTrial = false
+		showMetaData = false
+		item.wrappedValue = newValue
+	}
 	
 	private func deleteSelection() {
 		for timeTrial in timeTrials where selection.contains(timeTrial.id) {
@@ -269,11 +269,8 @@ fileprivate extension SessionTimeTrialView {
 	}
 	
 	private func toggleEditMode() {
-		
 		guard !showEditMode else { return }
-		
-		showEditMode.toggle()
-		
+		toggle(for: $showEditMode)
 		withAnimation(.smooth(duration: 0.25)) {
 			if editMode == .active {
 				editMode = .inactive
@@ -284,7 +281,7 @@ fileprivate extension SessionTimeTrialView {
 		}
 		Task {
 			try? await Task.sleep(for: .milliseconds(250))
-			showEditMode.toggle()
+			toggle(for: $showEditMode)
 		}
 	}
 }
@@ -316,7 +313,6 @@ fileprivate extension SessionTimeTrialView {
 		}
 		ToolbarItem(placement: .principal) {
 			Text("Time Trial")
-				.fontWeight(.semibold)
 		}
 	}
 }
