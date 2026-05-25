@@ -13,10 +13,10 @@ enum Theme {
 		
 		guard let cgImage = image.cgImage else { return [.black, .black] }
 		
-		let width = 60
-		let height = 60
+		let width = 80
+		let height = 80
 		let bytesPerPixel = 4
-		let bytesPerRow = bytesPerPixel * width
+		let bytesPerRow = width * bytesPerPixel
 		
 		var rawData = [UInt8](repeating: 0, count: width * height * 4)
 		
@@ -24,11 +24,15 @@ enum Theme {
 		
 		context.draw(cgImage, in: CGRect(x: 0, y: 0, width: width, height: height))
 		
-		var totalR: CGFloat = 0
-		var totalG: CGFloat = 0
-		var totalB: CGFloat = 0
-		var totalSaturation: CGFloat = 0
-		var pixelCount: CGFloat = 0
+		struct Bucket {
+			
+			var r: CGFloat = 0
+			var g: CGFloat = 0
+			var b: CGFloat = 0
+			var count: CGFloat = 0
+		}
+		
+		var buckets: [Int: Bucket] = [:]
 		
 		for i in stride(from: 0, to: rawData.count, by: 4) {
 			
@@ -41,37 +45,45 @@ enum Theme {
 			var br: CGFloat = 0
 			
 			color.getHue(&h, saturation: &s, brightness: &br, alpha: nil)
-			totalR += r
-			totalG += g
-			totalB += b
-			totalSaturation += s
-			pixelCount += 1
+			
+			if s < 0.15 || br < 0.12 { continue }
+			
+			let bucketIndex = Int(h * 12)
+			var bucket = buckets[bucketIndex] ?? Bucket()
+			
+			bucket.r += r
+			bucket.g += g
+			bucket.b += b
+			bucket.count += 1
+			buckets[bucketIndex] = bucket
 		}
 		
-		guard pixelCount > 0 else { return [.black, .black] }
+		let sortedBuckets = buckets.values.sorted { $0.count > $1.count }.prefix(2)
+		var uiColors: [UIColor] = []
 		
-		let avgColor = UIColor(red: totalR / pixelCount, green: totalG / pixelCount, blue: totalB / pixelCount, alpha: 1)
-		let avgSaturation = totalSaturation / pixelCount
-		
-		var h: CGFloat = 0
-		var s: CGFloat = 0
-		var b: CGFloat = 0
-		var a: CGFloat = 0
-		
-		avgColor.getHue(&h, saturation: &s, brightness: &b, alpha: &a)
-		b = min(max(b, 0.22), 0.72)
-		
-		if avgSaturation < 0.12 {
+		for bucket in sortedBuckets {
 			
-			let darkGray = UIColor(hue: h, saturation: 0, brightness: max(b - 0.18, 0.18), alpha: 1)
-			let lightGray = UIColor(hue: h, saturation: 0, brightness: min(b - 0.05, 0.45), alpha: 1)
+			guard bucket.count > 0 else { continue }
 			
-			return [Color(uiColor: darkGray), Color(uiColor: lightGray)]
+			let avgR = bucket.r / bucket.count
+			let avgG = bucket.g / bucket.count
+			let avgB = bucket.b / bucket.count
+			let uiColor = UIColor(red: avgR, green: avgG, blue: avgB, alpha: 1)
+			
+			uiColors.append(uiColor)
 		}
 		
-		let color1 = UIColor(hue: h - 0.025, saturation: min(s + 0.06, 1), brightness: max(b - 0.14, 0), alpha: 1)
-		let color2 = UIColor(hue: h + 0.02, saturation: max(s - 0.03, 0), brightness: min(b + 0.04, 1), alpha: 1)
+		while uiColors.count < 2 {
+			uiColors.append(uiColors.first ?? .black)
+		}
 		
-		return [Color(uiColor: color1), Color(uiColor: color2)]
+		uiColors.sort { c1, c2 in
+			var b1: CGFloat = 0
+			var b2: CGFloat = 0
+			c1.getHue(nil, saturation: nil, brightness: &b1, alpha: nil)
+			c2.getHue(nil, saturation: nil, brightness: &b2, alpha: nil)
+			return b1 < b2
+		}
+		return uiColors.map { Color(uiColor: $0) }
 	}
 }

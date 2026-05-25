@@ -25,7 +25,6 @@ struct DeckView: View {
 	@State private var selectedCard: Card?
 	@State private var argument: Argument?
 	@State private var colors: [Color]?
-	@State private var image: UIImage?
 	@State private var showCard: Bool = false
 	@State private var showToolbar: Bool = false
 	@State private var showDepiction: Bool = false
@@ -44,164 +43,160 @@ struct DeckView: View {
 	
 	var body: some View {
 		NavigationStack {
-			ScrollView {
-				VStack {
-					Section {
-						Image(image: deck.image, storage: storage)
-							.resizable()
-							.scaledToFill()
-							.frame(width: 235, height: 235)
-							.aspectRatio(1, contentMode: .fit)
-							.clipShape(RoundedRectangle(cornerRadius: 8))
-							.shadow(color: .black.opacity(0.2), radius: 5)
-							.navigationTransition(id: deck.id, namespace: namespace)
-						VStack(alignment: .center, spacing: 6) {
-							VStack {
-								Text(deck.name)
-									.font(.system(size: 25, weight: .bold))
-									.multilineTextAlignment(.center)
-								Text(deck.author)
-									.font(.title3)
-								Text({let langs = Set(deck.cards.flatMap { [$0.frontLanguage, $0.backLanguage] }).map { $0.rawValue }.sorted()
-									let year = deck.createdAt.formatted(.dateTime.year())
-									return langs.isEmpty ? year : year + " ⋅ " + langs.joined(separator: " ⋅ ")}())
-								.font(.system(size: 12, weight: .semibold))
-								.foregroundStyle(.secondary)
-								.padding(.top, 5)
-							}
-							.padding(.horizontal)
-							GlassEffectContainer {
-								HStack(alignment: .center, spacing: 15) {
-									Button {
-										showCard = false
-										let arg = Argument.make(deck: deck, cards: cards, mode: .standard, directions: [], timeInterval: 4.0, order: .random, numberOfCards: 0)
-										guard !arg.cards.isEmpty else { return showNoCards.toggle() }
-										argument = arg
-										showTimeTrial.toggle()
-									} label: {
-										Image(systemName: "shuffle")
-											.frame(width: 50, height: 50)
-											.glassEffect(.clear.interactive())
-									}
-									Button {
-										showCard = false
-										let arg = Argument.make(deck: deck, cards: cards, mode: .chill, directions: [], timeInterval: Constants.infinityYear, order: .random, numberOfCards: 0)
-										guard !arg.cards.isEmpty else { return showNoCards.toggle() }
-										argument = arg
-										showTimeTrial.toggle()
-									} label: {
-										Label("Play", systemImage: "arrowtriangle.forward.fill")
-											.frame(width: 160, height: 50)
-											.glassEffect(.regular.tint(.accentColor).interactive())
-									}
-									Button {
-										showDownload.toggle()
-									} label: {
-										Image(systemName: "arrow.down")
-											.frame(width: 50, height: 50)
-											.glassEffect(.clear.interactive())
-									}
-								}
-								.font(.system(size: 20, weight: .semibold))
-							}
-							.tint(.primary)
-							.padding(.top, 10)
-							let depiction = deck.depiction
-							Text(depiction)
-								.foregroundStyle(.secondary)
-								.lineLimit(2)
-								.multilineTextAlignment(.leading)
-								.onTapGesture {
-									showDepiction.toggle()
-								}
-								.sheet(isPresented: $showDepiction) {
-									ScrollView {
-										Text(depiction)
-											.padding(20)
-									}
-								}
-						}
-						.padding(EdgeInsets(top: 10, leading: 10, bottom: 0, trailing: 10))
-					} /// ``header``
-					Section {
-						Rectangle()
-							.fill(Color(uiColor: .separator))
-							.frame(height: 1.0)
-							.padding(.horizontal)
-						LazyVStack(alignment: .leading) {
-							ForEach(Array(cardsFromDeck.enumerated()), id: \.element.id) { index, card in
-								Button {
-									selectedCard = card
-									showCard = true
-								} label: {
-									HStack(spacing: 10) {
-										Text(index + 1, format: .number)
-											.font(.callout)
-											.foregroundStyle(.secondary)
-											.frame(width: 30, alignment: .center)
-										VStack(alignment: .leading, spacing: 5) {
-											Text(card.frontEntry)
-											Text(card.backEntry)
-												.foregroundStyle(.secondary)
-										}
-										.font(.subheadline)
-										.frame(maxWidth: .infinity, alignment: .leading)
-									}
-									.padding(EdgeInsets(top: 3, leading: 15, bottom: 3, trailing: 15))
-									.contentShape(Rectangle())
-								}
-								.buttonStyle(.plain)
-								Rectangle()
-									.fill(Color(uiColor: .separator))
-									.frame(height: 1.0)
-									.padding(.horizontal)
-							}
-							.sheet(isPresented: $showCard) {
-								if let card = selectedCard {
-									CardView(card: card)
-										.presentationDetents([
-											.fraction(Constants.heightOfACard[0]),
-											.fraction(Constants.heightOfACard[1])
-										])
-										.presentationBackgroundInteraction(.enabled)
-								}
-							}
-						}
-						Section { /// ``metadata``
-							VStack(alignment: .leading) {
-								Text(deck.createdAt, format: .dateTime.year().month().day())
-								Text("\(deck.cards.count) cards")
-								Text(deck.author)
-								Text(Set(deck.cards.flatMap {[$0.frontLanguage, $0.backLanguage]}).sorted { $0.language < $1.language }.map { $0.language }.joined(separator: " ⋅ "))
-									.font(.caption)
-							}
-							.foregroundStyle(.secondary)
-							.frame(maxWidth: .infinity, alignment: .leading)
-							.padding()
-						}
-					} /// ``items``
-				}
-				.foregroundStyle(showGradientBackground ? .white : .primary)
-				.frame(maxWidth: .infinity)
-				.padding(.top, 17)
-			}
-			.background {
+			ZStack {
 				if showGradientBackground {
 					if let colors {
 						AmazingBackground(colors: colors, active: showAnimationBackground ? true : false)
 							.ignoresSafeArea()
 					}
 				}
+				ScrollView {
+					VStack {
+						Section {
+							Image(image: deck.image, storage: storage)
+								.resizable()
+								.scaledToFill()
+								.frame(width: 235, height: 235)
+								.aspectRatio(1, contentMode: .fit)
+								.clipShape(RoundedRectangle(cornerRadius: 8))
+								.shadow(color: .black.opacity(0.2), radius: 5)
+								.navigationTransition(id: deck.id, namespace: namespace)
+							VStack(alignment: .center, spacing: 6) {
+								VStack {
+									Text(deck.name)
+										.font(.system(size: 25, weight: .bold))
+										.multilineTextAlignment(.center)
+									Text(deck.author)
+										.font(.title3)
+									Text({let langs = Set(deck.cards.flatMap { [$0.frontLanguage, $0.backLanguage] }).map { $0.rawValue }.sorted()
+										let year = deck.createdAt.formatted(.dateTime.year())
+										return langs.isEmpty ? year : year + " ⋅ " + langs.joined(separator: " ⋅ ")}())
+									.font(.system(size: 12, weight: .semibold))
+									.foregroundStyle(.secondary)
+									.padding(.top, 5)
+								}
+								.padding(.horizontal)
+								GlassEffectContainer {
+									HStack(alignment: .center, spacing: 15) {
+										Button {
+											showCard = false
+											let arg = Argument.make(deck: deck, cards: cards, mode: .standard, directions: [], timeInterval: 4.0, order: .random, numberOfCards: 0)
+											guard !arg.cards.isEmpty else { return showNoCards.toggle() }
+											argument = arg
+											showTimeTrial.toggle()
+										} label: {
+											Image(systemName: "shuffle")
+												.frame(width: 50, height: 50)
+												.glassEffect(.clear.interactive())
+										}
+										Button {
+											showCard = false
+											let arg = Argument.make(deck: deck, cards: cards, mode: .chill, directions: [], timeInterval: Constants.infinityYear, order: .random, numberOfCards: 0)
+											guard !arg.cards.isEmpty else { return showNoCards.toggle() }
+											argument = arg
+											showTimeTrial.toggle()
+										} label: {
+											Label("Play", systemImage: "arrowtriangle.forward.fill")
+												.frame(width: 160, height: 50)
+												.glassEffect(.regular.tint(.accentColor).interactive())
+										}
+										Button {
+											showDownload.toggle()
+										} label: {
+											Image(systemName: "arrow.down")
+												.frame(width: 50, height: 50)
+												.glassEffect(.clear.interactive())
+										}
+									}
+									.font(.system(size: 20, weight: .semibold))
+								}
+								.tint(.primary)
+								.padding(.top, 10)
+								let depiction = deck.depiction
+								Text(depiction)
+									.foregroundStyle(.secondary)
+									.lineLimit(2)
+									.multilineTextAlignment(.leading)
+									.onTapGesture {
+										showDepiction.toggle()
+									}
+									.sheet(isPresented: $showDepiction) {
+										ScrollView {
+											Text(depiction)
+												.padding(20)
+										}
+									}
+							}
+							.padding(EdgeInsets(top: 10, leading: 10, bottom: 0, trailing: 10))
+						} /// ``header``
+						Section {
+							Rectangle()
+								.fill(Color(uiColor: .separator))
+								.frame(height: 1.0)
+								.padding(.horizontal)
+							LazyVStack(alignment: .leading) {
+								ForEach(Array(cardsFromDeck.enumerated()), id: \.element.id) { index, card in
+									Button {
+										selectedCard = card
+										showCard = true
+									} label: {
+										HStack(spacing: 10) {
+											Text(index + 1, format: .number)
+												.font(.callout)
+												.foregroundStyle(.secondary)
+												.frame(width: 30, alignment: .center)
+											VStack(alignment: .leading, spacing: 5) {
+												Text(card.frontEntry)
+												Text(card.backEntry)
+													.foregroundStyle(.secondary)
+											}
+											.font(.subheadline)
+											.frame(maxWidth: .infinity, alignment: .leading)
+										}
+										.padding(EdgeInsets(top: 3, leading: 15, bottom: 3, trailing: 15))
+										.contentShape(Rectangle())
+									}
+									.buttonStyle(.plain)
+									Rectangle()
+										.fill(Color(uiColor: .separator))
+										.frame(height: 1.0)
+										.padding(.horizontal)
+								}
+								.sheet(isPresented: $showCard) {
+									if let card = selectedCard {
+										CardView(card: card)
+											.presentationDetents([
+												.fraction(Constants.heightOfACard[0]),
+												.fraction(Constants.heightOfACard[1])
+											])
+											.presentationBackgroundInteraction(.enabled)
+									}
+								}
+							}
+							Section { /// ``metadata``
+								VStack(alignment: .leading) {
+									Text(deck.createdAt, format: .dateTime.year().month().day())
+									Text("\(deck.cards.count) cards")
+									Text(deck.author)
+									Text(Set(deck.cards.flatMap {[$0.frontLanguage, $0.backLanguage]}).sorted { $0.language < $1.language }.map { $0.language }.joined(separator: " ⋅ "))
+										.font(.caption)
+								}
+								.foregroundStyle(.secondary)
+								.frame(maxWidth: .infinity, alignment: .leading)
+								.padding()
+							}
+						} /// ``items``
+					}
+					.foregroundStyle(showGradientBackground ? .white : .primary)
+					.frame(maxWidth: .infinity)
+					.padding(.top, 17)
+				}
+			}
+			.onAppear {
+				loadImageForBackground()
 			}
 			.onChange(of: deck.image) {
-				if let uiImage = try? storage.load(image: deck.image, size: 4) {
-					image = uiImage
-					if showGradientBackground {
-						colors = Theme.gradientColors(from: uiImage)
-					}
-				} else {
-					image = nil
-				}
+				loadImageForBackground()
 			}
 			.toolbar { toolbar }
 			.navigationDestination(isPresented: $showTimeTrial) {
@@ -235,6 +230,20 @@ struct DeckView: View {
 				Button("OK", role: .cancel) { }
 			}
 			.navigationBarBackButtonHidden(true)
+		}
+	}
+}
+
+/// Methods of DeckView.
+fileprivate extension DeckView {
+	
+	private func loadImageForBackground() {
+		if let uiImage = try? storage.load(image: deck.image, size: 512) {
+			if showGradientBackground {
+				colors = Theme.gradientColors(from: uiImage)
+			}
+		} else {
+			colors = nil
 		}
 	}
 }
