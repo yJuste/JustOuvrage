@@ -16,6 +16,7 @@ struct DeckView: View {
 	var namespace: Namespace.ID?
 	
 	@Environment(FileImageStorage.self) private var storage
+	@Environment(\.colorScheme) private var colorScheme
 	@Environment(\.modelContext) private var modelContext
 	@Environment(\.dismiss) private var dismiss
 	
@@ -182,7 +183,6 @@ struct DeckView: View {
 							}
 						} /// ``items``
 					}
-					.foregroundStyle(showGradientBackground && colors?.last != nil ? .white : .primary)
 					.frame(maxWidth: .infinity)
 					.padding(.top, 17)
 				}
@@ -245,8 +245,8 @@ fileprivate extension DeckView {
 	private var separator: some View {
 		Divider()
 			.overlay {
-				if showGradientBackground, let color = colors?.last {
-					color.mix(with: .white, amount: 0.4)
+				if let color = colors?.last {
+					color.mix(with: colorScheme == .dark ? .white : .black, amount: 0.4)
 				}
 			}
 			.padding(.horizontal)

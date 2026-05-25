@@ -102,7 +102,6 @@ struct CardView: View {
 						.padding(.vertical)
 					} /// ``Metadata``
 				}
-				.foregroundStyle(showGradientBackground ? Color(.label) : .primary)
 				.padding(.horizontal)
 			}
 			.onDisappear {
@@ -219,7 +218,6 @@ fileprivate extension CardView {
 				}
 			} label: {
 				Image(systemName: "ellipsis")
-					.foregroundStyle(showGradientBackground ? Color(.label) : .primary)
 			}
 		}
 		ToolbarItem(placement: .topBarLeading) {

@@ -32,7 +32,6 @@ struct RecordingView: View {
 					recordSection(title: card.frontEntry, filename: card.frontRecording, side: .front)
 					recordSection(title: card.backEntry, filename: card.backRecording, side: .back)
 				}
-				.foregroundStyle(showGradientBackground ? Color(.label) : .primary)
 				.padding(.horizontal, 20)
 			}
 			.onAppear {
@@ -271,7 +270,6 @@ fileprivate extension RecordingView {
 				}
 			} label: {
 				Image(systemName: "ellipsis")
-					.foregroundStyle(showGradientBackground ? Color(.label) : .primary)
 			}
 		}
 	}
