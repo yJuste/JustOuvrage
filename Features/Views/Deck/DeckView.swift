@@ -24,6 +24,8 @@ struct DeckView: View {
 	@Bindable private var preferences: Preferences = .unique
 	@State private var selectedCard: Card?
 	@State private var argument: Argument?
+	@State private var colors: [Color]?
+	@State private var image: UIImage?
 	@State private var showCard: Bool = false
 	@State private var showToolbar: Bool = false
 	@State private var showDepiction: Bool = false
@@ -33,8 +35,10 @@ struct DeckView: View {
 	@State private var showTimeTrial: Bool = false
 	@State private var showNoCards: Bool = false
 	@State private var showDownload: Bool = false
+	@State private var showGradientBackground: Bool = Preferences.unique.gradientBackground
+	@State private var showAnimationBackground: Bool = Preferences.unique.animationBackground
 	
-	var cardsFromDeck: [Card] {
+	private var cardsFromDeck: [Card] {
 		deck.cards.sorted { $0.createdAt > $1.createdAt }
 	}
 	
@@ -49,7 +53,7 @@ struct DeckView: View {
 							.frame(width: 235, height: 235)
 							.aspectRatio(1, contentMode: .fit)
 							.clipShape(RoundedRectangle(cornerRadius: 8))
-							.shadow(color: .black.opacity(0.3), radius: 15)
+							.shadow(color: .black.opacity(0.2), radius: 5)
 							.navigationTransition(id: deck.id, namespace: namespace)
 						VStack(alignment: .center, spacing: 6) {
 							VStack {
@@ -58,7 +62,6 @@ struct DeckView: View {
 									.multilineTextAlignment(.center)
 								Text(deck.author)
 									.font(.title3)
-									.foregroundStyle(.secondary)
 								Text({let langs = Set(deck.cards.flatMap { [$0.frontLanguage, $0.backLanguage] }).map { $0.rawValue }.sorted()
 									let year = deck.createdAt.formatted(.dateTime.year())
 									return langs.isEmpty ? year : year + " ⋅ " + langs.joined(separator: " ⋅ ")}())
@@ -121,7 +124,9 @@ struct DeckView: View {
 						.padding(EdgeInsets(top: 10, leading: 10, bottom: 0, trailing: 10))
 					} /// ``header``
 					Section {
-						Divider()
+						Rectangle()
+							.fill(Color(uiColor: .separator))
+							.frame(height: 1.0)
 							.padding(.horizontal)
 						LazyVStack(alignment: .leading) {
 							ForEach(Array(cardsFromDeck.enumerated()), id: \.element.id) { index, card in
@@ -146,13 +151,18 @@ struct DeckView: View {
 									.contentShape(Rectangle())
 								}
 								.buttonStyle(.plain)
-								Divider()
+								Rectangle()
+									.fill(Color(uiColor: .separator))
+									.frame(height: 1.0)
 									.padding(.horizontal)
 							}
 							.sheet(isPresented: $showCard) {
 								if let card = selectedCard {
 									CardView(card: card)
-										.presentationDetents([.fraction(0.3), .fraction(0.4)])
+										.presentationDetents([
+											.fraction(Constants.heightOfACard[0]),
+											.fraction(Constants.heightOfACard[1])
+										])
 										.presentationBackgroundInteraction(.enabled)
 								}
 							}
@@ -171,8 +181,27 @@ struct DeckView: View {
 						}
 					} /// ``items``
 				}
+				.foregroundStyle(showGradientBackground ? .white : .primary)
 				.frame(maxWidth: .infinity)
 				.padding(.top, 17)
+			}
+			.background {
+				if showGradientBackground {
+					if let colors {
+						AmazingBackground(colors: colors, active: showAnimationBackground ? true : false)
+							.ignoresSafeArea()
+					}
+				}
+			}
+			.onChange(of: deck.image) {
+				if let uiImage = try? storage.load(image: deck.image, size: 4) {
+					image = uiImage
+					if showGradientBackground {
+						colors = Theme.gradientColors(from: uiImage)
+					}
+				} else {
+					image = nil
+				}
 			}
 			.toolbar { toolbar }
 			.navigationDestination(isPresented: $showTimeTrial) {

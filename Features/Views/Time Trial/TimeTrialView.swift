@@ -144,6 +144,7 @@ struct TimeTrialView: View {
 				Spacer()
 			}
 			.multilineTextAlignment(.center)
+			.padding(.horizontal, 15)
 			.animation(.easeInOut(duration: 0.1), value: isCardTapped)
 			rectangle
 				.fill(LinearGradient(colors: [.red.opacity(Double(-dragOffset.width / 200)), .red.opacity(0.0)], startPoint: .leading, endPoint: .trailing))

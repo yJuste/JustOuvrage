@@ -62,10 +62,10 @@ struct SettingsView: View {
 					}
 				} footer: {
 					Text("""
-Controls refresh speed of the trial system.
+  Controls refresh speed of the trial system.
 
-60 FPS = fastest updates, smoother behavior
-10 FPS = slower but lighter on CPU
+  60 FPS = fastest updates, smoother behavior
+  10 FPS = slower but lighter on CPU
 """)
 				}
 				Section {
@@ -105,6 +105,43 @@ Controls refresh speed of the trial system.
   Max ≈ 1,500 recordings
   
   Tip: lower quality improves battery life and storage usage.
+  """)
+				}
+				Section {
+					Picker("Background", selection: Binding<Int>(
+						get: {
+							if preferences.gradientBackground { return preferences.animationBackground ? 2 : 1 }
+							return 0
+						},
+						set: { value in
+							switch value {
+							case 0: preferences.gradientBackground = false; preferences.animationBackground = false
+							case 1: preferences.gradientBackground = true; preferences.animationBackground = false
+							case 2: preferences.gradientBackground = true; preferences.animationBackground = true
+							default: break
+							}
+						}
+					)
+					) {
+						Text("None")
+							.tag(0)
+						Text("Gradient")
+							.tag(1)
+						Text("Gradient + Animation")
+							.tag(2)
+					}
+					.pickerStyle(.menu)
+				} footer: {
+					Text("""
+  Choose whether to use an animated background.
+  
+  None: no background
+  
+  Gradient: static gradient background
+  Moderate impact on memory (~1.5x) and energy usage.
+  
+  Animated background: dynamic visual effects
+  Moderate impact on memory (~1.5x) and significant and continuous energy consumption (~2.5x)
   """)
 				}
 			}

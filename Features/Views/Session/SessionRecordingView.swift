@@ -355,11 +355,10 @@ fileprivate extension SessionRecordingView {
 	@ToolbarContentBuilder private var toolbar: some ToolbarContent {
 		ToolbarItem(placement: .topBarLeading) {
 			if !selection.isEmpty {
-				Button(role: .destructive) {
+				Button {
 					showSelectedRecording.toggle()
 				} label: {
-					Text("Delete (\(selection.count))")
-						.foregroundStyle(.red)
+					Text("Clear (\(selection.count))")
 				}
 			}
 		}

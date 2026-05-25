@@ -43,6 +43,10 @@ import Observation
 		case invertCards
 		case visibleCards
 		case sortCards
+		
+		// In Deck
+		case gradientBackground
+		case animationBackground
 	}
 	
 	static let unique: Preferences = Preferences()
@@ -65,10 +69,17 @@ import Observation
 	private var invertCardsRaw: Bool = false
 	private var visibleCardsRaw: Bool = false
 	private var sortCardsRaw: [String] = []
+	private var gradientBackgroundRaw: Bool = false
+	private var animationBackgroundRaw: Bool = false
 	
 	private init() {
 		
 		let defaultLanguage: String = Language.en_US.rawValue
+		
+		userDefaults.register(defaults: [
+			Key.gradientBackground.rawValue: true,
+			Key.animationBackground.rawValue: false
+		])
 		
 		tabBarRaw = userDefaults.string(forKey: Key.tabBar.rawValue) ?? TabBar.new.rawValue
 		frontLanguageRaw = userDefaults.string(forKey: Key.frontLanguage.rawValue) ?? defaultLanguage
@@ -87,6 +98,8 @@ import Observation
 		invertCardsRaw = userDefaults.bool(forKey: Key.invertCards.rawValue)
 		visibleCardsRaw = userDefaults.bool(forKey: Key.visibleCards.rawValue)
 		sortCardsRaw = userDefaults.stringArray(forKey: Key.sortCards.rawValue) ?? [SortCard.newestToOldest.rawValue]
+		gradientBackgroundRaw = userDefaults.bool(forKey: Key.gradientBackground.rawValue)
+		animationBackgroundRaw = userDefaults.bool(forKey: Key.animationBackground.rawValue)
 	}
 	
 	var tabBar: TabBar {
@@ -221,6 +234,24 @@ import Observation
 		set {
 			sortCardsRaw = newValue.map(\.rawValue)
 			userDefaults.set(sortCardsRaw, forKey: Key.sortCards.rawValue)
+		}
+	}
+	
+	// In Deck
+	
+	var gradientBackground: Bool {
+		get { gradientBackgroundRaw }
+		set {
+			gradientBackgroundRaw = newValue
+			userDefaults.set(gradientBackgroundRaw, forKey: Key.gradientBackground.rawValue)
+		}
+	}
+	
+	var animationBackground: Bool {
+		get { animationBackgroundRaw }
+		set {
+			animationBackgroundRaw = newValue
+			userDefaults.set(animationBackgroundRaw, forKey: Key.animationBackground.rawValue)
 		}
 	}
 }
