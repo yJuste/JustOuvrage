@@ -38,7 +38,7 @@ struct DecksView: View {
 	}
 	
 	private var dismissItems: [Binding<Bool>] {
-		[$showDeck, $showEditMode, $showNewCard, $showNewDeck, $showDeleteDeck, $showDeleteDeck, $showSelectedDecks, $showMetaData]
+		[$showDeck, $showEditMode, $showNewCard, $showNewDeck, $showMetaData]
 	}
 	
 	var body: some View {
@@ -78,11 +78,19 @@ struct DecksView: View {
 									} label: {
 										Label("View Metadata", systemImage: "info.circle")
 									}
+									Section {
+										Button(role: .destructive) {
+											selectedDeck = deck
+											showDeleteDeck.toggle()
+										} label: {
+											Label("Delete Deck from Library", systemImage: "trash")
+										}
+									}
 								} label: {
 									Image(systemName: "ellipsis")
 										.font(.system(size: 20, weight: .bold))
-										.frame(width: 40, height: 40)
-										.background (Circle().fill(.background))
+										.frame(width: 41, height: 41)
+										.background (Circle().fill(.clear))
 								}
 								.padding(.trailing, 10)
 								.buttonStyle(.plain)
@@ -91,7 +99,7 @@ struct DecksView: View {
 						.contextMenu {
 							Button(role: .destructive) {
 								selectedDeck = deck
-								dismissItems.showOnly($showDeleteDeck)
+								showDeleteDeck.toggle()
 							} label: {
 								Label("Delete from Library", systemImage: "trash")
 							}
@@ -152,7 +160,7 @@ struct DecksView: View {
 					.presentationDragIndicator(.visible)
 			}
 			.alert("Delete Deck", isPresented: $showDeleteDeck) {
-				Button("Remove", role: .destructive) {
+				Button("Delete", role: .destructive) {
 					if let selectedDeck {
 						modelContext.delete(selectedDeck)
 					}
@@ -223,7 +231,7 @@ fileprivate extension DecksView {
 		ToolbarItem(placement: .topBarLeading) {
 			if !selection.isEmpty {
 				Button(role: .destructive) {
-					dismissItems.showOnly($showSelectedDecks)
+					showSelectedDecks.toggle()
 				} label: {
 					Text("Delete (\(selection.count))")
 						.foregroundStyle(.red)

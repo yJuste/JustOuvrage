@@ -31,6 +31,7 @@ struct CardView: View {
 	@State private var showDeleteCard: Bool = false
 	@State private var showDecksToCard: Bool = false
 	@State private var showRecording: Bool = false
+	@State private var showMetaData: Bool = false
 	@State private var showGradientBackground: Bool = Preferences.unique.gradientBackground
 	
 	private var cleanFrontEntry: [String] {
@@ -40,14 +41,20 @@ struct CardView: View {
 		cleanWords(expression: card.backEntry)
 	}
 	
+	private var dismissItems: [Binding<Bool>] {
+		[$showEditCard, $showDecksToCard, $showRecording, $showMetaData]
+	}
+	
 	var body: some View {
 		NavigationStack {
 			ScrollView {
 				VStack(alignment: .leading) {
+					
 					let frontEntry = card.frontEntry
 					let backEntry = card.backEntry
 					let frontLanguage = card.frontLanguage
 					let backLanguage = card.backLanguage
+					
 					Section {
 						LabelTrailing(title: "\(frontLanguage.language)") {
 							Text(frontEntry)
@@ -109,14 +116,14 @@ struct CardView: View {
 			}
 			.toolbar { toolbar }
 			.scrollIndicators(.hidden)
+			.fullScreenCover(item: $destination) {
+				SFSafariViewWrapper(url: $0.url)
+			}
 			.sheet(isPresented: $showEditCard) {
 				EditCardView(title: "Edit Card", card: card)
 			}
 			.sheet(isPresented: $showDecksToCard) {
 				DecksToCard(card: card)
-			}
-			.fullScreenCover(item: $destination) {
-				SFSafariViewWrapper(url: $0.url)
 			}
 			.sheet(isPresented: $showRecording) {
 				RecordingView(card: card)
@@ -126,8 +133,16 @@ struct CardView: View {
 					])
 					.presentationBackgroundInteraction(.enabled)
 			}
+			.sheet(isPresented: $showMetaData) {
+				CardMetaDataView(card: card)
+					.presentationDetents([
+						.fraction(Constants.heightOfAMetaData[0]),
+						.fraction(Constants.heightOfAMetaData[1])
+					])
+					.presentationBackgroundInteraction(.enabled)
+			}
 			.alert("Delete Card", isPresented: $showDeleteCard) {
-				Button("Remove", role: .destructive) {
+				Button("Delete", role: .destructive) {
 					modelContext.delete(card)
 					dismiss()
 				}
@@ -196,23 +211,32 @@ fileprivate extension CardView {
 	@ToolbarContentBuilder private var toolbar: some ToolbarContent {
 		ToolbarItem(placement: .topBarTrailing) {
 			Menu {
-				Button(role: .destructive) {
-					showDeleteCard.toggle()
-				} label: {
-					Label("Delete from Library", systemImage: "trash")
+				Section {
+					Button(role: .destructive) {
+						showDeleteCard.toggle()
+					} label: {
+						Label("Delete from Library", systemImage: "trash")
+					}
+				}
+				Section {
+					Button {
+						dismissItems.toggleOnly($showMetaData)
+					} label: {
+						Label("View Metadata", systemImage: "info.circle")
+					}
 				}
 				Button {
-					showRecording.toggle()
+					dismissItems.toggleOnly($showRecording)
 				} label: {
 					Label("Record audio", systemImage: "microphone.fill")
 				}
 				Button {
-					showDecksToCard.toggle()
+					dismissItems.toggleOnly($showDecksToCard)
 				} label: {
 					Label("Add decks", systemImage: "rectangle.stack.badge.plus")
 				}
 				Button {
-					showEditCard.toggle()
+					dismissItems.toggleOnly($showEditCard)
 				} label: {
 					Label("Edit Card", systemImage: "slider.horizontal.3")
 				}

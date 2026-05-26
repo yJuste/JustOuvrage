@@ -49,8 +49,8 @@ enum Constants {
 	// Height of the sheet of the time trial result view.
 	static let heightOfATimeTrial: [CGFloat] = [0.375, 1.0]
 	
-	// Height of the sheet of the time trial meta data view.
-	static let heightOfAMetaData: [CGFloat] = [0.25, 0.31]
+	// Height of the sheet of the meta data views.
+	static let heightOfAMetaData: [CGFloat] = [0.25, 0.35]
 	
 	//	--- Icons -------------------------------------------------------
 	

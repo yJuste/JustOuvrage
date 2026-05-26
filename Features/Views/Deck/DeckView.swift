@@ -27,19 +27,25 @@ struct DeckView: View {
 	@State private var argument: Argument?
 	@State private var colors: [Color]?
 	@State private var showCard: Bool = false
-	@State private var showToolbar: Bool = false
 	@State private var showDepiction: Bool = false
 	@State private var showCardsToDeck: Bool = false
 	@State private var showDeleteDeck: Bool = false
+	@State private var showDeleteCard: Bool = false
 	@State private var showEditDeck: Bool = false
 	@State private var showTimeTrial: Bool = false
 	@State private var showNoCards: Bool = false
 	@State private var showDownload: Bool = false
+	@State private var showMetaDataCard: Bool = false
+	@State private var showMetaData: Bool = false
 	@State private var showGradientBackground: Bool = Preferences.unique.gradientBackground
 	@State private var showAnimationBackground: Bool = Preferences.unique.animationBackground
 	
 	private var cardsFromDeck: [Card] {
 		deck.cards.sorted { $0.createdAt > $1.createdAt }
+	}
+	
+	private var dismissItems: [Binding<Bool>] {
+		[$showCard, $showCardsToDeck, $showEditDeck, $showDepiction, $showMetaDataCard, $showMetaData, $showTimeTrial]
 	}
 	
 	var body: some View {
@@ -81,22 +87,20 @@ struct DeckView: View {
 								GlassEffectContainer {
 									HStack(alignment: .center, spacing: 15) {
 										Button {
-											showCard = false
 											let arg = Argument.make(deck: deck, cards: cards, mode: .standard, directions: [], timeInterval: 4.0, order: .random, numberOfCards: 0)
 											guard !arg.cards.isEmpty else { return showNoCards.toggle() }
 											argument = arg
-											showTimeTrial.toggle()
+											dismissItems.toggleOnly($showTimeTrial)
 										} label: {
 											Image(systemName: "shuffle")
 												.frame(width: 50, height: 50)
 												.glassEffect(.clear.interactive())
 										}
 										Button {
-											showCard = false
 											let arg = Argument.make(deck: deck, cards: cards, mode: .chill, directions: [], timeInterval: Constants.infinityYear, order: .random, numberOfCards: 0)
 											guard !arg.cards.isEmpty else { return showNoCards.toggle() }
 											argument = arg
-											showTimeTrial.toggle()
+											dismissItems.toggleOnly($showTimeTrial)
 										} label: {
 											Label("Play", systemImage: "arrowtriangle.forward.fill")
 												.frame(width: 160, height: 50)
@@ -120,7 +124,7 @@ struct DeckView: View {
 									.lineLimit(2)
 									.multilineTextAlignment(.leading)
 									.onTapGesture {
-										showDepiction.toggle()
+										dismissItems.showOnly($showDepiction)
 									}
 									.sheet(isPresented: $showDepiction) {
 										ScrollView {
@@ -137,7 +141,7 @@ struct DeckView: View {
 								ForEach(Array(cardsFromDeck.enumerated()), id: \.element.id) { index, card in
 									Button {
 										selectedCard = card
-										showCard = true
+										dismissItems.showOnly($showCard)
 									} label: {
 										HStack(spacing: 10) {
 											Text(index + 1, format: .number)
@@ -151,9 +155,40 @@ struct DeckView: View {
 											}
 											.font(.subheadline)
 											.frame(maxWidth: .infinity, alignment: .leading)
+											Menu {
+												Button {
+													selectedCard = card
+													dismissItems.showOnly($showMetaDataCard)
+												} label: {
+													Label("View Metadata", systemImage: "info.circle")
+												}
+												Section {
+													Button(role: .destructive) {
+														selectedCard = card
+														showDeleteCard.toggle()
+													} label: {
+														Label("Remove from the Deck", systemImage: "trash")
+													}
+												}
+											} label: {
+												Image(systemName: "ellipsis")
+													.font(.system(size: 20, weight: .bold))
+													.frame(width: 41, height: 41)
+													.background (Circle().fill(.clear))
+											}
+											.padding(.trailing, 10)
+											.buttonStyle(.plain)
 										}
 										.padding(EdgeInsets(top: 3, leading: 15, bottom: 3, trailing: 15))
 										.contentShape(Rectangle())
+									}
+									.contextMenu {
+										Button(role: .destructive) {
+											selectedCard = card
+											showDeleteCard.toggle()
+										} label: {
+											Label("Remove from Deck", systemImage: "trash")
+										}
 									}
 									.buttonStyle(.plain)
 									separator
@@ -167,6 +202,24 @@ struct DeckView: View {
 											])
 											.presentationBackgroundInteraction(.enabled)
 									}
+								}
+								.sheet(isPresented: $showMetaDataCard) {
+									if let card = selectedCard {
+										CardMetaDataView(card: card)
+											.presentationDetents([
+												.fraction(Constants.heightOfAMetaData[0]),
+												.fraction(Constants.heightOfAMetaData[1])
+											])
+											.presentationBackgroundInteraction(.enabled)
+									}
+								}
+								.alert("Are you sure you want to remove this card from this deck?", isPresented: $showDeleteCard) {
+									Button("Remove", role: .destructive) {
+										if let card = selectedCard {
+											deck.cards.removeAll { $0.id == card.id }
+										}
+									}
+									Button("Cancel", role: .cancel) { }
 								}
 							}
 							Section { /// ``metadata``
@@ -201,6 +254,14 @@ struct DeckView: View {
 						.navigationAllowDismissalGestures(.none)
 				}
 			}
+			.sheet(isPresented: $showMetaData) {
+				DeckMetaDataView(deck: deck)
+					.presentationDetents([
+						.fraction(Constants.heightOfAMetaData[0]),
+						.fraction(Constants.heightOfAMetaData[1])
+					])
+					.presentationBackgroundInteraction(.enabled)
+			}
 			.sheet(isPresented: $showEditDeck) {
 				EditDeckView(title: "Edit Deck", deck: deck)
 			}
@@ -208,7 +269,7 @@ struct DeckView: View {
 				CardsToDeck(deck: deck)
 			}
 			.alert("Delete Deck", isPresented: $showDeleteDeck) {
-				Button("Remove", role: .destructive) {
+				Button("Delete", role: .destructive) {
 					modelContext.delete(deck)
 					dismiss()
 				}
@@ -249,6 +310,7 @@ fileprivate extension DeckView {
 					color.mix(with: colorScheme == .dark ? .white : .black, amount: 0.4)
 				}
 			}
+			.opacity(colors?.last != nil ? 0.5 : 1.0)
 			.padding(.horizontal)
 	}
 }
@@ -267,19 +329,28 @@ fileprivate extension DeckView {
 		ToolbarItem(placement: .topBarTrailing) {
 			Menu {
 				Button {
-					showEditDeck.toggle()
+					dismissItems.showOnly($showEditDeck)
 				} label: {
 					Label("Edit Deck", systemImage: "slider.horizontal.3")
 				}
 				Button {
-					showCardsToDeck.toggle()
+					dismissItems.showOnly($showCardsToDeck)
 				} label: {
 					Label("Add cards", systemImage: "plus.square.fill.on.square.fill")
 				}
-				Button(role: .destructive) {
-					showDeleteDeck.toggle()
-				} label: {
-					Label("Delete from Library", systemImage: "trash")
+				Section {
+					Button {
+						dismissItems.showOnly($showMetaData)
+					} label: {
+						Label("View Metadata", systemImage: "info.circle")
+					}
+				}
+				Section {
+					Button(role: .destructive) {
+						showDeleteDeck.toggle()
+					} label: {
+						Label("Delete from Library", systemImage: "trash")
+					}
 				}
 			} label: {
 				Image(systemName: "ellipsis")

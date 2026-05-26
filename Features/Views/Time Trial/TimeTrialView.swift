@@ -12,6 +12,7 @@ import Combine
 struct TimeTrialView: View {
 	
 	@Environment(FileImageStorage.self) private var storage
+	@Environment(\.colorScheme) private var colorScheme
 	@Environment(\.modelContext) private var modelContext
 	@Environment(\.dismiss) private var dismiss
 	
@@ -58,6 +59,7 @@ struct TimeTrialView: View {
 				if showGradientBackground {
 					if let colors {
 						AmazingBackground(colors: colors, active: showAnimationBackground ? true : false)
+							.opacity(colorScheme == .dark ? 0.5 : 1.0)
 							.ignoresSafeArea()
 					}
 				}
@@ -167,7 +169,7 @@ struct TimeTrialView: View {
 			rectangle
 				.fill(LinearGradient(colors: [.green.opacity(Double(dragOffset.width / 200)), .green.opacity(0.0)], startPoint: .trailing, endPoint: .leading))
 				.opacity(dragOffset.width > 0 ? 1 : 0)
-			TimerView(size: (isPortrait ? 70 : 20), duration: argument.timeInterval, remainingTime: remainingTime, color: showGradientBackground ? .white : UIColor.label)
+			TimerView(size: (isPortrait ? 70 : 20), duration: argument.timeInterval, remainingTime: remainingTime, color: .white)
 				.offset(y: height * 0.25)
 		}
 		.frame(width: width * (isPortrait ? 0.9 : 0.9), height: height * (isPortrait ? 0.85 : 1.0))

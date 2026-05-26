@@ -10,6 +10,15 @@
     "\"%@\"" : {
 
     },
+    "(Both)" : {
+
+    },
+    "(No recordings)" : {
+
+    },
+    "(one)" : {
+
+    },
     "%.0f pt" : {
 
     },
@@ -114,7 +123,13 @@
     "∞" : {
 
     },
+    "10 done ⋅ 23 more" : {
+
+    },
     "A → Z Ascending" : {
+
+    },
+    "Account" : {
 
     },
     "Add" : {
@@ -172,6 +187,9 @@
 
     },
     "Are you sure you want to log out to your account?" : {
+
+    },
+    "Are you sure you want to remove this card from this deck?" : {
 
     },
     "Ascending" : {
@@ -279,7 +297,13 @@
     "Delete Card" : {
 
     },
+    "Delete Card from Library" : {
+
+    },
     "Delete Deck" : {
+
+    },
+    "Delete Deck from Library" : {
 
     },
     "Delete from Library" : {
@@ -366,6 +390,9 @@
     "Languages" : {
 
     },
+    "Leitner" : {
+
+    },
     "Leitner Score" : {
 
     },
@@ -432,6 +459,12 @@
     "Normal" : {
 
     },
+    "Not available yet." : {
+
+    },
+    "Not implemented yet." : {
+
+    },
     "OK" : {
 
     },
@@ -493,6 +526,12 @@
 
     },
     "Remove" : {
+
+    },
+    "Remove from Deck" : {
+
+    },
+    "Remove from the Deck" : {
 
     },
     "Results" : {

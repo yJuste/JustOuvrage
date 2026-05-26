@@ -31,6 +31,7 @@ struct CardsView: View {
 	@State private var showNewDeck: Bool = false
 	@State private var showDeleteCard: Bool = false
 	@State private var showSelectedCards: Bool = false
+	@State private var showMetaData: Bool = false
 	
 	private var filteredCards: [Card] {
 		let filtered: [Card]
@@ -43,7 +44,7 @@ struct CardsView: View {
 	}
 	
 	private var dismissItems: [Binding<Bool>] {
-		[$showCard, $showEditMode, $showNewCard, $showNewDeck, $showDeleteCard, $showSelectedCards]
+		[$showCard, $showEditMode, $showNewCard, $showNewDeck, $showDeleteCard, $showSelectedCards, $showMetaData]
 	}
 	
 	var body: some View {
@@ -57,14 +58,40 @@ struct CardsView: View {
 							selectedCard = card
 							dismissItems.showOnly($showCard)
 						} label: {
-							VStack(alignment: .leading, spacing: 5) {
-								Text(filterInvert ? back : front)
-									.font(.subheadline)
-								if !filterVisible {
-									Text(filterInvert ? front : back)
+							HStack {
+								VStack(alignment: .leading, spacing: 5) {
+									Text(filterInvert ? back : front)
 										.font(.subheadline)
-										.foregroundStyle(.secondary)
+									if !filterVisible {
+										Text(filterInvert ? front : back)
+											.font(.subheadline)
+											.foregroundStyle(.secondary)
+									}
 								}
+								Spacer()
+								Menu {
+									Button {
+										selectedCard = card
+										dismissItems.showOnly($showMetaData)
+									} label: {
+										Label("View Metadata", systemImage: "info.circle")
+									}
+									Section {
+										Button(role: .destructive) {
+											selectedCard = card
+											showDeleteCard.toggle()
+										} label: {
+											Label("Delete Card from Library", systemImage: "trash")
+										}
+									}
+								} label: {
+									Image(systemName: "ellipsis")
+										.font(.system(size: 20, weight: .bold))
+										.frame(width: 41, height: 41)
+										.background (Circle().fill(.clear))
+								}
+								.padding(.trailing, 10)
+								.buttonStyle(.plain)
 							}
 						}
 						.contextMenu {
@@ -94,6 +121,16 @@ struct CardsView: View {
 						.presentationBackgroundInteraction(.enabled)
 				}
 			}
+			.sheet(isPresented: $showMetaData) {
+				if let card = selectedCard {
+					CardMetaDataView(card: card)
+						.presentationDetents([
+							.fraction(Constants.heightOfAMetaData[0]),
+							.fraction(Constants.heightOfAMetaData[1])
+						])
+						.presentationBackgroundInteraction(.enabled)
+				}
+			}
 			.sheet(isPresented: $showNewCard) {
 				NewCardView()
 					.presentationDetents([.fraction(Constants.heightOfANewCard), .large])
@@ -105,7 +142,7 @@ struct CardsView: View {
 					.presentationDragIndicator(.visible)
 			}
 			.alert("Are you sure you want to delete this card from your library?", isPresented: $showDeleteCard) {
-				Button("Remove", role: .destructive) {
+				Button("Delete", role: .destructive) {
 					if let selectedCard {
 						modelContext.delete(selectedCard)
 					}

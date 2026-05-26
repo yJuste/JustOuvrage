@@ -21,7 +21,7 @@ struct ProfileView: View {
 			List {
 				Section {
 					NavigationLink {
-						//
+						AccountView()
 					} label: {
 						HStack(spacing: 12) {
 							Image(profile)

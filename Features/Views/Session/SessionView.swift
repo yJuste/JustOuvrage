@@ -16,9 +16,11 @@ struct SessionView: View {
 	
 	@State private var showAudioRecording: Bool = false
 	@State private var showTimeTrial: Bool = false
+	@State private var showLeitner: Bool = false
 	
 	private var audioRecording: RecordingSession = Session.unique.audioRecording
 	private var timeTrial: TimeTrialSession = Session.unique.timeTrial
+	private var leitner: LeitnerSession = Session.unique.leitner
 	
 	var body: some View {
 		NavigationStack {
@@ -30,6 +32,9 @@ struct SessionView: View {
 					SessionBanner(id: timeTrial.id, namespace: namespace, title: timeTrial.title, image: timeTrial.banner) {
 						showTimeTrial.toggle()
 					}
+					SessionBanner(id: leitner.id, namespace: namespace, title: leitner.title, image: leitner.banner) {
+						showLeitner.toggle()
+					}
 				}
 				.padding()
 			}
@@ -38,6 +43,9 @@ struct SessionView: View {
 			}
 			.navigationDestination(isPresented: $showTimeTrial) {
 				SessionTimeTrialView(id: timeTrial.id, namespace: namespace)
+			}
+			.navigationDestination(isPresented: $showLeitner) {
+				SessionLeitnerView(id: leitner.id, namespace: namespace)
 			}
 			.navigationTitle("Session")
 			.toolbarTitleDisplayMode(.inlineLarge)
