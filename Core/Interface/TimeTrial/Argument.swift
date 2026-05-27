@@ -26,6 +26,16 @@ struct Argument: Identifiable {
 		self.order = order
 		self.directions = directions
 	}
+	
+	init(cards: [Card]) {
+		self.id = UUID()
+		self.deck = nil
+		self.cards = cards
+		self.mode = .chill
+		self.timeInterval = Constants.infinityYear
+		self.order = .random
+		self.directions = []
+	}
 }
 
 extension Argument {

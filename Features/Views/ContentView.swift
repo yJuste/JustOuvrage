@@ -47,6 +47,7 @@ fileprivate extension ContentView {
 				SearchView()
 			}
 		}
+		//.tabViewStyle(.page) optimisation but not the same layout.
 		.onChange(of: navigation.selectedTab) { _, newValue in
 			preferences.tabBar = newValue
 		}

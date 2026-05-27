@@ -107,6 +107,16 @@
         }
       }
     },
+    "%lld waiting ⋅ %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$lld waiting ⋅ %2$@"
+          }
+        }
+      }
+    },
     "%lld/%lld" : {
       "localizations" : {
         "en" : {
@@ -121,9 +131,6 @@
 
     },
     "∞" : {
-
-    },
-    "10 done ⋅ 23 more" : {
 
     },
     "A → Z Ascending" : {
@@ -201,6 +208,12 @@
     "Audio Recording" : {
 
     },
+    "Box %lld" : {
+
+    },
+    "Boxes" : {
+
+    },
     "Cancel" : {
 
     },
@@ -241,6 +254,12 @@
 
     },
     "Clear Image" : {
+
+    },
+    "Clear Leitner" : {
+
+    },
+    "Clear leitner score to this card" : {
 
     },
     "Clear Recordings" : {
@@ -390,6 +409,9 @@
     "Languages" : {
 
     },
+    "Learn" : {
+
+    },
     "Leitner" : {
 
     },
@@ -453,6 +475,9 @@
     "No cards selected" : {
 
     },
+    "No more ⋅ %@" : {
+
+    },
     "None" : {
 
     },
@@ -460,9 +485,6 @@
 
     },
     "Not available yet." : {
-
-    },
-    "Not implemented yet." : {
 
     },
     "OK" : {
@@ -484,6 +506,9 @@
 
     },
     "Order in which cards are shown." : {
+
+    },
+    "Pending" : {
 
     },
     "Play" : {
@@ -532,6 +557,15 @@
 
     },
     "Remove from the Deck" : {
+
+    },
+    "Reset" : {
+
+    },
+    "Reset (%lld)" : {
+
+    },
+    "Reset leitner scores to the selection?" : {
 
     },
     "Results" : {
@@ -588,6 +622,9 @@
     "This will delete both recordings for this card." : {
 
     },
+    "This will reset the leitner score to 1 for this card." : {
+
+    },
     "Time Trial" : {
 
     },
@@ -607,6 +644,9 @@
 
     },
     "Visible" : {
+
+    },
+    "You can't start the session because there are no cards in Library." : {
 
     },
     "You can't start the Time Trial because there are no cards in the deck." : {

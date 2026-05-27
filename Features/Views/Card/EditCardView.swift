@@ -154,7 +154,9 @@ fileprivate extension EditCardView {
 		card.backEntry = back
 		card.frontLanguage = frontLanguage
 		card.backLanguage = backLanguage
-		card.leitnerScore = leitnerScore
+		if leitnerScore != card.leitnerScore {
+			Leitner.update(for: card, score: leitnerScore)
+		}
 		do {
 			onSave(card)
 			try modelContext.save()

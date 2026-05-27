@@ -34,8 +34,7 @@ struct DeckMetaDataView: View {
 						Text(deck.author)
 					}
 					LeadingLabel(title: "Language") {
-						Text(
-							Set(deck.cards.flatMap { [$0.frontLanguage, $0.backLanguage] }).sorted().map(\.language).joined(separator: " ⋅ ")
+						Text(deck.cards.isEmpty ? "No language" : Set(deck.cards.flatMap { [$0.frontLanguage, $0.backLanguage] }).sorted().map(\.language).joined(separator: " ⋅ ")
 						)
 						.font(.caption)
 					}

@@ -16,10 +16,7 @@ struct LibraryView: View {
 	@Environment(\.dismiss) private var dismiss
 	@Namespace private var namespace
 	
-	@Query(sort: [
-		SortDescriptor(\Deck.lastOpenedAt, order: .reverse),
-		SortDescriptor(\Deck.createdAt, order: .reverse)
-	]) private var decks: [Deck]
+	@Query(sort: [SortDescriptor(\Deck.lastOpenedAt, order: .reverse), SortDescriptor(\Deck.createdAt, order: .reverse)]) private var decks: [Deck]
 	
 	@State private var selectedDeck: Deck?
 	@State private var profilePicture: ImageResource = .yellowflower

@@ -87,7 +87,7 @@ struct CardView: View {
 							Picker("Leitner Score",
 								   selection: Binding(
 									get: { card.leitnerScore },
-									set: { card.leitnerScore = $0 })
+									set: { Leitner.update(for: card, score: $0) })
 							) {
 								ForEach(1...7, id: \.self) { value in
 									Text(value, format: .number)

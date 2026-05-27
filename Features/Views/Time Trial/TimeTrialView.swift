@@ -23,21 +23,21 @@ struct TimeTrialView: View {
 	@State private var timeTrial: TimeTrial?
 	@State private var currentIndex: Int = 0
 	@State private var hasTimerReachedZero: Bool = false
-	@State private var hasTimerPaused: Bool = false
 	@State private var dragOffset: CGSize = .zero
 	@State private var rotation: Double = 0
 	@State private var directions: [SwipeDirection] = []
 	@State private var showPause: Bool = false
-	@State private var isSwiping: Bool = false
 	@State private var isCardTapped: Bool = false
 	@State private var remainingTime: TimeInterval
 	@State private var colors: [Color]?
 	@State private var showGradientBackground: Bool = Preferences.unique.gradientBackground
 	@State private var showAnimationBackground: Bool = Preferences.unique.animationBackground
+	@State private var showLeitner: Bool
 	
 	private var currentCard: Card? {
-		guard currentIndex < argument.cards.count else { return nil }
-		return argument.cards[currentIndex]
+		let cards = argument.cards
+		guard currentIndex < cards.count else { return nil }
+		return cards[currentIndex]
 	}
 	
 	private let timer = Timer.publish(every: Preferences.unique.trialRefreshTimer, on: .main, in: .common).autoconnect()
@@ -51,6 +51,21 @@ struct TimeTrialView: View {
 	init(argument: Argument) {
 		_argument = State(initialValue: argument)
 		_remainingTime = State(initialValue: argument.timeInterval)
+		_showLeitner = State(initialValue: false)
+	}
+	
+	init(cards: [Card], leitner: Bool = false) {
+		if leitner {
+			let activeArgument = Argument(cards: cards)
+			_argument = State(initialValue: activeArgument)
+			_remainingTime = State(initialValue: activeArgument.timeInterval)
+			_showLeitner = State(initialValue: true)
+		} else {
+			let activeArgument = Argument(cards: cards)
+			_argument = State(initialValue: activeArgument)
+			_remainingTime = State(initialValue: activeArgument.timeInterval)
+			_showLeitner = State(initialValue: false)
+		}
 	}
 	
 	var body: some View {
@@ -98,25 +113,24 @@ struct TimeTrialView: View {
 								}
 							}
 							.font(.system(size: 35, weight: .semibold))
-							.disabled(isSwiping)
 						}
 					}
 					.foregroundStyle(showGradientBackground && colors?.last != nil ? .white : .primary)
 					.frame(maxWidth: .infinity, maxHeight: .infinity)
 				}
 			}
-			.onChange(of: hasTimerReachedZero) { _, reached in
-				guard reached else { return }
-				swipe(.left)
-			}
 			.onReceive(timer) { _ in
-				guard !hasTimerPaused else { return }
+				guard !showPause else { return }
 				guard currentCard != nil else { return }
 				if remainingTime > 0 {
 					remainingTime = max(remainingTime - preferences.trialRefreshTimer, 0)
 				} else {
 					hasTimerReachedZero = true
 				}
+			}
+			.onChange(of: hasTimerReachedZero) { _, newValue in
+				guard newValue else { return }
+				swipe(.left)
 			}
 			.onAppear {
 				loadImageForBackground()
@@ -127,9 +141,7 @@ struct TimeTrialView: View {
 			.toolbar { toolbar }
 			.toolbar(.hidden, for: .tabBar)
 			.alert("Quit Time Trial ?", isPresented: $showPause) {
-				Button("Continue", role: .cancel) {
-					hasTimerPaused = false
-				}
+				Button("Continue", role: .cancel) { }
 				Button("Quit", role: .destructive) {
 					dismiss()
 				}
@@ -140,8 +152,9 @@ struct TimeTrialView: View {
 	}
 	
 	private func flashcard(card: Card, height: CGFloat, width: CGFloat, isPortrait: Bool) -> some View {
-		
-		ZStack {
+		let dragheight = dragOffset.height
+		let dragwidth = dragOffset.width
+		return ZStack {
 			rectangle
 				.fill(.clear)
 				.contentShape(rectangle)
@@ -164,23 +177,23 @@ struct TimeTrialView: View {
 			.padding(.horizontal, 15)
 			.animation(.easeInOut(duration: 0.1), value: isCardTapped)
 			rectangle
-				.fill(LinearGradient(colors: [.red.opacity(Double(-dragOffset.width / 200)), .red.opacity(0.0)], startPoint: .leading, endPoint: .trailing))
-				.opacity(dragOffset.width < 0 ? 1 : 0)
+				.fill(LinearGradient(colors: [.red.opacity(Double(-dragwidth / 200)), .red.opacity(0.0)], startPoint: .leading, endPoint: .trailing))
+				.opacity(dragwidth < 0 ? 1 : 0)
 			rectangle
-				.fill(LinearGradient(colors: [.green.opacity(Double(dragOffset.width / 200)), .green.opacity(0.0)], startPoint: .trailing, endPoint: .leading))
-				.opacity(dragOffset.width > 0 ? 1 : 0)
-			TimerView(size: (isPortrait ? 70 : 20), duration: argument.timeInterval, remainingTime: remainingTime, color: .white)
+				.fill(LinearGradient(colors: [.green.opacity(Double(dragwidth / 200)), .green.opacity(0.0)], startPoint: .trailing, endPoint: .leading))
+				.opacity(dragwidth > 0 ? 1 : 0)
+			TimerView(size: (isPortrait ? 70 : 20), duration: argument.timeInterval, remainingTime: remainingTime, color: (showGradientBackground && colors?.last != nil) ? .white : (colorScheme == .light ? .black : .white))
 				.offset(y: height * 0.25)
 		}
 		.frame(width: width * (isPortrait ? 0.9 : 0.9), height: height * (isPortrait ? 0.85 : 1.0))
-		.offset(x: dragOffset.width, y: dragOffset.height)
+		.offset(x: dragwidth, y: dragheight)
 		.rotationEffect(.degrees(rotation))
 		.gesture(
-			isSwiping ? nil :
-				DragGesture()
+			DragGesture()
 				.onChanged { value in
-					dragOffset = value.translation
-					rotation = value.translation.width / 30
+					let translation = value.translation
+					dragOffset = translation
+					rotation = translation.width / 30
 				}
 				.onEnded { value in
 					let horizontal = value.translation.width
@@ -203,36 +216,39 @@ struct TimeTrialView: View {
 	}
 }
 
-/// SwipeDirection
+/// Methods of TimeTrialView.
 fileprivate extension TimeTrialView {
 	
 	private func swipe(_ direction: SwipeDirection) {
-		
-		guard !isSwiping else { return }
-		isSwiping = true
-		directions.append(direction)
-		hasTimerPaused = true
 		
 		withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
 			dragOffset.width = direction == .right ? 900 : -900
 			rotation = direction == .right ? 14 : -14
 		}
 		
-		Task { @MainActor in
-			self.currentIndex += 1
-			if self.currentIndex >= argument.cards.count {
-				argument.directions = directions
-				let result = TimeTrial(argument: argument, with: calculateSuccesRate(argument.directions))
-				modelContext.insert(result)
-				timeTrial = result
+		directions.append(direction)
+		currentIndex += 1
+		isCardTapped = false
+		dragOffset = .zero
+		rotation = 0
+		hasTimerReachedZero = false
+		remainingTime = argument.timeInterval
+		
+		let cards = argument.cards
+		if currentIndex >= cards.count {
+			if showLeitner {
+				for (index, card) in cards.enumerated() {
+					if directions[index] == .right {
+						Leitner.update(for: card, score: card.leitnerScore + 1)
+					} else {
+						Leitner.update(for: card, score: 1)
+					}
+				}
 			}
-			self.isCardTapped = false
-			self.dragOffset = .zero
-			self.rotation = 0
-			self.hasTimerReachedZero = false
-			self.hasTimerPaused = false
-			self.remainingTime = argument.timeInterval
-			self.isSwiping = false
+			argument.directions = directions
+			let result = TimeTrial(argument: argument, with: calculateSuccesRate(directions))
+			modelContext.insert(result)
+			timeTrial = result
 		}
 	}
 	
@@ -247,19 +263,6 @@ fileprivate extension TimeTrialView {
 			}
 		}
 	}
-}
-
-/// Background for Gradient & Deck.
-fileprivate extension TimeTrialView {
-	
-	private func backgroundDeck(geo: GeometryProxy) -> some View {
-		RoundedRectangle(cornerRadius: 35, style: .continuous)
-			.fill(.primary.opacity(0.05))
-			.frame(
-				width: geo.size.width * 0.90,
-				height: geo.size.height * 0.58
-			)
-	}
 	
 	private func calculateSuccesRate(_ directions: [SwipeDirection]) -> Double {
 		guard !directions.isEmpty else { return 0 }
@@ -273,7 +276,6 @@ fileprivate extension TimeTrialView {
 	@ToolbarContentBuilder private var toolbar: some ToolbarContent {
 		ToolbarItem(placement: .topBarLeading) {
 			Button {
-				hasTimerPaused = true
 				showPause.toggle()
 			} label: {
 				Label("Close", systemImage: "xmark")
@@ -286,7 +288,7 @@ fileprivate extension TimeTrialView {
 		}
 		ToolbarItem(placement: .topBarTrailing) {
 			Button {
-				//
+				// Nothing
 			} label: {
 				Text("\(min(currentIndex + 1, argument.cards.count))/\(argument.cards.count)")
 			}

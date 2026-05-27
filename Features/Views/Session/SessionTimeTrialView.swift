@@ -45,9 +45,11 @@ struct SessionTimeTrialView: View {
 	var body: some View {
 		NavigationStack {
 			GeometryReader { geo in
+				
 				let width = geo.size.width
 				let height = geo.size.height
 				let isPortrait = height > width
+				
 				ScrollView {
 					VStack {
 						Image(session.banner)
@@ -61,7 +63,7 @@ struct SessionTimeTrialView: View {
 							.navigationTransition(id: id, namespace: namespace)
 							.offset(y: verticalOffset > 0 ? -verticalOffset : 0)
 							.overlay(alignment: .bottom) {
-								mainInformation(paddingText: geo.size.height > geo.size.width ? 10 : 100)
+								mainInformation(paddingText: height > width ? 10 : 100)
 									.offset(y: 20)
 							}
 						LazyVStack(alignment: .leading, spacing: 15) {
@@ -83,22 +85,20 @@ struct SessionTimeTrialView: View {
 										Spacer()
 										Text("\(timeTrial.cards.count) cards")
 											.font(.system(size: 15, weight: .semibold))
-										ZStack(alignment: .bottom) {
-											Button {
-												selectedTimeTrial = timeTrial
-												dismissItems.showOnly($showMetaData)
-											} label: {
-												let score = Int((timeTrial.success * 100).rounded())
-												Text(score, format: .number)
-													.font(.system(size: 20, weight: .semibold))
-													.foregroundStyle(.background)
-													.frame(width: 50, height: 50)
-													.background(
-														Circle().glassEffect(.clear.tint(score == 100 ? .blue : Color(hue: (Double(score) / 100) * 0.33, saturation: 1, brightness: 1)).interactive())
-													)
-											}
-											.buttonStyle(.plain)
+										Button {
+											selectedTimeTrial = timeTrial
+											dismissItems.showOnly($showMetaData)
+										} label: {
+											let score = Int((timeTrial.success * 100).rounded())
+											Text(score, format: .number)
+												.font(.system(size: 20, weight: .semibold))
+												.foregroundStyle(.background)
+												.frame(width: 50, height: 50)
+												.background(
+													Circle().glassEffect(.clear.tint(score == 100 ? .blue : Color(hue: (Double(score) / 100) * 0.33, saturation: 1, brightness: 1)).interactive())
+												)
 										}
+										.buttonStyle(.plain)
 									}
 								}
 								.padding()
@@ -250,9 +250,6 @@ fileprivate extension SessionTimeTrialView {
 	private func deleteSelection() {
 		for timeTrial in timeTrials where selection.contains(timeTrial.id) {
 			modelContext.delete(timeTrial)
-		}
-		withAnimation(.easeInOut(duration: 0.2)) {
-			selection.removeAll()
 		}
 	}
 	

@@ -13,13 +13,17 @@ import Foundation
 @Model final class Card {
 	
 	@Attribute(.unique) var id: UUID
+	
 	var frontEntry: String
 	var backEntry: String
 	var frontLanguage: Language
 	var backLanguage: Language
 	var frontRecording: String?
 	var backRecording: String?
+	
 	var leitnerScore: Int
+	var nextLeitnerAt: Date?
+	
 	var author: String
 	var lastViewedAt: Date?
 	

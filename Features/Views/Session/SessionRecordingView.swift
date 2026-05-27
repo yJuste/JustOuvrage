@@ -80,7 +80,7 @@ struct SessionRecordingView: View {
 							.navigationTransition(id: id, namespace: namespace)
 							.offset(y: verticalOffset > 0 ? -verticalOffset : 0)
 							.overlay(alignment: .bottom) {
-								mainInformation(paddingText: geo.size.height > geo.size.width ? 10 : 100)
+								mainInformation(paddingText: height > width ? 10 : 100)
 									.offset(y: 20)
 							}
 						LazyVStack(alignment: .leading, spacing: 15) {
@@ -181,13 +181,14 @@ struct SessionRecordingView: View {
 				}
 			}
 			.alert("Clear recordings to the selection?", isPresented: $showSelectedRecording) {
-				Button("Clear", role: .destructive) {
+				Button("Clear") {
 					clearSelection()
+					toggleEditMode()
 				}
 				Button("Cancel", role: .cancel) { }
 			}
 			.alert("Clear Recordings", isPresented: $showClearRecording) {
-				Button("Clear", role: .destructive) {
+				Button("Clear") {
 					if let card = selectedCard {
 						clearRecordings(for: card)
 					}
@@ -300,10 +301,6 @@ fileprivate extension SessionRecordingView {
 				storage.delete(back)
 				card.backRecording = nil
 			}
-		}
-		withAnimation(.smooth(duration: 0.25)) {
-			selection.removeAll()
-			editMode = .inactive
 		}
 	}
 	
