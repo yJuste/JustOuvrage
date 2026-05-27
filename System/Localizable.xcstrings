@@ -256,10 +256,7 @@
     "Clear Image" : {
 
     },
-    "Clear Leitner" : {
-
-    },
-    "Clear leitner score to this card" : {
+    "Clear leitner score" : {
 
     },
     "Clear Recordings" : {
@@ -400,6 +397,9 @@
     "Inverted" : {
 
     },
+    "It's done!" : {
+
+    },
     "Just Account" : {
 
     },
@@ -467,6 +467,9 @@
 
     },
     "Newest to Oldest" : {
+
+    },
+    "Nice" : {
 
     },
     "No cards" : {
@@ -565,6 +568,9 @@
     "Reset (%lld)" : {
 
     },
+    "Reset leitner score" : {
+
+    },
     "Reset leitner scores to the selection?" : {
 
     },
@@ -653,6 +659,9 @@
 
     },
     "You completed every recording." : {
+
+    },
+    "You have finished the session for today." : {
 
     },
     "You have to enable the microphone in the settings." : {

@@ -58,11 +58,6 @@ fileprivate extension ContentView {
 	}
 }
 
-@Observable final class Navigation {
-	
-	var selectedTab: TabBar = .new
-}
-
 #Preview {
 	ContentView()
 		.environment(FileImageStorage())

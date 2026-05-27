@@ -14,6 +14,7 @@ extension Image {
 	/// - Parameters:
 	///   - image: The name of the image file to load.
 	///   - storage: The storage system used to retrieve the image.
+	///   - size: The size of the loading image.
 	///
 	/// - Returns: A `SwiftUI.Image` created from the stored file, or a default image if loading fails.
 	///

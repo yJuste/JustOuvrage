@@ -64,9 +64,11 @@ struct SessionRecordingView: View {
 	var body: some View {
 		NavigationStack {
 			GeometryReader { geo in
+				
 				let width = geo.size.width
 				let height = geo.size.height
 				let isPortrait = height > width
+				
 				ScrollView {
 					VStack {
 						Image(session.banner)

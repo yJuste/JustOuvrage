@@ -31,6 +31,7 @@ struct SessionLeitnerView: View {
 	@State private var showClearLeitner: Bool = false
 	@State private var showLearn: Bool = false
 	@State private var showNoCards: Bool = false
+	@State private var showFinishedSession: Bool = false
 	
 	private let session: LeitnerSession = Session.unique.leitner
 	
@@ -96,7 +97,7 @@ struct SessionLeitnerView: View {
 								}
 							}
 						}
-						.id(editMode == .inactive)
+						.id(editMode == .active || showClearLeitner)
 						.padding()
 					}
 				}
@@ -124,14 +125,14 @@ struct SessionLeitnerView: View {
 				}
 			}
 			.alert("Reset leitner scores to the selection?", isPresented: $showSelection) {
-				Button("Reset") {
+				Button("Reset", role: .destructive) {
 					resetLeitnerScores()
 					toggleEditMode()
 				}
 				Button("Cancel", role: .cancel) { }
 			}
-			.alert("Clear Leitner", isPresented: $showClearLeitner) {
-				Button("Clear") {
+			.alert("Reset leitner score", isPresented: $showClearLeitner) {
+				Button("Reset") {
 					if let selectedCard {
 						Leitner.update(for: selectedCard, score: 1)
 					}
@@ -144,6 +145,11 @@ struct SessionLeitnerView: View {
 				Button("OK", role: .cancel) { }
 			} message: {
 				Text("You can't start the session because there are no cards in Library.")
+			}
+			.alert("It's done!", isPresented: $showFinishedSession) {
+				Button("Nice", role: .cancel) { }
+			} message: {
+				Text("You have finished the session for today.")
 			}
 		}
 		.environment(\.editMode, $editMode)
@@ -169,8 +175,7 @@ fileprivate extension SessionLeitnerView {
 			.font(.subheadline)
 			Spacer()
 			Button {
-				selectedCard = card
-				//dismissItems.showOnly($showRecording)
+				// Nothing
 			} label: {
 				Text(card.leitnerScore, format: .number)
 					.font(.system(size: 20, weight: .semibold))
@@ -202,11 +207,11 @@ fileprivate extension SessionLeitnerView {
 			}
 		}
 		.contextMenu {
-			Button(role: .confirm) {
+			Button {
 				selectedCard = card
 				showClearLeitner.toggle()
 			} label: {
-				Label("Clear leitner score to this card", systemImage: "trash")
+				Label("Clear leitner score", systemImage: "trash")
 			}
 		}
 	}
@@ -228,7 +233,7 @@ fileprivate extension SessionLeitnerView {
 					Button {
 						guard !cards.isEmpty else { return showNoCards.toggle() }
 						let due = Leitner.due(from: cards)
-						guard !due.isEmpty else { return showNoCards.toggle() }
+						guard !due.isEmpty else { return showFinishedSession.toggle() }
 						selectedCardsForSession = due
 						dismissItems.showOnly($showLearn)
 					} label: {
@@ -308,7 +313,6 @@ fileprivate extension SessionLeitnerView {
 					showSelection.toggle()
 				} label: {
 					Text("Reset (\(selection.count))")
-						.foregroundStyle(.red)
 				}
 			}
 		}

@@ -14,6 +14,7 @@ enum Leitner {
 	
 	static func due(from cards: [Card]) -> [Card] {
 		cards.filter { card in
+			guard card.leitnerScore < maximumScore else { return false }
 			guard let nextLeitnerAt = card.nextLeitnerAt else { return true }
 			return Date.now >= nextLeitnerAt
 		}
@@ -21,9 +22,11 @@ enum Leitner {
 	
 	static func next(from cards: [Card]) -> String {
 		
-		if !due(from: cards).isEmpty { return "Now!" }
+		let activeCards = cards.filter { $0.leitnerScore < maximumScore }
 		
-		guard let closestDate = cards.compactMap(\.nextLeitnerAt).min() else { return "Now!" }
+		if !due(from: activeCards).isEmpty { return "Now!" }
+		
+		guard let closestDate = activeCards.compactMap(\.nextLeitnerAt).min() else { return "Completed!" }
 		
 		let interval = closestDate.timeIntervalSinceNow
 		
@@ -45,6 +48,8 @@ enum Leitner {
 	static func update(for card: Card, score: Int) {
 		
 		card.leitnerScore = min(max(score, minimumScore), maximumScore)
+		
+		if card.leitnerScore == maximumScore { card.nextLeitnerAt = nil; return }
 		
 		if card.leitnerScore == 1 {
 			card.nextLeitnerAt = .now
