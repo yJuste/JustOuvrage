@@ -234,6 +234,9 @@ struct SessionTimeTrialView: View {
 									.font(.system(size: 20, weight: .bold))
 									.padding(.bottom, 20)
 								Text(session.depiction)
+								Image(session.timeTrialExample)
+									.resizable()
+									.scaledToFit()
 							}
 							.padding(.horizontal, 15)
 						}

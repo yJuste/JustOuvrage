@@ -15,6 +15,9 @@ import Observation
 	/// An Interface that lists all `persisted selections` with UserDefault.
 	private enum Key: String {
 		
+		// Color
+		case globalColor
+		
 		// Tab
 		case tabBar
 		
@@ -53,6 +56,7 @@ import Observation
 	static let unique: Preferences = Preferences()
 	
 	private let userDefaults: UserDefaults = UserDefaults.standard
+	private var globalColorRaw: String = ""
 	private var tabBarRaw: String = ""
 	private var frontLanguageRaw: String = ""
 	private var backLanguageRaw: String = ""
@@ -86,6 +90,7 @@ import Observation
 			Key.animationBackground.rawValue: false
 		])
 		
+		globalColorRaw = userDefaults.string(forKey: Key.globalColor.rawValue) ?? AccentColor.accent.rawValue
 		tabBarRaw = userDefaults.string(forKey: Key.tabBar.rawValue) ?? TabBar.new.rawValue
 		frontLanguageRaw = userDefaults.string(forKey: Key.frontLanguage.rawValue) ?? defaultLanguage
 		backLanguageRaw = userDefaults.string(forKey: Key.backLanguage.rawValue) ?? defaultLanguage
@@ -106,6 +111,14 @@ import Observation
 		sortCardsRaw = userDefaults.stringArray(forKey: Key.sortCards.rawValue) ?? [SortCard.newestToOldest.rawValue]
 		gradientBackgroundRaw = userDefaults.bool(forKey: Key.gradientBackground.rawValue)
 		animationBackgroundRaw = userDefaults.bool(forKey: Key.animationBackground.rawValue)
+	}
+	
+	var globalColor: AccentColor {
+		get { AccentColor(rawValue: globalColorRaw) ?? .accent }
+		set {
+			globalColorRaw = newValue.rawValue
+			userDefaults.set(globalColorRaw, forKey: Key.globalColor.rawValue)
+		}
 	}
 	
 	var tabBar: TabBar {

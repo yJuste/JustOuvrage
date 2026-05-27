@@ -24,6 +24,7 @@ struct JustOuvrageApp: App {
 				.environment(FileImageStorage())
 				.environment(Recording())
 				.environment(Navigation())
+				//.tint(Preferences.unique.globalColor.color)
 		}
 		.modelContainer(for: [Card.self, Deck.self, Draft.self, TimeTrial.self])
 	}

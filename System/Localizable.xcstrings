@@ -136,6 +136,9 @@
     "A → Z Ascending" : {
 
     },
+    "About Me" : {
+
+    },
     "Account" : {
 
     },
@@ -212,6 +215,9 @@
 
     },
     "Boxes" : {
+
+    },
+    "Bugs" : {
 
     },
     "Cancel" : {
@@ -343,6 +349,9 @@
     "Done" : {
 
     },
+    "Downloading / Data Export" : {
+
+    },
     "Downloading is not implemented yet." : {
 
     },
@@ -355,7 +364,16 @@
     "Every Card" : {
 
     },
+    "First of all, it’s a great honor that you are using this flashcard/dictionary application.\n\nThis app was originally designed for my personal needs because I felt it was important to have an app like this for language learning, allowing me to store every learned word and track progress in real time.\n\nThat’s also why the application is completely free. If you enjoy it, feel free to leave your feedback." : {
+
+    },
     "for \"%@\"" : {
+
+    },
+    "For more information, feel free to contact: [No mail yet]" : {
+
+    },
+    "Future updates will include sessions to create your own website links as well as your own languages." : {
 
     },
     "Go!" : {
@@ -386,6 +404,9 @@
 
     },
     "How many cards to include in this session." : {
+
+    },
+    "If you encounter any bugs in the application, feel free to report them to the provided email address." : {
 
     },
     "Infinity" : {
@@ -451,6 +472,12 @@
     "Mode" : {
 
     },
+    "More informations" : {
+
+    },
+    "More Informations" : {
+
+    },
     "My friend" : {
 
     },
@@ -478,6 +505,9 @@
     "No cards selected" : {
 
     },
+    "No date" : {
+
+    },
     "No more ⋅ %@" : {
 
     },
@@ -500,6 +530,12 @@
 
     },
     "Only Decks" : {
+
+    },
+    "Optimization" : {
+
+    },
+    "Optimizations are regularly included in patches. If you experience stability or performance issues, lower the settings to the minimum." : {
 
     },
     "Options" : {
@@ -604,7 +640,13 @@
     "Session" : {
 
     },
+    "Sessions" : {
+
+    },
     "Settings" : {
+
+    },
+    "Since downloading and data export are not implemented yet, all data, without any exception, will be permanently deleted if or when the app is removed." : {
 
     },
     "Standard" : {

@@ -272,6 +272,9 @@ fileprivate extension SessionLeitnerView {
 									.font(.system(size: 20, weight: .bold))
 									.padding(.bottom, 20)
 								Text(session.depiction)
+								Image(session.leitnerExample)
+									.resizable()
+									.scaledToFit()
 							}
 							.padding(.horizontal, 15)
 						}

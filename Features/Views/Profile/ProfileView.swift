@@ -51,6 +51,15 @@ struct ProfileView: View {
 					Text("Manage your app preferences, maintenance tools, and data-related settings.")
 				}
 				Section {
+					NavigationLink {
+						MoreInformationsView()
+					} label: {
+						Text("More informations")
+					}
+				} footer: {
+					Text("")
+				}
+				Section {
 					Button {
 						showLogOut.toggle()
 					} label: {

@@ -52,6 +52,13 @@ struct CardMetaDataView: View {
 					LeadingLabel(title: "Leitner Score") {
 						Text(card.leitnerScore, format: .number)
 					}
+					LeadingLabel(title: "Leitner Next") {
+						if let nextDate = card.nextLeitnerAt {
+							Text(nextDate, format: .dateTime.year().month().day().hour().minute())
+						} else {
+							Text("No date")
+						}
+					}
 					LeadingLabel(title: "Author") {
 						Text(card.author)
 					}

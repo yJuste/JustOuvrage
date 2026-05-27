@@ -20,10 +20,8 @@ import Foundation
 	var backLanguage: Language
 	var frontRecording: String?
 	var backRecording: String?
-	
 	var leitnerScore: Int
 	var nextLeitnerAt: Date?
-	
 	var author: String
 	var lastViewedAt: Date?
 	
