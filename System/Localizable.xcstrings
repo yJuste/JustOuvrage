@@ -238,6 +238,9 @@
     "Choose the audio quality of recordings.\n\nVery Low: smallest files, lowest CPU usage\nLow: lightweight, reduced clarity\nMedium: balanced quality and size\nHigh: clear audio for everyday use\nUltra: high fidelity, larger files\nMax: stereo, highest quality, highest resource usage\n\nStorage estimate (for 100 Mo, 3-second recordings):\n\nVery Low ≈ 11,300 recordings\nLow ≈ 8,500 recordings\nMedium ≈ 5,700 recordings\nHigh ≈ 4,200 recordings\nUltra ≈ 2,800 recordings\nMax ≈ 1,500 recordings\n\nTip: lower quality improves battery life and storage usage." : {
 
     },
+    "Choose the global color for the app." : {
+
+    },
     "Choose whether to use an animated background.\n\nNone: no background\n\nGradient: static gradient background\nModerate impact on memory (~1.5x) and energy usage.\n\nAnimated background: dynamic visual effects\nModerate impact on memory (~1.5x) and significant and continuous energy consumption (~2.5x)" : {
 
     },
@@ -374,6 +377,9 @@
 
     },
     "Future updates will include sessions to create your own website links as well as your own languages." : {
+
+    },
+    "Global Color" : {
 
     },
     "Go!" : {

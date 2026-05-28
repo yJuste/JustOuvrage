@@ -94,6 +94,7 @@ struct DecksView: View {
 								}
 								.padding(.trailing, 10)
 								.buttonStyle(.plain)
+								.tint(nil)
 							}
 						}
 						.contextMenu {
@@ -248,6 +249,7 @@ fileprivate extension DecksView {
 					Text("Select")
 				}
 			}
+			.foregroundStyle(.primary)
 		}
 		ToolbarSpacer(.fixed, placement: .topBarTrailing)
 		ToolbarItem(placement: .topBarTrailing) {
@@ -289,6 +291,7 @@ fileprivate extension DecksView {
 			} label: {
 				Label("Options", systemImage: "ellipsis")
 			}
+			.tint(nil)
 		}
 	}
 }

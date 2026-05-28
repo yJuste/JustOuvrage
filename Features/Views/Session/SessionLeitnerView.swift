@@ -151,6 +151,9 @@ struct SessionLeitnerView: View {
 			} message: {
 				Text("You have finished the session for today.")
 			}
+			.alert("Downloading is not implemented yet.", isPresented: $showDownload) {
+				Button("OK", role: .cancel) { }
+			}
 		}
 		.environment(\.editMode, $editMode)
 	}
@@ -165,7 +168,7 @@ fileprivate extension SessionLeitnerView {
 			if editMode == .active {
 				Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
 					.font(.title3)
-					.foregroundStyle(isSelected ? .accent : .secondary)
+					.foregroundStyle(isSelected ? Color.accentColor : .secondary)
 			}
 			VStack(alignment: .leading, spacing: 5) {
 				Text(card.frontEntry)
@@ -189,7 +192,7 @@ fileprivate extension SessionLeitnerView {
 		}
 		.padding()
 		.background(
-			RoundedRectangle(cornerRadius: 18).fill(isSelected ? .accent.opacity(0.3) : .secondary.opacity(0.2))
+			RoundedRectangle(cornerRadius: 18).fill(isSelected ? Color.accentColor.opacity(0.3) : .secondary.opacity(0.2))
 		)
 		.onTapGesture {
 			let id = card.id
@@ -213,6 +216,7 @@ fileprivate extension SessionLeitnerView {
 			} label: {
 				Label("Clear leitner score", systemImage: "trash")
 			}
+			.tint(nil)
 		}
 	}
 	
@@ -239,7 +243,7 @@ fileprivate extension SessionLeitnerView {
 					} label: {
 						Label("Learn", systemImage: "flag.pattern.checkered.2.crossed")
 							.frame(width: 160, height: 50)
-							.glassEffect(.regular.tint(.accent).interactive())
+							.glassEffect(.regular.tint(Color.accentColor).interactive())
 					}
 					Button {
 						showDownload.toggle()
@@ -266,7 +270,7 @@ fileprivate extension SessionLeitnerView {
 							VStack {
 								Text(session.title)
 									.font(.system(size: 28, weight: .bold))
-									.foregroundStyle(.accent)
+									.foregroundStyle(Color.accentColor)
 									.padding(.top, 20)
 								Text(session.subtitle)
 									.font(.system(size: 20, weight: .bold))
@@ -317,6 +321,7 @@ fileprivate extension SessionLeitnerView {
 				} label: {
 					Text("Reset (\(selection.count))")
 				}
+				.foregroundStyle(.primary)
 			}
 		}
 		ToolbarItem(placement: .principal) {
@@ -332,6 +337,7 @@ fileprivate extension SessionLeitnerView {
 					Text("Select")
 				}
 			}
+			.foregroundStyle(.primary)
 		}
 		ToolbarSpacer(placement: .topBarTrailing)
 		ToolbarItem(placement: .topBarTrailing) {
@@ -356,6 +362,7 @@ fileprivate extension SessionLeitnerView {
 			} label: {
 				Label("Boxes", systemImage: "line.3.horizontal.decrease.circle")
 			}
+			.tint(nil)
 		}
 	}
 }

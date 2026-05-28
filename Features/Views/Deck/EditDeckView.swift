@@ -223,6 +223,7 @@ fileprivate extension EditDeckView {
 			} label: {
 				Text("Cancel")
 			}
+			.tint(nil)
 		}
 		ToolbarItem(placement: .principal) {
 			Text(title)

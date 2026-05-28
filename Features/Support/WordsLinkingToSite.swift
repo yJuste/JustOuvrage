@@ -15,11 +15,13 @@ struct WordsLinkingToSite: View {
 	let item: [String]
 	let action: (String) -> Void
 	
+	@State private var globalColor: Color = Preferences.unique.globalColor.color
+	
 	var body: some View {
 		WrapHStack {
 			Text(title)
 				.font(.caption)
-				.foregroundStyle(.accent)
+				.foregroundStyle(globalColor)
 				.padding(.top, 14)
 			ForEach(item, id: \.self) { item in
 				Button {

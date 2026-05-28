@@ -188,6 +188,7 @@ fileprivate extension NewCardView {
 			} label: {
 				Text("Cancel")
 			}
+			.foregroundStyle(.primary)
 		}
 		ToolbarItem(placement: .principal) {
 			if ((cards.first?.frontEntry) != nil) && ((cards.first?.backEntry) != nil) {

@@ -73,7 +73,7 @@ struct SessionTimeTrialView: View {
 									if editMode == .active {
 										Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
 											.font(.title3)
-											.foregroundStyle(isSelected ? .accent : .secondary)
+											.foregroundStyle(isSelected ? Color.accentColor : .secondary)
 									}
 									HStack(spacing: 8) {
 										VStack(alignment: .leading, spacing: 5) {
@@ -103,7 +103,7 @@ struct SessionTimeTrialView: View {
 								}
 								.padding()
 								.background(
-									RoundedRectangle(cornerRadius: 18).fill(isSelected ? .accent.opacity(0.3) : .secondary.opacity(0.2))
+									RoundedRectangle(cornerRadius: 18).fill(isSelected ? Color.accentColor.opacity(0.3) : .secondary.opacity(0.2))
 								)
 								.contentShape(Rectangle())
 								.onTapGesture {
@@ -128,6 +128,7 @@ struct SessionTimeTrialView: View {
 									} label: {
 										Label("Delete from Time Trial", systemImage: "trash")
 									}
+									.tint(nil)
 								}
 							}
 						}
@@ -201,7 +202,7 @@ struct SessionTimeTrialView: View {
 					} label: {
 						Label("Session", systemImage: "flag.pattern.checkered.2.crossed")
 							.frame(width: 160, height: 50)
-							.glassEffect(.regular.tint(.accentColor).interactive())
+							.glassEffect(.regular.tint(Color.accentColor).interactive())
 					}
 					Button {
 						showDownload.toggle()
@@ -228,7 +229,7 @@ struct SessionTimeTrialView: View {
 							VStack {
 								Text(session.title)
 									.font(.system(size: 28, weight: .bold))
-									.foregroundStyle(.accent)
+									.foregroundStyle(Color.accentColor)
 									.padding(.top, 20)
 								Text(session.subtitle)
 									.font(.system(size: 20, weight: .bold))
@@ -298,6 +299,7 @@ fileprivate extension SessionTimeTrialView {
 					Text("Select")
 				}
 			}
+			.foregroundStyle(.primary)
 		}
 		ToolbarItem(placement: .principal) {
 			Text("Time Trial")

@@ -115,6 +115,7 @@ struct CardView: View {
 				stopPlaying()
 			}
 			.toolbar { toolbar }
+			.tint(nil)
 			.scrollIndicators(.hidden)
 			.fullScreenCover(item: $destination) {
 				SFSafariViewWrapper(url: $0.url)

@@ -16,6 +16,7 @@ struct RecordingView: View {
 	@Environment(\.dismiss) private var dismiss
 	
 	@Bindable private var preferences: Preferences = .unique
+	@State private var globalColor: Color =  Preferences.unique.globalColor.color
 	@State private var activeRecording: Side?
 	@State private var activePlaying: Side?
 	@State private var deleteSide: DeleteSide?
@@ -103,7 +104,7 @@ fileprivate extension RecordingView {
 					.minimumScaleFactor(0.01)
 					.frame(minWidth: 70)
 					.padding(EdgeInsets(top: 7, leading: 20, bottom: 7, trailing: 20))
-					.background(Capsule().glassEffect(.clear.tint(filename != nil ? .green.opacity(0.4) : .clear).interactive()))
+					.background(Capsule().glassEffect(.clear.tint(filename != nil ? globalColor.opacity(0.4) : .clear).interactive()))
 				}
 			}
 			.buttonStyle(.plain)
@@ -250,6 +251,7 @@ fileprivate extension RecordingView {
 			} label: {
 				Label("Close", systemImage: "xmark")
 			}
+			.tint(nil)
 		}
 		ToolbarItem(placement: .topBarTrailing) {
 			Menu {
@@ -271,6 +273,7 @@ fileprivate extension RecordingView {
 			} label: {
 				Image(systemName: "ellipsis")
 			}
+			.tint(nil)
 		}
 	}
 }

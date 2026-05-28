@@ -183,6 +183,7 @@ fileprivate extension EditCardView {
 			} label: {
 				Text("Cancel")
 			}
+			.tint(nil)
 		}
 		ToolbarItem(placement: .principal) {
 			Text(title)

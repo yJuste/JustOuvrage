@@ -56,6 +56,7 @@ fileprivate extension TimeTrialMetaDataView {
 			} label: {
 				Label("Close", systemImage: "xmark")
 			}
+			.tint(nil)
 		}
 	}
 }

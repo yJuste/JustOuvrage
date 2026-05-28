@@ -280,6 +280,7 @@ fileprivate extension TimeTrialView {
 			} label: {
 				Label("Close", systemImage: "xmark")
 			}
+			.tint(nil)
 		}
 		ToolbarItem(placement: .principal) {
 			Text(selectedDeck?.name ?? "Every Card")
@@ -292,6 +293,7 @@ fileprivate extension TimeTrialView {
 			} label: {
 				Text("\(min(currentIndex + 1, argument.cards.count))/\(argument.cards.count)")
 			}
+			.foregroundStyle(.primary)
 		}
 	}
 }

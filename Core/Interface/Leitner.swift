@@ -32,17 +32,17 @@ enum Leitner {
 		
 		if interval <= 0 { return "Now!" }
 		
-		let formatter = DateComponentsFormatter()
-		formatter.unitsStyle = .abbreviated
-		formatter.maximumUnitCount = 1
+		let seconds = Int(interval)
+		let minutes = seconds / 60
+		let hours = seconds / 3600
+		let days = seconds / 86400
 		
-		switch interval {
-		case ..<60: formatter.allowedUnits = [.second]
-		case ..<3600: formatter.allowedUnits = [.minute]
-		case ..<86400: formatter.allowedUnits = [.hour]
-		default: formatter.allowedUnits = [.day]
+		switch seconds {
+		case ..<60: return "\(seconds)s"
+		case ..<3600: return "\(minutes)m"
+		case ..<86400: return "\(hours)h"
+		default: return "\(days)d"
 		}
-		return formatter.string(from: interval) ?? "Soon"
 	}
 	
 	static func update(for card: Card, score: Int) {

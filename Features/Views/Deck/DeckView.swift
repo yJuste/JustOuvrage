@@ -23,6 +23,7 @@ struct DeckView: View {
 	@Query(sort: \Card.createdAt, order: .reverse) private var cards: [Card]
 	
 	@Bindable private var preferences: Preferences = .unique
+	@State private var globalColor: Color = Preferences.unique.globalColor.color
 	@State private var selectedCard: Card?
 	@State private var argument: Argument?
 	@State private var colors: [Color]?
@@ -104,7 +105,7 @@ struct DeckView: View {
 										} label: {
 											Label("Play", systemImage: "arrowtriangle.forward.fill")
 												.frame(width: 160, height: 50)
-												.glassEffect(.regular.tint(.accentColor).interactive())
+												.glassEffect(.regular.tint(globalColor).interactive())
 										}
 										Button {
 											showDownload.toggle()
@@ -178,6 +179,7 @@ struct DeckView: View {
 											}
 											.padding(.trailing, 10)
 											.buttonStyle(.plain)
+											.tint(nil)
 										}
 										.padding(EdgeInsets(top: 3, leading: 15, bottom: 3, trailing: 15))
 										.contentShape(Rectangle())
@@ -189,6 +191,7 @@ struct DeckView: View {
 										} label: {
 											Label("Remove from Deck", systemImage: "trash")
 										}
+										.tint(nil)
 									}
 									.buttonStyle(.plain)
 									separator
@@ -215,9 +218,7 @@ struct DeckView: View {
 								}
 								.alert("Are you sure you want to remove this card from this deck?", isPresented: $showDeleteCard) {
 									Button("Remove", role: .destructive) {
-										if let card = selectedCard {
-											deck.cards.removeAll { $0.id == card.id }
-										}
+										removeTheCard()
 									}
 									Button("Cancel", role: .cancel) { }
 								}
@@ -293,6 +294,12 @@ struct DeckView: View {
 /// Methods of DeckView.
 fileprivate extension DeckView {
 	
+	private func removeTheCard() {
+		if let card = selectedCard {
+			deck.cards.removeAll { $0.id == card.id }
+		}
+	}
+	
 	private func loadImageForBackground() {
 		if let uiImage = try? storage.load(image: deck.image, size: 512) {
 			if showGradientBackground {
@@ -325,6 +332,7 @@ fileprivate extension DeckView {
 			} label: {
 				Image(systemName: "chevron.backward")
 			}
+			.tint(nil)
 		}
 		ToolbarItem(placement: .topBarTrailing) {
 			Menu {
@@ -355,6 +363,7 @@ fileprivate extension DeckView {
 			} label: {
 				Image(systemName: "ellipsis")
 			}
+			.tint(nil)
 		}
 	}
 }

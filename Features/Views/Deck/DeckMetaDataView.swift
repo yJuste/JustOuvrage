@@ -59,6 +59,7 @@ fileprivate extension DeckMetaDataView {
 			} label: {
 				Label("Close", systemImage: "xmark")
 			}
+			.tint(nil)
 		}
 	}
 }

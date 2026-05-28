@@ -162,6 +162,7 @@ struct TimeTrialSetupView: View {
 					.transition(.opacity.combined(with: .move(edge: .top)))
 				}
 			}
+			.tint(.secondary)
 			.animation(.spring(response: 0.35, dampingFraction: 0.9), value: preferences.trialMode)
 			.toolbar { toolbar }
 			.navigationDestination(isPresented: $showTimeTrial) {

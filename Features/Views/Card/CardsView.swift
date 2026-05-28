@@ -109,6 +109,7 @@ struct CardsView: View {
 			}
 			.listStyle(.plain)
 			.toolbar { toolbar }
+			.tint(nil)
 			.animation(.easeInOut(duration: 0.15), value: selection.isEmpty)
 			.animation(.easeInOut(duration: 0.15), value: editMode)
 			.sheet(isPresented: $showCard) {

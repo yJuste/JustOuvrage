@@ -88,6 +88,7 @@ fileprivate extension ProfileView {
 			} label: {
 				Label("Close", systemImage: "xmark")
 			}
+			.tint(nil)
 		}
 		ToolbarItem(placement: .principal) {
 			Text("Just Account")

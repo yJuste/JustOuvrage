@@ -39,7 +39,7 @@ struct TimeTrialDeckSelectionView: View {
 				} label: {
 					HStack {
 						Text("Every Card")
-							.foregroundStyle(Color.accent)
+							.foregroundStyle(.primary)
 						if selectedDeck == nil {
 							Spacer()
 							Image(systemName: "checkmark")

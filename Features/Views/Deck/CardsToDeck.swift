@@ -73,6 +73,7 @@ fileprivate extension CardsToDeck {
 			} label: {
 				Text("Cancel")
 			}
+			.tint(nil)
 		}
 		ToolbarItem(placement: .principal) {
 			VStack {

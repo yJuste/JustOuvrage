@@ -92,7 +92,7 @@ struct SessionRecordingView: View {
 									if editMode == .active {
 										Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
 											.font(.title3)
-											.foregroundStyle(isSelected ? .accent : .secondary)
+											.foregroundStyle(isSelected ? Color.accentColor : .secondary)
 									}
 									VStack(alignment: .leading, spacing: 5) {
 										Text(card.frontEntry)
@@ -126,7 +126,7 @@ struct SessionRecordingView: View {
 								}
 								.padding()
 								.background(
-									RoundedRectangle(cornerRadius: 18).fill(isSelected ? .accent.opacity(0.3) : .secondary.opacity(0.2))
+									RoundedRectangle(cornerRadius: 18).fill(isSelected ? Color.accentColor.opacity(0.3) : .secondary.opacity(0.2))
 								)
 								.onTapGesture {
 									let id = card.id
@@ -144,12 +144,13 @@ struct SessionRecordingView: View {
 									}
 								}
 								.contextMenu {
-									Button(role: .destructive) {
+									Button {
 										selectedCard = card
 										showClearRecording.toggle()
 									} label: {
 										Label("Clear recordings in the card", systemImage: "trash")
 									}
+									.tint(nil)
 								}
 							}
 						}
@@ -239,7 +240,7 @@ fileprivate extension SessionRecordingView {
 					} label: {
 						Label("Record", systemImage: "record.circle")
 							.frame(width: 160, height: 50)
-							.glassEffect(.regular.tint(.accentColor).interactive())
+							.glassEffect(.regular.tint(Color.accentColor).interactive())
 					}
 					Button {
 						showDownload.toggle()
@@ -266,7 +267,7 @@ fileprivate extension SessionRecordingView {
 							VStack {
 								Text(session.title)
 									.font(.system(size: 28, weight: .bold))
-									.foregroundStyle(.accent)
+									.foregroundStyle(Color.accentColor)
 									.padding(.top, 20)
 								Text(session.subtitle)
 									.font(.system(size: 20, weight: .bold))
@@ -346,6 +347,7 @@ fileprivate extension SessionRecordingView {
 				} label: {
 					Text("Clear (\(selection.count))")
 				}
+				.foregroundStyle(.primary)
 			}
 		}
 		ToolbarItem(placement: .topBarTrailing) {
@@ -358,6 +360,7 @@ fileprivate extension SessionRecordingView {
 					Text("Select")
 				}
 			}
+			.foregroundStyle(.primary)
 		}
 		ToolbarItem(placement: .principal) {
 			Text("Audio Recording")

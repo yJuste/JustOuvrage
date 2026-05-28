@@ -120,6 +120,7 @@ fileprivate extension LibraryView {
 			} label: {
 				Label("Add", systemImage: "square.fill.text.grid.1x2")
 			}
+			.tint(nil)
 		}
 		ToolbarSpacer(.fixed, placement: .topBarTrailing)
 		ToolbarItem(placement: .topBarTrailing) {

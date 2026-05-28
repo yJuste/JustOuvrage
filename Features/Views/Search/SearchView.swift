@@ -146,7 +146,7 @@ struct SearchView: View {
 							} label: {
 								Label("\"\(match.entry)\"", systemImage: "magnifyingglass.circle.fill")
 									.font(.system(size: 17, weight: .medium))
-									.foregroundStyle(.accent)
+									.foregroundStyle(Color.accentColor)
 							}
 						} /// ``Search for a Match``
 					}

@@ -143,6 +143,7 @@ fileprivate extension DraftView {
 			} label: {
 				Image(systemName: "ellipsis")
 			}
+			.tint(nil)
 		}
 		ToolbarItem(placement: .topBarLeading) {
 			Button {

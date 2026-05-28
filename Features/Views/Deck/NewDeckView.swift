@@ -120,6 +120,7 @@ fileprivate extension NewDeckView {
 			} label: {
 				Text("Cancel")
 			}
+			.foregroundStyle(.primary)
 		}
 		ToolbarItem(placement: .principal) {
 			Text("New Deck")

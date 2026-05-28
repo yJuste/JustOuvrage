@@ -83,6 +83,7 @@ fileprivate extension CardMetaDataView {
 			} label: {
 				Label("Close", systemImage: "xmark")
 			}
+			.tint(nil)
 		}
 	}
 }

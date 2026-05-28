@@ -175,6 +175,22 @@ struct SettingsView: View {
    10 pt = very fast swipe
    """)
 				}
+				Section {
+					Picker("Global Color", selection: $preferences.globalColor) {
+						ForEach(AccentColor.allCases, id: \.self) { color in
+							HStack {
+								Circle()
+									.fill(color.color)
+									.frame(width: 16, height: 16)
+								Text(color.rawValue.capitalized)
+							}
+							.tag(color)
+						}
+					}
+					.pickerStyle(.menu)
+				} footer: {
+					Text("Choose the global color for the app.")
+				}
 			}
 			.toolbar { toolbar }
 		}

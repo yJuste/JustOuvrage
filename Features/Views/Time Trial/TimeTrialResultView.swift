@@ -86,6 +86,7 @@ fileprivate extension TimeTrialResultView {
 			} label: {
 				Label("Close", systemImage: "xmark")
 			}
+			.tint(nil)
 		}
 		ToolbarItem(placement: .principal) {
 			VStack {
