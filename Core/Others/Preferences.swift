@@ -85,7 +85,7 @@ import Observation
 		let defaultLanguage: String = Language.en_US.rawValue
 		
 		userDefaults.register(defaults: [
-			Key.trialTimeInterval.rawValue: 4.0,
+			Key.trialTimeInterval.rawValue: 5.0,
 			Key.trialRefreshTimer.rawValue: (2.0 / 60.0),
 			Key.trialSwipeThreshold.rawValue: 50.0,
 			Key.gradientBackground.rawValue: true,

@@ -98,7 +98,7 @@ struct DeckView: View {
 								GlassEffectContainer {
 									HStack(alignment: .center, spacing: 15) {
 										Button {
-											let arg = Argument.make(deck: deck, cards: cards, mode: .standard, directions: [], timeInterval: 4.0, order: .random, numberOfCards: 0)
+											let arg = Argument.make(deck: deck, cards: cards, mode: .standard, directions: [], timeInterval: 5.0, order: .random, numberOfCards: 0)
 											guard !arg.cards.isEmpty else { return showNoCards.toggle() }
 											argument = arg
 											dismissItems.toggleOnly($showTimeTrial)

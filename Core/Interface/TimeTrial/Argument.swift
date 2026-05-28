@@ -50,7 +50,7 @@ extension Argument {
 		
 		switch mode {
 		case .chill: res = res.sorted { $0.createdAt > $1.createdAt }; newInterval = Constants.infinityYear; newOrder = .newestToOldest
-		case .standard: res.shuffle(); newInterval = 4.0; newOrder = .random
+		case .standard: res.shuffle(); newInterval = 5.0; newOrder = .random
 		case .death: res.shuffle(); newInterval = 1.5; newOrder = .random
 		case .custom:
 			switch order {
