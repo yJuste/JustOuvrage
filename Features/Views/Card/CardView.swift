@@ -225,23 +225,23 @@ fileprivate extension CardView {
 				}
 				Section {
 					Button {
-						dismissItems.toggleOnly($showMetaData)
+						dismissItems.showOnly($showMetaData)
 					} label: {
 						Label("View Metadata", systemImage: "info.circle")
 					}
 				}
 				Button {
-					dismissItems.toggleOnly($showRecording)
+					dismissItems.showOnly($showRecording)
 				} label: {
 					Label("Record audio", systemImage: "microphone.fill")
 				}
 				Button {
-					dismissItems.toggleOnly($showDecksToCard)
+					dismissItems.showOnly($showDecksToCard)
 				} label: {
 					Label("Add decks", systemImage: "rectangle.stack.badge.plus")
 				}
 				Button {
-					dismissItems.toggleOnly($showEditCard)
+					dismissItems.showOnly($showEditCard)
 				} label: {
 					Label("Edit Card", systemImage: "slider.horizontal.3")
 				}

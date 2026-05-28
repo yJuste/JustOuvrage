@@ -39,6 +39,9 @@ struct DeckView: View {
 	@State private var showDownload: Bool = false
 	@State private var showMetaDataCard: Bool = false
 	@State private var showMetaData: Bool = false
+	@State private var showRecording: Bool = false
+	@State private var showDecksToCard: Bool = false
+	@State private var showEditCard: Bool = false
 	@State private var showGradientBackground: Bool = Preferences.unique.gradientBackground
 	@State private var showAnimationBackground: Bool = Preferences.unique.animationBackground
 	
@@ -53,7 +56,7 @@ struct DeckView: View {
 	}
 	
 	private var dismissItems: [Binding<Bool>] {
-		[$showCard, $showCardsToDeck, $showEditDeck, $showDepiction, $showMetaDataCard, $showMetaData, $showTimeTrial]
+		[$showCard, $showCardsToDeck, $showEditDeck, $showDepiction, $showMetaDataCard, $showMetaData, $showTimeTrial, $showRecording, $showDecksToCard, $showEditCard]
 	}
 	
 	var body: some View {
@@ -166,9 +169,29 @@ struct DeckView: View {
 											Menu {
 												Button {
 													selectedCard = card
-													dismissItems.showOnly($showMetaDataCard)
+													dismissItems.showOnly($showEditCard)
 												} label: {
-													Label("View Metadata", systemImage: "info.circle")
+													Label("Edit Card", systemImage: "slider.horizontal.3")
+												}
+												Button {
+													selectedCard = card
+													dismissItems.showOnly($showDecksToCard)
+												} label: {
+													Label("Add decks", systemImage: "rectangle.stack.badge.plus")
+												}
+												Button {
+													selectedCard = card
+													dismissItems.showOnly($showRecording)
+												} label: {
+													Label("Record audio", systemImage: "microphone.fill")
+												}
+												Section {
+													Button {
+														selectedCard = card
+														dismissItems.showOnly($showMetaDataCard)
+													} label: {
+														Label("View Metadata", systemImage: "info.circle")
+													}
 												}
 												Section {
 													Button(role: .destructive) {
@@ -209,6 +232,26 @@ struct DeckView: View {
 											.presentationDetents([
 												.fraction(Constants.heightOfACard[0]),
 												.fraction(Constants.heightOfACard[1])
+											])
+											.presentationBackgroundInteraction(.enabled)
+									}
+								}
+								.sheet(isPresented: $showEditCard) {
+									if let card = selectedCard {
+										EditCardView(title: "Edit Card", card: card)
+									}
+								}
+								.sheet(isPresented: $showDecksToCard) {
+									if let card = selectedCard {
+										DecksToCard(card: card)
+									}
+								}
+								.sheet(isPresented: $showRecording) {
+									if let card = selectedCard {
+										RecordingView(card: card)
+											.presentationDetents([
+												.fraction(Constants.heightOfARecording[0]),
+												.fraction(Constants.heightOfARecording[1])
 											])
 											.presentationBackgroundInteraction(.enabled)
 									}

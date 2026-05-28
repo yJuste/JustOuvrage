@@ -32,6 +32,9 @@ struct CardsView: View {
 	@State private var showDeleteCard: Bool = false
 	@State private var showSelectedCards: Bool = false
 	@State private var showMetaData: Bool = false
+	@State private var showRecording: Bool = false
+	@State private var showDecksToCard: Bool = false
+	@State private var showEditCard: Bool = false
 	
 	private var filteredCards: [Card] {
 		let filtered: [Card]
@@ -51,7 +54,7 @@ struct CardsView: View {
 	}
 	
 	private var dismissItems: [Binding<Bool>] {
-		[$showCard, $showEditMode, $showNewCard, $showNewDeck, $showDeleteCard, $showSelectedCards, $showMetaData]
+		[$showCard, $showEditMode, $showNewCard, $showNewDeck, $showDeleteCard, $showSelectedCards, $showMetaData, $showRecording, $showDecksToCard, $showEditCard]
 	}
 	
 	var body: some View {
@@ -79,9 +82,29 @@ struct CardsView: View {
 								Menu {
 									Button {
 										selectedCard = card
-										dismissItems.showOnly($showMetaData)
+										dismissItems.showOnly($showEditCard)
 									} label: {
-										Label("View Metadata", systemImage: "info.circle")
+										Label("Edit Card", systemImage: "slider.horizontal.3")
+									}
+									Button {
+										selectedCard = card
+										dismissItems.showOnly($showDecksToCard)
+									} label: {
+										Label("Add decks", systemImage: "rectangle.stack.badge.plus")
+									}
+									Button {
+										selectedCard = card
+										dismissItems.showOnly($showRecording)
+									} label: {
+										Label("Record audio", systemImage: "microphone.fill")
+									}
+									Section {
+										Button {
+											selectedCard = card
+											dismissItems.showOnly($showMetaData)
+										} label: {
+											Label("View Metadata", systemImage: "info.circle")
+										}
 									}
 									Section {
 										Button(role: .destructive) {
@@ -125,6 +148,26 @@ struct CardsView: View {
 						.presentationDetents([
 							.fraction(Constants.heightOfACard[0]),
 							.fraction(Constants.heightOfACard[1])
+						])
+						.presentationBackgroundInteraction(.enabled)
+				}
+			}
+			.sheet(isPresented: $showEditCard) {
+				if let card = selectedCard {
+					EditCardView(title: "Edit Card", card: card)
+				}
+			}
+			.sheet(isPresented: $showDecksToCard) {
+				if let card = selectedCard {
+					DecksToCard(card: card)
+				}
+			}
+			.sheet(isPresented: $showRecording) {
+				if let card = selectedCard {
+					RecordingView(card: card)
+						.presentationDetents([
+							.fraction(Constants.heightOfARecording[0]),
+							.fraction(Constants.heightOfARecording[1])
 						])
 						.presentationBackgroundInteraction(.enabled)
 				}

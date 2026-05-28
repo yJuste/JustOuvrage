@@ -32,6 +32,8 @@ struct DecksView: View {
 	@State private var showDeleteDeck: Bool = false
 	@State private var showSelectedDecks: Bool = false
 	@State private var showMetaData: Bool = false
+	@State private var showEditDeck: Bool = false
+	@State private var showCardsToDeck: Bool = false
 	
 	private var filteredDecks: [Deck] {
 		decks.sorted { lhs, rhs in
@@ -45,7 +47,7 @@ struct DecksView: View {
 	}
 	
 	private var dismissItems: [Binding<Bool>] {
-		[$showDeck, $showEditMode, $showNewCard, $showNewDeck, $showMetaData]
+		[$showDeck, $showEditMode, $showNewCard, $showNewDeck, $showMetaData, $showEditDeck, $showCardsToDeck]
 	}
 	
 	var body: some View {
@@ -81,9 +83,23 @@ struct DecksView: View {
 								Menu {
 									Button {
 										selectedDeck = deck
-										dismissItems.showOnly($showMetaData)
+										dismissItems.showOnly($showEditDeck)
 									} label: {
-										Label("View Metadata", systemImage: "info.circle")
+										Label("Edit Deck", systemImage: "slider.horizontal.3")
+									}
+									Button {
+										selectedDeck = deck
+										dismissItems.showOnly($showCardsToDeck)
+									} label: {
+										Label("Add cards", systemImage: "plus.square.fill.on.square.fill")
+									}
+									Section {
+										Button {
+											selectedDeck = deck
+											dismissItems.showOnly($showMetaData)
+										} label: {
+											Label("View Metadata", systemImage: "info.circle")
+										}
 									}
 									Section {
 										Button(role: .destructive) {
@@ -155,6 +171,16 @@ struct DecksView: View {
 							.fraction(Constants.heightOfAMetaData[1])
 						])
 						.presentationBackgroundInteraction(.enabled)
+				}
+			}
+			.sheet(isPresented: $showEditDeck) {
+				if let deck = selectedDeck {
+					EditDeckView(title: "Edit Deck", deck: deck)
+				}
+			}
+			.sheet(isPresented: $showCardsToDeck) {
+				if let deck = selectedDeck {
+					CardsToDeck(deck: deck)
 				}
 			}
 			.sheet(isPresented: $showNewCard) {
