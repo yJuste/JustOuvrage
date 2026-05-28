@@ -15,7 +15,7 @@ import SwiftData
 struct JustOuvrageApp: App {
 	
 	init() {
-		Appearance.configurePicker()
+		//Appearance.configurePicker()
 	}
 	
 	var body: some Scene {

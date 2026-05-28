@@ -104,7 +104,7 @@ fileprivate extension RecordingView {
 					.minimumScaleFactor(0.01)
 					.frame(minWidth: 70)
 					.padding(EdgeInsets(top: 7, leading: 20, bottom: 7, trailing: 20))
-					.background(Capsule().glassEffect(.clear.tint(filename != nil ? globalColor.opacity(0.4) : .clear).interactive()))
+					.background(Capsule().glassEffect(.clear.tint(filename != nil ? globalColor.opacity(0.5) : .clear).interactive()))
 				}
 			}
 			.buttonStyle(.plain)
