@@ -201,7 +201,10 @@ fileprivate extension EditCardView {
 		card.backLanguage = backLanguage
 		if let deck = selectedDeck.wrappedValue, title.localizedCaseInsensitiveContains("Add") {
 			card.decks.append(deck)
+			preferences.selectDeck = deck.id
 		}
+		preferences.frontLanguage = frontLanguage
+		preferences.backLanguage = backLanguage
 		if leitnerScore != card.leitnerScore {
 			Leitner.update(for: card, score: leitnerScore)
 		}
