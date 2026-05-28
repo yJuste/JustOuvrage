@@ -17,6 +17,9 @@ struct EditCardView: View {
 	@Environment(\.modelContext) private var modelContext
 	@Environment(\.dismiss) private var dismiss
 	
+	@Query(sort: \Deck.createdAt, order: .reverse) private var decks: [Deck]
+	
+	@Bindable private var preferences: Preferences = .unique
 	@FocusState private var focusField: FocusField?
 	@State private var frontEntry: String = ""
 	@State private var backEntry: String = ""
@@ -38,82 +41,120 @@ struct EditCardView: View {
 		_leitnerScore = State(initialValue: card.leitnerScore)
 	}
 	
+	private var selectedDeck: Binding<Deck?> {
+		Binding {
+			guard let id = preferences.selectDeck else { return nil }
+			return decks.first(where: { $0.id == id })
+		} set: { newDeck in
+			preferences.selectDeck = newDeck?.id
+		}
+	}
+	
+	private var deckName: String {
+		guard let id = preferences.selectDeck, let deck = decks.first(where: { $0.id == id }) else { return "Every Card" }
+		return deck.name
+	}
+	
 	var body: some View {
 		NavigationStack {
-			ScrollViewReader { proxy in
-				ScrollView {
-					Spacer(minLength: 100)
-					VStack(spacing: 50) {
-						HStack(spacing: 40) {
-							Button {
-								showFrontLanguage.toggle()
-							} label: {
-								Image(frontLanguage.flagAsset)
-									.resizable()
-									.scaledToFill()
-									.frame(width: 60, height: 60)
-									.clipShape(Circle())
-							}
-							.popover(isPresented: $showFrontLanguage) {
-								FlagPicker(selected: $frontLanguage)
-									.padding(25)
-									.presentationCompactAdaptation(.none)
-							}
-							Button {
-								withAnimation(.spring(response: 0.3)) {
-									(frontLanguage, backLanguage) = (backLanguage, frontLanguage)
+			GeometryReader { geo in
+				ScrollViewReader { proxy in
+					ScrollView {
+						VStack {
+							if title.localizedCaseInsensitiveContains("Add") {
+								VStack {
+									NavigationLink {
+										DeckSelectionView(selectedDeck: selectedDeck)
+									} label: {
+										HStack {
+											Text("Deck")
+											Spacer()
+											Text(deckName)
+												.font(.footnote)
+												.foregroundStyle(.secondary)
+										}
+										.padding()
+									}
+									.buttonStyle(.plain)
 								}
-							} label: {
-								Image(systemName: "arrow.left.arrow.right")
+								.background(.thinMaterial)
+								.clipShape(RoundedRectangle(cornerRadius: 16))
+								.padding(.horizontal, 25)
 							}
-							.buttonStyle(.plain)
-							.padding()
-							.glassEffect(.regular.interactive())
-							Button {
-								showBackLanguage.toggle()
-							} label: {
-								Image(backLanguage.flagAsset)
-									.resizable()
-									.scaledToFill()
-									.frame(width: 60, height: 60)
-									.clipShape(Circle())
-							}
-							.popover(isPresented: $showBackLanguage) {
-								FlagPicker(selected: $backLanguage)
-									.padding(20)
-									.presentationCompactAdaptation(.none)
-							}
-						}
-						VStack(spacing: 50) {
-							SplendidField(title: "Front Entry", text: $frontEntry)
-								.id(FocusField.front)
-								.focused($focusField, equals: .front)
-							SplendidField(title: "Back Entry", text: $backEntry)
-								.id(FocusField.back)
-								.focused($focusField, equals: .back)
-						}
-						Section {
-							LabelTrailing(title: "Leitner Score") {
-								Picker("Leitner Score", selection: $leitnerScore) {
-									ForEach(1...7, id: \.self) { value in
-										Text(value, format: .number)
-											.tag(value)
+							VStack(spacing: 40) {
+								HStack(spacing: 40) {
+									Button {
+										showFrontLanguage.toggle()
+									} label: {
+										Image(frontLanguage.flagAsset)
+											.resizable()
+											.scaledToFill()
+											.frame(width: 60, height: 60)
+											.clipShape(Circle())
+									}
+									.popover(isPresented: $showFrontLanguage) {
+										FlagPicker(selected: $frontLanguage)
+											.padding(25)
+											.presentationCompactAdaptation(.none)
+									}
+									Button {
+										withAnimation(.spring(response: 0.3)) {
+											(frontLanguage, backLanguage) = (backLanguage, frontLanguage)
+										}
+									} label: {
+										Image(systemName: "arrow.left.arrow.right")
+									}
+									.buttonStyle(.plain)
+									.padding()
+									.glassEffect(.regular.interactive())
+									Button {
+										showBackLanguage.toggle()
+									} label: {
+										Image(backLanguage.flagAsset)
+											.resizable()
+											.scaledToFill()
+											.frame(width: 60, height: 60)
+											.clipShape(Circle())
+									}
+									.popover(isPresented: $showBackLanguage) {
+										FlagPicker(selected: $backLanguage)
+											.padding(20)
+											.presentationCompactAdaptation(.none)
 									}
 								}
-								.pickerStyle(.navigationLink)
+								VStack(spacing: 50) {
+									SplendidField(title: "Front Entry", text: $frontEntry)
+										.id(FocusField.front)
+										.focused($focusField, equals: .front)
+									SplendidField(title: "Back Entry", text: $backEntry)
+										.id(FocusField.back)
+										.focused($focusField, equals: .back)
+								}
+								Section {
+									LabelTrailing(title: "Leitner Score") {
+										Picker("Leitner Score", selection: $leitnerScore) {
+											ForEach(1...7, id: \.self) { value in
+												Text(value, format: .number)
+													.tag(value)
+											}
+										}
+										.pickerStyle(.navigationLink)
+									}
+								} /// ``Leitner Score``
 							}
-						} /// ``Leitner Score``
+							.padding(30)
+						}
+						.frame(maxWidth: .infinity, minHeight: geo.size.height * 0.95, alignment: .center)
 					}
-					.padding(30)
-				}
-				.scrollDismissesKeyboard(.interactively)
-				.scrollIndicators(.hidden)
-				.onChange(of: focusField) {
-					guard let field = focusField else { return }
-					Task { @MainActor in
-						try? await Task.sleep(for: .milliseconds(250))
-						withAnimation {
-							proxy.scrollTo(field, anchor: .top)
+					.scrollDismissesKeyboard(.interactively)
+					.scrollIndicators(.hidden)
+					.onChange(of: focusField) {
+						guard let field = focusField else { return }
+						Task { @MainActor in
+							try? await Task.sleep(for: .milliseconds(250))
+							withAnimation {
+								proxy.scrollTo(field, anchor: .top)
+							}
 						}
 					}
 				}
@@ -206,7 +247,7 @@ fileprivate extension EditCardView {
 #Preview {
 	
 	EditCardView(
-		title: "Edit Card",
+		title: "Add Card To Library",
 		card: Card(
 			frontEntry: "hello my na🇺🇸m on, l, l,",
 			backEntry: ",,,bonjour,,,,",
