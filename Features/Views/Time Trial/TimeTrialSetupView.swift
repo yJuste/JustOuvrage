@@ -47,7 +47,7 @@ struct TimeTrialSetupView: View {
 			Form {
 				Section {
 					NavigationLink {
-						TimeTrialDeckSelectionView(selectedDeck: selectedDeck, decks: decks)
+						DeckSelectionView(selectedDeck: selectedDeck)
 					} label: {
 						HStack {
 							Text("Deck")

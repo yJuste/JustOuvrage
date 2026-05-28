@@ -25,6 +25,7 @@ import Observation
 		case frontLanguage
 		case backLanguage
 		case exactMatch
+		case selectDeck
 		
 		// In Trial
 		case trialTimeInterval
@@ -61,6 +62,7 @@ import Observation
 	private var frontLanguageRaw: String = ""
 	private var backLanguageRaw: String = ""
 	private var exactMatchRaw: String = ""
+	private var selectDeckRaw: String = ""
 	private var trialTimeIntervalRaw: TimeInterval = 0
 	private var trialDeckRaw: String = ""
 	private var trialNumberOfCardsRaw: Int = 0
@@ -95,6 +97,7 @@ import Observation
 		frontLanguageRaw = userDefaults.string(forKey: Key.frontLanguage.rawValue) ?? defaultLanguage
 		backLanguageRaw = userDefaults.string(forKey: Key.backLanguage.rawValue) ?? defaultLanguage
 		exactMatchRaw = userDefaults.string(forKey: Key.exactMatch.rawValue) ?? defaultLanguage
+		selectDeckRaw = userDefaults.string(forKey: Key.selectDeck.rawValue) ?? ""
 		trialTimeIntervalRaw = userDefaults.double(forKey: Key.trialTimeInterval.rawValue)
 		trialDeckRaw = userDefaults.string(forKey: Key.trialDeck.rawValue) ?? ""
 		trialNumberOfCardsRaw = userDefaults.integer(forKey: Key.trialNumberOfCards.rawValue)
@@ -150,6 +153,14 @@ import Observation
 		set {
 			exactMatchRaw = newValue.rawValue
 			userDefaults.set(exactMatchRaw, forKey: Key.exactMatch.rawValue)
+		}
+	}
+	
+	var selectDeck: UUID? {
+		get { UUID(uuidString: selectDeckRaw) }
+		set {
+			selectDeckRaw = newValue?.uuidString ?? ""
+			userDefaults.set(selectDeckRaw, forKey: Key.selectDeck.rawValue)
 		}
 	}
 	

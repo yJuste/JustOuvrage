@@ -1,33 +1,25 @@
 //
-//  TimeTrialDeckSelectionView.swift
+//  DeckSelectionView.swift
 //  JustOuvrage
 //
-//  Created by Jules Longin on 5/23/26.
+//  Created by Jules Longin on 5/28/26.
 //
 
 import SwiftUI
+import SwiftData
 
-struct TimeTrialDeckSelectionView: View {
+struct DeckSelectionView: View {
 	
 	@Binding var selectedDeck: Deck?
-	let decks: [Deck]
+	
+	@Query(sort: [SortDescriptor(\Deck.lastOpenedAt, order: .reverse), SortDescriptor(\Deck.createdAt, order: .reverse)]) private var decks: [Deck]
 	
 	@Environment(\.dismiss) private var dismiss
 	
 	@State private var searchText = ""
 	
 	var filteredDecks: [Deck] {
-		
-		let decksToFilter: [Deck]
-		
-		if searchText.isEmpty {
-			decksToFilter = decks
-		} else {
-			decksToFilter = decks.filter {
-				$0.name.localizedCaseInsensitiveContains(searchText)
-			}
-		}
-		return decksToFilter.sorted { ($0.lastOpenedAt ?? $0.createdAt) > ($1.lastOpenedAt ?? $1.createdAt) }
+		decks.filter { searchText.isEmpty || $0.name.localizedCaseInsensitiveContains(searchText) }
 	}
 	
 	var body: some View {
@@ -71,12 +63,5 @@ struct TimeTrialDeckSelectionView: View {
 #Preview {
 	@Previewable @State var selectedDeck: Deck? = nil
 	
-	let decks = [
-		Deck(name: "Spanish", image: "deck"),
-		Deck(name: "English", image: "deck"),
-		Deck(name: "French", image: "deck"),
-		Deck(name: "Portuguese", image: "deck"),
-	]
-	
-	TimeTrialDeckSelectionView(selectedDeck: $selectedDeck, decks: decks)
+	DeckSelectionView(selectedDeck: $selectedDeck)
 }
