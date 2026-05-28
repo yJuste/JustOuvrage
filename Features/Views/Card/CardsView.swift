@@ -40,7 +40,14 @@ struct CardsView: View {
 		} else {
 			filtered = cards.filter { selectedLanguages.contains($0.frontLanguage.code) || selectedLanguages.contains($0.backLanguage.code) }
 		}
-		return filtered.sorted(using: sorts.map(\.descriptor))
+		return filtered.sorted { lhs, rhs in
+			for sort in sorts {
+				if let result = sort.compare(lhs, rhs) {
+					return result == .orderedAscending
+				}
+			}
+			return false
+		}
 	}
 	
 	private var dismissItems: [Binding<Bool>] {

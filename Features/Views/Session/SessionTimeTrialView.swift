@@ -17,8 +17,9 @@ struct SessionTimeTrialView: View {
 	@Environment(\.modelContext) private var modelContext
 	@Environment(\.dismiss) private var dismiss
 	
-	@Query(sort: \TimeTrial.createdAt, order: .reverse) private var timeTrials: [TimeTrial]
+	@Query private var timeTrials: [TimeTrial]
 	
+	@State private var sort: SortTimeTrial = .newestToOldest
 	@State private var verticalOffset: CGFloat = 0
 	@State private var selectedTimeTrial: TimeTrial?
 	@State private var editMode: EditMode = .inactive
@@ -32,6 +33,15 @@ struct SessionTimeTrialView: View {
 	@State private var showSelectedTimeTrial: Bool = false
 	
 	private let session: TimeTrialSession = Session.unique.timeTrial
+	
+	private var sortedTimeTrials: [TimeTrial] {
+		timeTrials.sorted { lhs, rhs in
+			if let result = sort.compare(lhs, rhs) {
+				return result == .orderedAscending
+			}
+			return false
+		}
+	}
 	
 	private var averagePercentage: Int {
 		guard !timeTrials.isEmpty else { return 0 }
@@ -67,7 +77,7 @@ struct SessionTimeTrialView: View {
 									.offset(y: 20)
 							}
 						LazyVStack(alignment: .leading, spacing: 15) {
-							ForEach(timeTrials) { timeTrial in
+							ForEach(sortedTimeTrials) { timeTrial in
 								let isSelected = selection.contains(timeTrial.id)
 								HStack(spacing: 12) {
 									if editMode == .active {
@@ -289,6 +299,9 @@ fileprivate extension SessionTimeTrialView {
 				}
 			}
 		}
+		ToolbarItem(placement: .principal) {
+			Text("Time Trial")
+		}
 		ToolbarItem(placement: .topBarTrailing) {
 			Button {
 				toggleEditMode()
@@ -301,8 +314,27 @@ fileprivate extension SessionTimeTrialView {
 			}
 			.foregroundStyle(.primary)
 		}
-		ToolbarItem(placement: .principal) {
-			Text("Time Trial")
+		ToolbarSpacer(placement: .topBarTrailing)
+		ToolbarItem(placement: .topBarTrailing) {
+			Menu {
+				Button {
+					sort = sort == .newestToOldest ? .oldestToNewest : .newestToOldest
+				} label: {
+					let newest = sort == .newestToOldest
+					Label("Date", systemImage: newest ? "text.line.first.and.arrowtriangle.forward" : "text.line.last.and.arrowtriangle.forward")
+					Text(newest ? "Newest to Oldest" : "Oldest to Newest")
+				}
+				Button {
+					sort = sort == .alphabeticalAscending ? .alphabeticalDescending : .alphabeticalAscending
+				} label: {
+					let ascending = sort == .alphabeticalAscending
+					Label("Name", systemImage: ascending ? "text.line.first.and.arrowtriangle.forward" : "text.line.last.and.arrowtriangle.forward")
+					Text(ascending ? "Ascending" : "Descending")
+				}
+			} label: {
+				Label("Options", systemImage: "ellipsis")
+			}
+			.tint(nil)
 		}
 	}
 }

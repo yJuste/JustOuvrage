@@ -21,6 +21,7 @@ struct DeckView: View {
 	@Environment(\.dismiss) private var dismiss
 	
 	@Query(sort: \Card.createdAt, order: .reverse) private var cards: [Card]
+	@Query private var timeTrials: [TimeTrial]
 	
 	@Bindable private var preferences: Preferences = .unique
 	@State private var globalColor: Color = Preferences.unique.globalColor.color
@@ -43,6 +44,12 @@ struct DeckView: View {
 	
 	private var cardsFromDeck: [Card] {
 		deck.cards.sorted { $0.createdAt > $1.createdAt }
+	}
+	
+	private var averageSuccess: Double {
+		let trials = timeTrials.filter { $0.deck?.id == deck.id }
+		guard !trials.isEmpty else { return 0 }
+		return trials.reduce(0) { $0 + $1.success } / Double(trials.count)
 	}
 	
 	private var dismissItems: [Binding<Bool>] {
@@ -228,6 +235,7 @@ struct DeckView: View {
 									Text(deck.createdAt, format: .dateTime.year().month().day())
 									Text("\(deck.cards.count) cards")
 									Text(deck.author)
+									Text("Success \(averageSuccess.formatted(.percent.precision(.fractionLength(1))))")
 									Text(Set(deck.cards.flatMap {[$0.frontLanguage, $0.backLanguage]}).sorted { $0.language < $1.language }.map { $0.language }.joined(separator: " ⋅ "))
 										.font(.caption)
 								}
