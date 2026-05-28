@@ -158,10 +158,10 @@ struct SearchFocusView: View {
 					Text("Select the language you want to search in at the top of the toolbar on the left.")
 						.font(.caption2)
 						.foregroundStyle(.secondary)
-						.clipShape(RoundedRectangle(cornerRadius: 15))
 					Image(.searchDraftExample)
 						.resizable()
 						.scaledToFit()
+						.clipShape(RoundedRectangle(cornerRadius: 15))
 				}
 				.padding()
 				.frame(maxWidth: .infinity)
