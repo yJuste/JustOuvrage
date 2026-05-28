@@ -130,7 +130,7 @@ struct EditCardView: View {
 										.id(FocusField.back)
 										.focused($focusField, equals: .back)
 								}
-								Section {
+								if title.localizedCaseInsensitiveContains("Edit") {
 									LabelTrailing(title: "Leitner Score") {
 										Picker("Leitner Score", selection: $leitnerScore) {
 											ForEach(1...7, id: \.self) { value in
@@ -140,7 +140,7 @@ struct EditCardView: View {
 										}
 										.pickerStyle(.navigationLink)
 									}
-								} /// ``Leitner Score``
+								}
 							}
 							.padding(30)
 						}
