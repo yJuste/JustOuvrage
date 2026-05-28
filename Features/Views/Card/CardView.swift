@@ -94,6 +94,7 @@ struct CardView: View {
 										.tag(value)
 								}
 							}
+							.id(preferences.globalColor)
 							.pickerStyle(.segmented)
 						}
 					} /// ``Leitner Score``
@@ -110,6 +111,9 @@ struct CardView: View {
 					} /// ``Metadata``
 				}
 				.padding(.horizontal)
+			}
+			.onAppear {
+				Appearance.configurePicker()
 			}
 			.onDisappear {
 				stopPlaying()

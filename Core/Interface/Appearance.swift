@@ -22,9 +22,11 @@ enum Appearance {
 	/// ```
 	static func configurePicker() {
 		
+		@Bindable var preferences: Preferences = .unique
+		
 		let appearance = UISegmentedControl.appearance()
 		let font = UIFont.boldSystemFont(ofSize: 12)
-		let accent = UIColor(Color.accentColor)
+		let accent = UIColor(preferences.globalColor.color)
 		
 		appearance.selectedSegmentTintColor = accent.withAlphaComponent(0.8)
 		appearance.setTitleTextAttributes([.font: font, .foregroundColor: accent], for: .normal)

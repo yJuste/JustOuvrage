@@ -45,7 +45,12 @@ struct ProfileView: View {
 					NavigationLink {
 						SettingsView()
 					} label: {
-						Label("Settings", systemImage: "gear")
+						Label {
+							Text("Settings")
+						} icon: {
+							Image(systemName: "gear")
+								.foregroundStyle(Preferences.unique.globalColor.color)
+						}
 					}
 				} footer: {
 					Text("Manage your app preferences, maintenance tools, and data-related settings.")
@@ -66,6 +71,9 @@ struct ProfileView: View {
 						Text("Log out")
 					}
 				}
+			}
+			.onAppear {
+				Appearance.configurePicker()
 			}
 			.toolbar { toolbar }
 			.alert("Log out", isPresented: $showLogOut) {
@@ -98,5 +106,5 @@ fileprivate extension ProfileView {
 }
 
 #Preview {
-	ProfileView(profile: .yellowflower)
+	ProfileView(profile: .wall)
 }

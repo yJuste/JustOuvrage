@@ -20,6 +20,7 @@ struct SearchView: View {
 	@Query private var decks: [Deck]
 	@Query private var drafts: [Draft]
 	
+	@Bindable private var preferences: Preferences = .unique
 	@State private var search: String = ""
 	@State private var selectPicker: Int = 0
 	@State private var selectedCard: Card?
@@ -152,6 +153,9 @@ struct SearchView: View {
 					}
 				}
 			}
+			.onAppear {
+				Appearance.configurePicker()
+			}
 			.safeAreaInset(edge: .top) {
 				if !showDeck && !showCard && !showMatch {
 					Picker("", selection: $selectPicker) {
@@ -162,6 +166,7 @@ struct SearchView: View {
 						Text("Only Decks")
 							.tag(2)
 					}
+					.id(preferences.globalColor)
 					.pickerStyle(.segmented)
 					.scaleEffect(1.2)
 					.padding(EdgeInsets(top: 10, leading: 40, bottom: 10, trailing: 40))

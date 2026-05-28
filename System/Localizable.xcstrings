@@ -409,6 +409,9 @@
     "High" : {
 
     },
+    "How does it work?" : {
+
+    },
     "How many cards to include in this session." : {
 
     },
@@ -632,6 +635,12 @@
 
     },
     "Select Deck" : {
+
+    },
+    "Select the language you want to search in at the top of the toolbar on the left." : {
+
+    },
+    "Select the section where the words can be found: All, Only Cards, or Only Decks." : {
 
     },
     "Selected Cards" : {

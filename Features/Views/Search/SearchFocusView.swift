@@ -141,6 +141,33 @@ struct SearchFocusView: View {
 			} message: {
 				Text("Clearing your searches will remove your search history from this device.")
 			}
+		} else {
+			if !hasSearch {
+				VStack {
+					Text("How does it work?")
+						.font(.headline)
+					Spacer(minLength: 20)
+					Text("Select the section where the words can be found: All, Only Cards, or Only Decks.")
+						.font(.caption2)
+						.foregroundStyle(.secondary)
+					Image(.searchPickerExample)
+						.resizable()
+						.scaledToFit()
+						.clipShape(RoundedRectangle(cornerRadius: 15))
+					Spacer(minLength: 100)
+					Text("Select the language you want to search in at the top of the toolbar on the left.")
+						.font(.caption2)
+						.foregroundStyle(.secondary)
+						.clipShape(RoundedRectangle(cornerRadius: 15))
+					Image(.searchDraftExample)
+						.resizable()
+						.scaledToFit()
+				}
+				.padding()
+				.frame(maxWidth: .infinity)
+				.background ( RoundedRectangle(cornerRadius: 15).fill(Color.accentColor.opacity(0.5)) )
+				.listRowSeparator(.hidden)
+			}
 		}
 	}
 }

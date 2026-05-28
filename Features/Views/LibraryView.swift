@@ -19,7 +19,7 @@ struct LibraryView: View {
 	@Query(sort: [SortDescriptor(\Deck.lastOpenedAt, order: .reverse), SortDescriptor(\Deck.createdAt, order: .reverse)]) private var decks: [Deck]
 	
 	@State private var selectedDeck: Deck?
-	@State private var profilePicture: ImageResource = .yellowflower
+	@State private var profilePicture: ImageResource = .wall
 	@State private var showNewCard: Bool = false
 	@State private var showNewDeck: Bool = false
 	@State private var showProfile: Bool = false

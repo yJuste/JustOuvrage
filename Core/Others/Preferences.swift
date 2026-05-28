@@ -90,7 +90,7 @@ import Observation
 			Key.animationBackground.rawValue: false
 		])
 		
-		globalColorRaw = userDefaults.string(forKey: Key.globalColor.rawValue) ?? AccentColor.accent.rawValue
+		globalColorRaw = userDefaults.string(forKey: Key.globalColor.rawValue) ?? AccentColor.firGreen.rawValue
 		tabBarRaw = userDefaults.string(forKey: Key.tabBar.rawValue) ?? TabBar.new.rawValue
 		frontLanguageRaw = userDefaults.string(forKey: Key.frontLanguage.rawValue) ?? defaultLanguage
 		backLanguageRaw = userDefaults.string(forKey: Key.backLanguage.rawValue) ?? defaultLanguage
@@ -114,7 +114,7 @@ import Observation
 	}
 	
 	var globalColor: AccentColor {
-		get { AccentColor(rawValue: globalColorRaw) ?? .accent }
+		get { AccentColor(rawValue: globalColorRaw) ?? .firGreen }
 		set {
 			globalColorRaw = newValue.rawValue
 			userDefaults.set(globalColorRaw, forKey: Key.globalColor.rawValue)
