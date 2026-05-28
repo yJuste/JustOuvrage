@@ -37,7 +37,11 @@ struct EditCardView: View {
 		_frontEntry = State(initialValue: card.frontEntry)
 		_backEntry = State(initialValue: card.backEntry)
 		_frontLanguage = State(initialValue: card.frontLanguage)
-		_backLanguage = State(initialValue: card.backLanguage)
+		if title.localizedCaseInsensitiveContains("Add") {
+			_backLanguage = State(initialValue: Preferences.unique.backLanguage)
+		} else {
+			_backLanguage = State(initialValue: card.backLanguage)
+		}
 		_leitnerScore = State(initialValue: card.leitnerScore)
 	}
 	
@@ -195,6 +199,9 @@ fileprivate extension EditCardView {
 		card.backEntry = back
 		card.frontLanguage = frontLanguage
 		card.backLanguage = backLanguage
+		if let deck = selectedDeck.wrappedValue, title.localizedCaseInsensitiveContains("Add") {
+			card.decks.append(deck)
+		}
 		if leitnerScore != card.leitnerScore {
 			Leitner.update(for: card, score: leitnerScore)
 		}
