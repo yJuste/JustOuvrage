@@ -15,7 +15,7 @@ import AVFoundation
 enum Constants {
 	
 	// How many searches are listed.
-	static let maxRecentSearches: Int = 200
+	static let maxRecentSearches: Int = 10000
 	
 	// ⚠️ Assets catalog -> "deck" (image)
 	static let defaultDeckImage: String = "deck"
