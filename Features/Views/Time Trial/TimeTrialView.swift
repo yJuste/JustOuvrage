@@ -12,6 +12,7 @@ import Combine
 struct TimeTrialView: View {
 	
 	@Environment(FileImageStorage.self) private var storage
+	@Environment(Recording.self) private var recording
 	@Environment(\.colorScheme) private var colorScheme
 	@Environment(\.modelContext) private var modelContext
 	@Environment(\.dismiss) private var dismiss
@@ -132,8 +133,15 @@ struct TimeTrialView: View {
 				guard newValue else { return }
 				swipe(.left)
 			}
+			.onChange(of: currentIndex) {
+				playCurrentCardAudio()
+			}
 			.onAppear {
 				loadImageForBackground()
+			}
+			.onAppear {
+				loadImageForBackground()
+				playCurrentCardAudio()
 			}
 			.navigationDestination(item: $timeTrial) { trial in
 				TimeTrialResultView(timeTrial: trial)
@@ -280,6 +288,19 @@ fileprivate extension TimeTrialView {
 			return (front: card.backEntry, back: card.frontEntry)
 		}
 		return (front: card.frontEntry, back: card.backEntry)
+	}
+	
+	private func playCurrentCardAudio() {
+		
+		guard let card = currentCard else { return }
+		let filename: String?
+		
+		if sideReversed(for: card) {
+			filename = card.backRecording
+		} else {
+			filename = card.frontRecording
+		}
+		recording.play(filename)
 	}
 }
 

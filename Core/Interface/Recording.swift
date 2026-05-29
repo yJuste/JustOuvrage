@@ -11,6 +11,7 @@ import AVFoundation
 @Observable final class Recording {
 	
 	private var recorder: AVAudioRecorder?
+	private var player: AVAudioPlayer?
 	private let preferences: Preferences = .unique
 	
 	private let folder: URL = {
@@ -75,6 +76,27 @@ import AVFoundation
 			if FileManager.default.fileExists(atPath: fileURL.path) {
 				try FileManager.default.removeItem(at: fileURL)
 			}
+		} catch {
+			print(Errors.AudioRecorder)
+		}
+	}
+	
+	// Player
+	
+	func play(_ filename: String?) {
+		
+		guard let filename else { return }
+		guard exists(filename) else { return }
+		
+		do {
+			let session = AVAudioSession.sharedInstance()
+			try session.setCategory(.playback, mode: .spokenAudio)
+			try session.setActive(true)
+			
+			player?.stop()
+			player = try AVAudioPlayer(contentsOf: url(for: filename))
+			player?.prepareToPlay()
+			player?.play()
 		} catch {
 			print(Errors.AudioRecorder)
 		}

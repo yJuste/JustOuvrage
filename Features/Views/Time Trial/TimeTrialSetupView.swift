@@ -89,7 +89,6 @@ struct TimeTrialSetupView: View {
 							}
 						}
 					}
-					.id(preferences.globalColor)
 					.pickerStyle(.segmented)
 				} footer: {
 					Text("Choose which side of the cards will be shown first.")
