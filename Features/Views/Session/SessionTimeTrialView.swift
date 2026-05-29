@@ -61,92 +61,88 @@ struct SessionTimeTrialView: View {
 				let isPortrait = height > width
 				
 				ScrollView {
-					VStack {
-						Image(session.banner)
-							.resizable()
-							.aspectRatio(contentMode: .fill)
-							.frame(maxWidth: isPortrait ? width : .infinity)
-							.containerRelativeFrame(.vertical) { height, _ in
-								isPortrait ? height * 0.8 + max(verticalOffset, 0) * 0.4 : height + max(verticalOffset, 0) * 0.4
-							}
-							.clipped()
-							.navigationTransition(id: id, namespace: namespace)
-							.offset(y: verticalOffset > 0 ? -verticalOffset : 0)
-							.overlay(alignment: .bottom) {
-								mainInformation(paddingText: height > width ? 10 : 100)
-									.offset(y: 20)
-							}
-						LazyVStack(alignment: .leading, spacing: 15) {
-							ForEach(sortedTimeTrials) { timeTrial in
-								let isSelected = selection.contains(timeTrial.id)
-								HStack(spacing: 12) {
-									if editMode == .active {
-										Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
-											.font(.title3)
-											.foregroundStyle(isSelected ? Color.accentColor : .secondary)
-									}
-									HStack(spacing: 8) {
-										VStack(alignment: .leading, spacing: 5) {
-											Text(timeTrial.deck?.name ?? "Every Card")
-											Text(timeTrial.mode.mode)
-												.foregroundStyle(.secondary)
-										}
-										.font(.subheadline)
-										Spacer()
-										Text("\(timeTrial.cards.count) cards")
-											.font(.system(size: 15, weight: .semibold))
-										Button {
-											selectedTimeTrial = timeTrial
-											dismissItems.showOnly($showMetaData)
-										} label: {
-											let score = Int((timeTrial.success * 100).rounded())
-											Text(score, format: .number)
-												.font(.system(size: 20, weight: .semibold))
-												.foregroundStyle(.background)
-												.frame(width: 50, height: 50)
-												.background(
-													Circle().glassEffect(.clear.tint(score == 100 ? .blue : Color(hue: (Double(score) / 100) * 0.33, saturation: 1, brightness: 1)).interactive())
-												)
-										}
-										.buttonStyle(.plain)
-									}
+					Image(session.banner)
+						.resizable()
+						.aspectRatio(contentMode: .fill)
+						.frame(maxWidth: isPortrait ? width : .infinity)
+						.containerRelativeFrame(.vertical) { height, _ in
+							isPortrait ? height * 0.8 + max(verticalOffset, 0) * 0.4 : height + max(verticalOffset, 0) * 0.4
+						}
+						.clipped()
+						.navigationTransition(id: id, namespace: namespace)
+						.offset(y: verticalOffset > 0 ? -verticalOffset : 0)
+						.overlay(alignment: .bottom) {
+							mainInformation(paddingText: height > width ? 10 : 100)
+								.offset(y: 20)
+						}
+					LazyVStack(alignment: .leading, spacing: 15) {
+						ForEach(sortedTimeTrials) { timeTrial in
+							let isSelected = selection.contains(timeTrial.id)
+							HStack(spacing: 12) {
+								if editMode == .active {
+									Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
+										.font(.title3)
+										.foregroundStyle(isSelected ? Color.accentColor : .secondary)
 								}
-								.padding()
-								.background(
-									RoundedRectangle(cornerRadius: 18).fill(isSelected ? Color.accentColor.opacity(0.3) : .secondary.opacity(0.2))
-								)
-								.contentShape(Rectangle())
-								.onTapGesture {
-									let id = timeTrial.id
-									if editMode == .active {
-										withAnimation(.easeInOut(duration: 0.2)) {
-											if isSelected {
-												selection.remove(id)
-											} else {
-												selection.insert(id)
-											}
-										}
-									} else {
-										selectedTimeTrial = timeTrial
-										dismissItems.showOnly($showTimeTrial)
+								HStack(spacing: 8) {
+									VStack(alignment: .leading, spacing: 5) {
+										Text(timeTrial.deck?.name ?? "Every Card")
+										Text(timeTrial.mode.mode)
+											.foregroundStyle(.secondary)
 									}
-								}
-								.contextMenu {
-									Button(role: .destructive) {
+									.font(.subheadline)
+									Spacer()
+									Text("\(timeTrial.cards.count) cards")
+										.font(.system(size: 15, weight: .semibold))
+									Button {
 										selectedTimeTrial = timeTrial
-										showDeleteTimeTrial.toggle()
+										dismissItems.showOnly($showMetaData)
 									} label: {
-										Label("Delete from Time Trial", systemImage: "trash")
+										let score = Int((timeTrial.success * 100).rounded())
+										Text(score, format: .number)
+											.font(.system(size: 20, weight: .semibold))
+											.foregroundStyle(.background)
+											.frame(width: 50, height: 50)
+											.background(
+												Circle().glassEffect(.clear.tint(score == 100 ? .blue : Color(hue: (Double(score) / 100) * 0.33, saturation: 1, brightness: 1)).interactive())
+											)
 									}
-									.tint(nil)
+									.buttonStyle(.plain)
 								}
+							}
+							.padding()
+							.background(
+								RoundedRectangle(cornerRadius: 18).fill(isSelected ? Color.accentColor.opacity(0.3) : .secondary.opacity(0.2))
+							)
+							.contentShape(Rectangle())
+							.onTapGesture {
+								let id = timeTrial.id
+								if editMode == .active {
+									withAnimation(.easeInOut(duration: 0.2)) {
+										if isSelected {
+											selection.remove(id)
+										} else {
+											selection.insert(id)
+										}
+									}
+								} else {
+									selectedTimeTrial = timeTrial
+									dismissItems.showOnly($showTimeTrial)
+								}
+							}
+							.contextMenu {
+								Button(role: .destructive) {
+									selectedTimeTrial = timeTrial
+									showDeleteTimeTrial.toggle()
+								} label: {
+									Label("Delete from Time Trial", systemImage: "trash")
+								}
+								.tint(nil)
 							}
 						}
-						.padding()
 					}
+					.padding()
 				}
-				.scrollIndicators(.hidden)
-				.scrollContentBackground(.hidden)
 				.ignoresSafeArea(.container, edges: [.horizontal, .top])
 				.onScrollGeometryChange(for: CGFloat.self, of: { $0.contentOffset.y + $0.contentInsets.top }, action: { _, newValue in verticalOffset = -newValue })
 			}
@@ -193,6 +189,10 @@ struct SessionTimeTrialView: View {
 		}
 		.environment(\.editMode, $editMode)
 	}
+}
+
+/// Methods of SessionTimeTrialView.
+fileprivate extension SessionTimeTrialView {
 	
 	@ViewBuilder private func mainInformation(paddingText: CGFloat) -> some View {
 		
@@ -256,10 +256,6 @@ struct SessionTimeTrialView: View {
 		}
 		.padding(.bottom, 40)
 	}
-}
-
-/// Methods of SessionTimeTrialView.
-fileprivate extension SessionTimeTrialView {
 	
 	private func deleteSelection() {
 		for timeTrial in timeTrials where selection.contains(timeTrial.id) {

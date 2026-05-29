@@ -70,95 +70,91 @@ struct SessionRecordingView: View {
 				let isPortrait = height > width
 				
 				ScrollView {
-					VStack {
-						Image(session.banner)
-							.resizable()
-							.aspectRatio(contentMode: .fill)
-							.frame(maxWidth: isPortrait ? width : .infinity)
-							.containerRelativeFrame(.vertical) { height, _ in
-								isPortrait ? height * 0.8 + max(verticalOffset, 0) * 0.4 : height + max(verticalOffset, 0) * 0.4
-							}
-							.clipped()
-							.navigationTransition(id: id, namespace: namespace)
-							.offset(y: verticalOffset > 0 ? -verticalOffset : 0)
-							.overlay(alignment: .bottom) {
-								mainInformation(paddingText: height > width ? 10 : 100)
-									.offset(y: 20)
-							}
-						LazyVStack(alignment: .leading, spacing: 15) {
-							ForEach(cards) { card in
-								let isSelected = selection.contains(card.id)
-								HStack(spacing: 8) {
-									if editMode == .active {
-										Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
-											.font(.title3)
-											.foregroundStyle(isSelected ? Color.accentColor : .secondary)
-									}
-									VStack(alignment: .leading, spacing: 5) {
-										Text(card.frontEntry)
-										Text(card.backEntry)
-											.foregroundStyle(.secondary)
-									}
-									.font(.subheadline)
-									Spacer()
-									ZStack(alignment: .bottom) {
-										Button {
-											selectedCard = card
-											dismissItems.showOnly($showRecording)
-										} label: {
-											Image(systemName: "waveform")
-												.font(.system(size: 28))
-												.padding(12)
-												.background(Circle().glassEffect(.clear.tint(card.frontRecording != nil && card.backRecording != nil ? .green : card.frontRecording != nil || card.backRecording != nil ? .orange : .clear).interactive()))
-										}
-										.buttonStyle(.plain)
-										HStack(spacing: 0) {
-											if card.frontRecording != nil {
-												Image(systemName: "circle.fill")
-											}
-											if card.backRecording != nil {
-												Image(systemName: "circle.fill")
-											}
-										}
-										.font(.caption2)
-										.offset(y: 5)
-									}
+					Image(session.banner)
+						.resizable()
+						.aspectRatio(contentMode: .fill)
+						.frame(maxWidth: isPortrait ? width : .infinity)
+						.containerRelativeFrame(.vertical) { height, _ in
+							isPortrait ? height * 0.8 + max(verticalOffset, 0) * 0.4 : height + max(verticalOffset, 0) * 0.4
+						}
+						.clipped()
+						.navigationTransition(id: id, namespace: namespace)
+						.offset(y: verticalOffset > 0 ? -verticalOffset : 0)
+						.overlay(alignment: .bottom) {
+							mainInformation(paddingText: height > width ? 10 : 100)
+								.offset(y: 20)
+						}
+					LazyVStack(alignment: .leading, spacing: 15) {
+						ForEach(cards) { card in
+							let isSelected = selection.contains(card.id)
+							HStack(spacing: 8) {
+								if editMode == .active {
+									Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
+										.font(.title3)
+										.foregroundStyle(isSelected ? Color.accentColor : .secondary)
 								}
-								.padding()
-								.background(
-									RoundedRectangle(cornerRadius: 18).fill(isSelected ? Color.accentColor.opacity(0.3) : .secondary.opacity(0.2))
-								)
-								.onTapGesture {
-									let id = card.id
-									if editMode == .active {
-										withAnimation(.easeInOut(duration: 0.2)) {
-											if isSelected {
-												selection.remove(id)
-											} else {
-												selection.insert(id)
-											}
-										}
-									} else {
-										selectedCard = card
-										dismissItems.showOnly($showCard)
-									}
+								VStack(alignment: .leading, spacing: 5) {
+									Text(card.frontEntry)
+									Text(card.backEntry)
+										.foregroundStyle(.secondary)
 								}
-								.contextMenu {
+								.font(.subheadline)
+								Spacer()
+								ZStack(alignment: .bottom) {
 									Button {
 										selectedCard = card
-										showClearRecording.toggle()
+										dismissItems.showOnly($showRecording)
 									} label: {
-										Label("Clear recordings in the card", systemImage: "trash")
+										Image(systemName: "waveform")
+											.font(.system(size: 28))
+											.padding(12)
+											.background(Circle().glassEffect(.clear.tint(card.frontRecording != nil && card.backRecording != nil ? .green : card.frontRecording != nil || card.backRecording != nil ? .orange : .clear).interactive()))
 									}
-									.tint(nil)
+									.buttonStyle(.plain)
+									HStack(spacing: 0) {
+										if card.frontRecording != nil {
+											Image(systemName: "circle.fill")
+										}
+										if card.backRecording != nil {
+											Image(systemName: "circle.fill")
+										}
+									}
+									.font(.caption2)
+									.offset(y: 5)
 								}
 							}
+							.padding()
+							.background(
+								RoundedRectangle(cornerRadius: 18).fill(isSelected ? Color.accentColor.opacity(0.3) : .secondary.opacity(0.2))
+							)
+							.onTapGesture {
+								let id = card.id
+								if editMode == .active {
+									withAnimation(.easeInOut(duration: 0.2)) {
+										if isSelected {
+											selection.remove(id)
+										} else {
+											selection.insert(id)
+										}
+									}
+								} else {
+									selectedCard = card
+									dismissItems.showOnly($showCard)
+								}
+							}
+							.contextMenu {
+								Button {
+									selectedCard = card
+									showClearRecording.toggle()
+								} label: {
+									Label("Clear recordings in the card", systemImage: "trash")
+								}
+								.tint(nil)
+							}
 						}
-						.padding()
 					}
+					.padding()
 				}
-				.scrollIndicators(.hidden)
-				.scrollContentBackground(.hidden)
 				.ignoresSafeArea(.container, edges: [.horizontal, .top])
 				.onScrollGeometryChange(for: CGFloat.self, of: { $0.contentOffset.y + $0.contentInsets.top }, action: { _, newValue in verticalOffset = -newValue })
 			}

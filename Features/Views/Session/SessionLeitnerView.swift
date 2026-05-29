@@ -66,43 +66,39 @@ struct SessionLeitnerView: View {
 				let isPortrait = height > width
 				
 				ScrollView {
-					VStack {
-						Image(session.banner)
-							.resizable()
-							.aspectRatio(contentMode: .fill)
-							.frame(maxWidth: isPortrait ? width : .infinity)
-							.containerRelativeFrame(.vertical) { height, _ in
-								isPortrait ? height * 0.8 + max(verticalOffset, 0) * 0.4 : height + max(verticalOffset, 0) * 0.4
-							}
-							.clipped()
-							.navigationTransition(id: id, namespace: namespace)
-							.offset(y: verticalOffset > 0 ? -verticalOffset : 0)
-							.overlay(alignment: .bottom) {
-								mainInformation(paddingText: height > width ? 10 : 100)
-									.offset(y: 20)
-							}
-						LazyVStack(alignment: .leading, spacing: 15) {
-							if !pendingCards.isEmpty {
-								Text("Pending")
-									.font(.headline)
-								ForEach(pendingCards) { card in
-									section(card: card)
-								}
-							}
-							if !filteredCards.isEmpty {
-								Text("All")
-									.font(.headline)
-								ForEach(filteredCards) { card in
-									section(card: card)
-								}
+					Image(session.banner)
+						.resizable()
+						.aspectRatio(contentMode: .fill)
+						.frame(maxWidth: isPortrait ? width : .infinity)
+						.containerRelativeFrame(.vertical) { height, _ in
+							isPortrait ? height * 0.8 + max(verticalOffset, 0) * 0.4 : height + max(verticalOffset, 0) * 0.4
+						}
+						.clipped()
+						.navigationTransition(id: id, namespace: namespace)
+						.offset(y: verticalOffset > 0 ? -verticalOffset : 0)
+						.overlay(alignment: .bottom) {
+							mainInformation(paddingText: height > width ? 10 : 100)
+								.offset(y: 20)
+						}
+					LazyVStack(alignment: .leading, spacing: 15) {
+						if !pendingCards.isEmpty {
+							Text("Pending")
+								.font(.headline)
+							ForEach(pendingCards) { card in
+								section(card: card)
 							}
 						}
-						.id(editMode == .active || showClearLeitner)
-						.padding()
+						if !filteredCards.isEmpty {
+							Text("All")
+								.font(.headline)
+							ForEach(filteredCards) { card in
+								section(card: card)
+							}
+						}
 					}
+					.id(editMode == .active || showClearLeitner)
+					.padding()
 				}
-				.scrollIndicators(.hidden)
-				.scrollContentBackground(.hidden)
 				.ignoresSafeArea(.container, edges: [.horizontal, .top])
 				.onScrollGeometryChange(for: CGFloat.self, of: { $0.contentOffset.y + $0.contentInsets.top }, action: { _, newValue in verticalOffset = -newValue })
 			}
