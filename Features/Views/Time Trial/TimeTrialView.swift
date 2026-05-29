@@ -154,6 +154,7 @@ struct TimeTrialView: View {
 	private func flashcard(card: Card, height: CGFloat, width: CGFloat, isPortrait: Bool) -> some View {
 		let dragheight = dragOffset.height
 		let dragwidth = dragOffset.width
+		let entry = sideEntries(for: card)
 		return ZStack {
 			rectangle
 				.fill(.clear)
@@ -162,11 +163,11 @@ struct TimeTrialView: View {
 				.stroke(.primary.opacity(0.1), lineWidth: 2)
 			VStack(spacing: 24) {
 				Spacer()
-				Text(card.frontEntry)
+				Text(entry.front)
 					.font(.system(size: width * (isPortrait ? 0.06 : 0.04), weight: .semibold))
 					.foregroundStyle(.primary)
 				if isCardTapped && argument.mode != .death {
-					Text(card.backEntry)
+					Text(entry.back)
 						.font(.system(size: width * (isPortrait ? 0.05 : 0.03), weight: .semibold))
 						.foregroundStyle(.secondary)
 				}
@@ -268,6 +269,18 @@ fileprivate extension TimeTrialView {
 		guard !directions.isEmpty else { return 0 }
 		return Double(directions.filter { $0 == .right }.count) / Double(directions.count)
 	}
+	
+	private func sideReversed(for card: Card) -> Bool {
+		argument.reversedCards[card.id] ?? false
+	}
+	
+	private func sideEntries(for card: Card) -> (front: String, back: String) {
+		
+		if sideReversed(for: card) {
+			return (front: card.backEntry, back: card.frontEntry)
+		}
+		return (front: card.frontEntry, back: card.backEntry)
+	}
 }
 
 /// Toolbar.
@@ -304,7 +317,7 @@ fileprivate extension TimeTrialView {
 	
 	let deck = Deck(name: "Title deck", image: "deck")
 	
-	let argument = Argument.make(deck: deck, cards: cards, mode: .chill, directions: [.left], timeInterval: 4.0, order: .alphabeticalAscending, numberOfCards: 30)
+	let argument = Argument.make(deck: deck, cards: cards, side: .front, mode: .chill, directions: [.left], timeInterval: 4.0, order: .alphabeticalAscending, numberOfCards: 30)
 	
 	TimeTrialView(argument: argument)
 }

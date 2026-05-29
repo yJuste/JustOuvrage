@@ -347,7 +347,7 @@ fileprivate extension SessionTimeTrialView {
 	let deck2 = Deck(name: "Lucas", image: "deck")
 	let deck3 = Deck(name: "All", image: "deck")
 	
-	let argument = Argument.make(deck: nil, cards: cards, mode: .chill, directions: [.left], timeInterval: 4.0, order: .alphabeticalAscending, numberOfCards: 30)
+	let argument = Argument.make(deck: nil, cards: cards, side: .front, mode: .chill, directions: [.left], timeInterval: 4.0, order: .alphabeticalAscending, numberOfCards: 30)
 	context.insert(deck1)
 	context.insert(deck2)
 	context.insert(deck3)

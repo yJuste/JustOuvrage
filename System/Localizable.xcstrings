@@ -211,6 +211,12 @@
     "Audio Recording" : {
 
     },
+    "Back" : {
+
+    },
+    "Both" : {
+
+    },
     "Box %lld" : {
 
     },
@@ -242,6 +248,9 @@
 
     },
     "Choose whether to use an animated background.\n\nNone: no background\n\nGradient: static gradient background\nModerate impact on memory (~1.5x) and energy usage.\n\nAnimated background: dynamic visual effects\nModerate impact on memory (~1.5x) and significant and continuous energy consumption (~2.5x)" : {
+
+    },
+    "Choose which side of the cards will be shown first." : {
 
     },
     "Clear" : {
@@ -374,6 +383,9 @@
 
     },
     "For more information, feel free to contact: [No mail yet]" : {
+
+    },
+    "Front" : {
 
     },
     "Future updates will include sessions to create your own website links as well as your own languages." : {
@@ -659,6 +671,9 @@
 
     },
     "Settings" : {
+
+    },
+    "Side" : {
 
     },
     "Since downloading and data export are not implemented yet, all data, without any exception, will be permanently deleted if or when the app is removed." : {

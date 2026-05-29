@@ -35,6 +35,7 @@ import Observation
 		case trialMode
 		case trialRefreshTimer
 		case trialSwipeThreshold
+		case trialSide
 		
 		// In Settings
 		case lastCleanDuplicate
@@ -70,6 +71,7 @@ import Observation
 	private var trialModeRaw: Int = 0
 	private var trialRefreshTimerRaw: Double = 0
 	private var trialSwipeThresholdRaw: Double = 0
+	private var trialSideRaw: Int = 0
 	private var lastCleanDuplicateRaw: Double = 0
 	private var audioQualityRaw: String = ""
 	private var visibleDecksRaw: Bool = false
@@ -105,6 +107,7 @@ import Observation
 		trialModeRaw = userDefaults.integer(forKey: Key.trialMode.rawValue)
 		trialRefreshTimerRaw = userDefaults.double(forKey: Key.trialRefreshTimer.rawValue)
 		trialSwipeThresholdRaw = userDefaults.double(forKey: Key.trialSwipeThreshold.rawValue)
+		trialSideRaw = userDefaults.integer(forKey: Key.trialSide.rawValue)
 		lastCleanDuplicateRaw = userDefaults.double(forKey: Key.lastCleanDuplicate.rawValue)
 		audioQualityRaw = userDefaults.string(forKey: Key.audioQuality.rawValue) ?? AudioQuality.high.rawValue
 		visibleDecksRaw = userDefaults.bool(forKey: Key.visibleDecks.rawValue)
@@ -217,6 +220,14 @@ import Observation
 		set {
 			trialSwipeThresholdRaw = Double(newValue)
 			userDefaults.set(trialSwipeThresholdRaw, forKey: Key.trialSwipeThreshold.rawValue)
+		}
+	}
+	
+	var trialSide: Side {
+		get { Side(rawValue: trialSideRaw) ?? .front }
+		set {
+			trialSideRaw = newValue.rawValue
+			userDefaults.set(trialSideRaw, forKey: Key.trialSide.rawValue)
 		}
 	}
 	

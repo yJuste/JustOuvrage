@@ -27,6 +27,7 @@ struct TimeTrialSetupView: View {
 	private let optionsOfNumberOfCards: [Int] = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160, 170, 180, 190, 200]
 	private let optionsOfOrder: [SortTrial] = SortTrial.allCases
 	private let optionsOfMode: [Mode] = Mode.allCases
+	private let optionsOfSide: [Side] = Side.allCases
 	
 	private var selectedDeck: Binding<Deck?> {
 		Binding {
@@ -74,6 +75,24 @@ struct TimeTrialSetupView: View {
 					}
 				} footer: {
 					Text("How many cards to include in this session.")
+				}
+				Section {
+					Picker("Side", selection: $preferences.trialSide) {
+						ForEach(optionsOfSide, id: \.self) { side in
+							switch side {
+							case .front: Text("Front")
+									.tag(side)
+							case .back: Text("Back")
+									.tag(side)
+							case .both: Text("Both")
+									.tag(side)
+							}
+						}
+					}
+					.id(preferences.globalColor)
+					.pickerStyle(.segmented)
+				} footer: {
+					Text("Choose which side of the cards will be shown first.")
 				}
 				Section {
 					Picker(selection: $preferences.trialMode) {
@@ -162,7 +181,7 @@ struct TimeTrialSetupView: View {
 					.transition(.opacity.combined(with: .move(edge: .top)))
 				}
 			}
-			.tint(.secondary)
+			.tint(Color.secondary)
 			.animation(.spring(response: 0.35, dampingFraction: 0.9), value: preferences.trialMode)
 			.toolbar { toolbar }
 			.navigationDestination(isPresented: $showTimeTrial) {
@@ -189,7 +208,7 @@ fileprivate extension TimeTrialSetupView {
 	@ToolbarContentBuilder private var toolbar: some ToolbarContent {
 		ToolbarItem(placement: .topBarTrailing) {
 			Button {
-				let arg = Argument.make(deck: selectedDeck.wrappedValue, cards: cards, mode: preferences.trialMode, directions: [], timeInterval: preferences.trialTimeInterval, order: preferences.trialOrder, numberOfCards: preferences.trialNumberOfCards)
+				let arg = Argument.make(deck: selectedDeck.wrappedValue, cards: cards, side: preferences.trialSide, mode: preferences.trialMode, directions: [], timeInterval: preferences.trialTimeInterval, order: preferences.trialOrder, numberOfCards: preferences.trialNumberOfCards)
 				guard !arg.cards.isEmpty else { return showNoCards.toggle() }
 				argument = arg
 				showTimeTrial.toggle()
