@@ -9,9 +9,7 @@ import SwiftUI
 
 extension Array where Element == Binding<Bool> {
 	
-	func setAll(to value: Bool) {
-		forEach { $0.wrappedValue = value }
-	}
+	func setAll(to value: Bool) { forEach { $0.wrappedValue = value } }
 	
 	func showOnly(_ item: Binding<Bool>) {
 		setAll(to: false)

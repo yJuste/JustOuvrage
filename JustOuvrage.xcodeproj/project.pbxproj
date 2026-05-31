@@ -15,6 +15,7 @@
 		0A16CC882F8F447E0015C13A /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		0A16CC932F8F467E0015C13A /* JustOuvrageApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JustOuvrageApp.swift; sourceTree = "<group>"; };
 		0A16CD2B2F904C810015C13A /* JustOuvrage.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = JustOuvrage.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		0A17DDDD2FCAB87F00874935 /* JustOuvrage-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "JustOuvrage-Info.plist"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -49,6 +50,7 @@
 		0A16CBE22F8F3DA40015C13A = {
 			isa = PBXGroup;
 			children = (
+				0A17DDDD2FCAB87F00874935 /* JustOuvrage-Info.plist */,
 				0AA05C232F90CDBA00E3CCBE /* System */,
 				0A16CC8D2F8F45B70015C13A /* Core */,
 				0A16CC9C2F8F47220015C13A /* Features */,
@@ -280,6 +282,8 @@
 				DEVELOPMENT_TEAM = 8QQ6MQJL5K;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "JustOuvrage-Info.plist";
+				INFOPLIST_KEY_LSSupportsOpeningDocumentsInPlace = YES;
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Need to record for Audio Recording.";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "We need access to your photo library to select images for your decks.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -314,6 +318,8 @@
 				DEVELOPMENT_TEAM = 8QQ6MQJL5K;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "JustOuvrage-Info.plist";
+				INFOPLIST_KEY_LSSupportsOpeningDocumentsInPlace = YES;
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Need to record for Audio Recording.";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "We need access to your photo library to select images for your decks.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;

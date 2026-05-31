@@ -64,20 +64,8 @@ extension Argument {
 			case .random: res.shuffle()
 			case .newestToOldest: res = res.sorted { $0.createdAt > $1.createdAt }
 			case .oldestToNewest: res = res.sorted { $0.createdAt < $1.createdAt }
-			case .alphabeticalAscending:
-				res = res.sorted {
-					if $0.frontEntry == $1.frontEntry {
-						return $0.backEntry.localizedStandardCompare($1.backEntry) == .orderedAscending
-					}
-					return $0.frontEntry.localizedStandardCompare($1.frontEntry) == .orderedAscending
-				}
-			case .alphabeticalDescending:
-				res = res.sorted {
-					if $0.frontEntry == $1.frontEntry {
-						return $0.backEntry.localizedStandardCompare($1.backEntry) == .orderedDescending
-					}
-					return $0.frontEntry.localizedStandardCompare($1.frontEntry) == .orderedDescending
-				}
+			case .alphabeticalAscending: res = res.sorted { if $0.frontEntry == $1.frontEntry { return $0.backEntry.localizedStandardCompare($1.backEntry) == .orderedAscending }; return $0.frontEntry.localizedStandardCompare($1.frontEntry) == .orderedAscending }
+			case .alphabeticalDescending: res = res.sorted { if $0.frontEntry == $1.frontEntry { return $0.backEntry.localizedStandardCompare($1.backEntry) == .orderedDescending }; return $0.frontEntry.localizedStandardCompare($1.frontEntry) == .orderedDescending }
 			}
 		}
 		

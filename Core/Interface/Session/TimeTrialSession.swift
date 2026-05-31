@@ -23,7 +23,6 @@ struct TimeTrialSession: SessionService {
  You'll simply see all the decks you've worked on along with the associated mode.
  The average score is displayed inside a bubble on the right with a color indicating the success level. It also displays the metadata.
  """
-	
 	let banner: ImageResource = .timeTrial
 	let timeTrialExample: ImageResource = .timeTrialExample
 }

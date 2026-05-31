@@ -361,6 +361,15 @@
     "Done" : {
 
     },
+    "Download" : {
+
+    },
+    "Download Deck" : {
+
+    },
+    "Downloaded" : {
+
+    },
     "Downloading / Data Export" : {
 
     },
@@ -376,6 +385,9 @@
     "Every Card" : {
 
     },
+    "Export" : {
+
+    },
     "First of all, it’s a great honor that you are using this flashcard/dictionary application.\n\nThis app was originally designed for my personal needs because I felt it was important to have an app like this for language learning, allowing me to store every learned word and track progress in real time.\n\nThat’s also why the application is completely free. If you enjoy it, feel free to leave your feedback." : {
 
     },
@@ -383,6 +395,9 @@
 
     },
     "For more information, feel free to contact: [No mail yet]" : {
+
+    },
+    "From Deck" : {
 
     },
     "Front" : {
@@ -430,6 +445,12 @@
     "If you encounter any bugs in the application, feel free to report them to the provided email address." : {
 
     },
+    "Import" : {
+
+    },
+    "Import or export decks and cards to share them or transfer them between devices." : {
+
+    },
     "Infinity" : {
 
     },
@@ -449,6 +470,9 @@
 
     },
     "Languages" : {
+
+    },
+    "Last download: %@" : {
 
     },
     "Learn" : {
@@ -673,6 +697,9 @@
     "Settings" : {
 
     },
+    "Share or Receive" : {
+
+    },
     "Side" : {
 
     },
@@ -700,6 +727,9 @@
     "The timer is currently paused." : {
 
     },
+    "This deck has never been downloaded." : {
+
+    },
     "This will delete both recordings for this card." : {
 
     },
@@ -710,6 +740,9 @@
 
     },
     "Timer" : {
+
+    },
+    "Transfer" : {
 
     },
     "Trial" : {

@@ -5,14 +5,11 @@
 //  Created by Jules Longin on 5/4/26.
 //
 
-//https://www.google.com/search?q=drip+definition&hl=en&gl=us
-//https://www.google.com/search?q=こんにちは+定義&hl=ja&gl=jp
 import SwiftUI
 
 struct GoogleSite: SiteService {
 	
 	func specificLanguage(language: Language) -> String {
-		
 		switch language {
 		case .en_GB: return "definition_en_gb"
 		case .en_US: return "definition_en_us"

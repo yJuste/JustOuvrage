@@ -16,8 +16,10 @@ import UIKit
 @Observable final class FileImageStorage: ImageStorageService {
 	
 	private let folder: URL = {
+		
 		let url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0].appendingPathComponent("Images", isDirectory: true)
 		try? FileManager.default.createDirectory(at: url, withIntermediateDirectories: true)
+		
 		return url
 	}()
 	
@@ -40,24 +42,19 @@ import UIKit
 	func load(image name: String, size: CGFloat = 1024) throws -> UIImage {
 		
 		if name == Constants.defaultDeckImage { throw Errors.ImageError }
-		
 		if let cached = cache.object(forKey: name as NSString) { return cached }
 		
 		guard let source = CGImageSourceCreateWithURL(folder.appendingPathComponent(name) as CFURL, nil) else { throw Errors.ImageError }
-		
 		guard let cgImage = CGImageSourceCreateThumbnailAtIndex(source, 0, [kCGImageSourceCreateThumbnailFromImageAlways: true, kCGImageSourceThumbnailMaxPixelSize: size, kCGImageSourceCreateThumbnailWithTransform: true] as CFDictionary) else { throw Errors.ImageError }
 		
 		let final = UIImage(cgImage: cgImage)
-		
 		cache.setObject(final, forKey: name as NSString)
 		
 		return final
 	}
 	
 	func delete(image: String) throws {
-		
 		try FileManager.default.removeItem(at: folder.appendingPathComponent(image))
-		
 		cache.removeObject(forKey: image as NSString)
 	}
 }

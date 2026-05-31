@@ -325,7 +325,8 @@ fileprivate extension TimeTrialView {
 			Button {
 				// Nothing
 			} label: {
-				Text("\(min(currentIndex + 1, argument.cards.count))/\(argument.cards.count)")
+				let count = argument.cards.count
+				Text("\(min(currentIndex + 1, count))/\(count)")
 			}
 			.foregroundStyle(.primary)
 		}

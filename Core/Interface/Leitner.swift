@@ -13,6 +13,7 @@ enum Leitner {
 	static let maximumScore = 7
 	
 	static func due(from cards: [Card]) -> [Card] {
+		
 		cards.filter { card in
 			guard card.leitnerScore < maximumScore else { return false }
 			guard let nextLeitnerAt = card.nextLeitnerAt else { return true }
@@ -33,28 +34,26 @@ enum Leitner {
 		if interval <= 0 { return "Now!" }
 		
 		let seconds = Int(interval)
-		let minutes = seconds / 60
-		let hours = seconds / 3600
-		let days = seconds / 86400
 		
 		switch seconds {
 		case ..<60: return "\(seconds)s"
-		case ..<3600: return "\(minutes)m"
-		case ..<86400: return "\(hours)h"
-		default: return "\(days)d"
+		case ..<3600: return "\(seconds / 60)m"
+		case ..<86400: return "\(seconds / 3600)h"
+		default: return "\(seconds / 86400)d"
 		}
 	}
 	
 	static func update(for card: Card, score: Int) {
 		
 		card.leitnerScore = min(max(score, minimumScore), maximumScore)
+		let score = card.leitnerScore
 		
-		if card.leitnerScore == maximumScore { card.nextLeitnerAt = nil; return }
+		if score == maximumScore { card.nextLeitnerAt = nil; return }
 		
-		if card.leitnerScore == 1 {
+		if score == 1 {
 			card.nextLeitnerAt = .now
 		} else {
-			card.nextLeitnerAt = Calendar.current.date(byAdding: .day, value: card.leitnerScore, to: .now)
+			card.nextLeitnerAt = Calendar.current.date(byAdding: .day, value: score, to: .now)
 		}
 	}
 }

@@ -32,7 +32,6 @@ struct LeitnerSession: SessionService {
  Pending, for all cards waiting to be reviewed.
  And All, which lists every card along with its Leitner score.
  """
-	
 	let banner: ImageResource = .leitner
 	let leitnerExample: ImageResource = .leitnerExample
 }

@@ -43,10 +43,10 @@ struct DraftView: View {
 							Text("\(draft.entry)")
 						}
 						WordsLinkingToSite(title: "Forvo", item: cleanEntry) { entry in
-							destination = site.forvo.link(for: entry, in: (selectedLanguage, selectedLanguage))
+							destination = site.forvo.link(for: entry, in: selectedLanguage)
 						}
 						WordsLinkingToSite(title: "WordReference", item: cleanEntry) { entry in
-							destination = site.wordReference.link(for: entry, in: selectedLanguage)
+							destination = site.wordReference.link(for: entry, in: (selectedLanguage, preferences.backLanguage))
 						}
 						WordsLinkingToSite(title: "Google", item: cleanEntry) { entry in
 							destination = site.google.link(for: entry, in: selectedLanguage)

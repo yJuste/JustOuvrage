@@ -19,6 +19,7 @@ import Foundation
 	var author: String
 	var lastViewedAt: Date?
 	var lastOpenedAt: Date?
+	var lastDownloadAt: Date?
 	
 	@Relationship(inverse: \Card.decks) var cards: [Card]
 	

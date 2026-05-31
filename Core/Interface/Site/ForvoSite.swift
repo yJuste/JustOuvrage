@@ -10,7 +10,6 @@ import SwiftUI
 struct ForvoSite: SiteService {
 	
 	func specificLanguage(language: Language) -> String {
-		
 		switch language {
 		case .en_GB: return "en_uk"
 		case .en_US: return "en_usa"
@@ -24,15 +23,11 @@ struct ForvoSite: SiteService {
 		
 		let languageCode = specificLanguage(language: language)
 		let expressionEncoded = expression.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? expression
-		let link = expression.contains(" ")
-		? "https://forvo.com/search/\(expressionEncoded)/\(languageCode)"
-		: "https://forvo.com/word/\(expressionEncoded)/#\(languageCode)"
 		
-		guard let url = URL(string: link) else { return nil }
+		guard let url = URL(string: expression.contains(" ") ? "https://forvo.com/search/\(expressionEncoded)/\(languageCode)" : "https://forvo.com/word/\(expressionEncoded)/#\(languageCode)") else { return nil }
+		
 		return Destination(url: url)
 	}
 	
-	func link(for expression: String, in language: (Language, Language)) -> Destination? {
-		link(for: expression, in: language.0)
-	}
+	func link(for expression: String, in language: (Language, Language)) -> Destination? { link(for: expression, in: language.0) }
 }

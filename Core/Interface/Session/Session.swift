@@ -16,10 +16,10 @@ enum Session: CaseIterable {
 	
 	final class Sessions {
 		
-		fileprivate init() {}
-		
 		lazy var audioRecording = RecordingSession()
 		lazy var timeTrial = TimeTrialSession()
 		lazy var leitner = LeitnerSession()
+		
+		fileprivate init() {}
 	}
 }

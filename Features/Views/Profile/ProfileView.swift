@@ -15,6 +15,8 @@ struct ProfileView: View {
 	@Environment(\.dismiss) private var dismiss
 	
 	@State private var showLogOut: Bool = false
+	@State private var color: Color = Preferences.unique.globalColor.color
+	@State private var showTransfer: Bool = false
 	
 	var body: some View {
 		NavigationStack {
@@ -42,6 +44,20 @@ struct ProfileView: View {
 					Text("Your Just Account provides a unique identifier that connects you across all Just Anthology productions.")
 				}
 				Section {
+					Button {
+						showTransfer = true
+					} label: {
+						Label {
+							Text("Share or Receive")
+						} icon: {
+							Image(systemName: "square.and.arrow.up.on.square")
+								.foregroundStyle(color)
+						}
+					}
+				} footer: {
+					Text("Import or export decks and cards to share them or transfer them between devices.")
+				}
+				Section {
 					NavigationLink {
 						SettingsView()
 					} label: {
@@ -49,7 +65,7 @@ struct ProfileView: View {
 							Text("Settings")
 						} icon: {
 							Image(systemName: "gear")
-								.foregroundStyle(Preferences.unique.globalColor.color)
+								.foregroundStyle(color)
 						}
 					}
 				} footer: {
@@ -74,6 +90,14 @@ struct ProfileView: View {
 			}
 			.onAppear {
 				Appearance.configurePicker()
+			}
+			.sheet(isPresented: $showTransfer) {
+				TransferView()
+					.presentationDetents([
+						.fraction(Constants.heightOfATransfer[0]),
+						.fraction(Constants.heightOfATransfer[1])
+					])
+					.presentationBackgroundInteraction(.enabled)
 			}
 			.toolbar { toolbar }
 			.alert("Log out", isPresented: $showLogOut) {

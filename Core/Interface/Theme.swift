@@ -15,12 +15,10 @@ enum Theme {
 		
 		let width = 80
 		let height = 80
-		let bytesPerPixel = 4
-		let bytesPerRow = width * bytesPerPixel
 		
 		var rawData = [UInt8](repeating: 0, count: width * height * 4)
 		
-		guard let context = CGContext(data: &rawData, width: width, height: height, bitsPerComponent: 8, bytesPerRow: bytesPerRow, space: CGColorSpaceCreateDeviceRGB(), bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue) else { return [.black, .black] }
+		guard let context = CGContext(data: &rawData, width: width, height: height, bitsPerComponent: 8, bytesPerRow: width * 4, space: CGColorSpaceCreateDeviceRGB(), bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue) else { return [.black, .black] }
 		
 		context.draw(cgImage, in: CGRect(x: 0, y: 0, width: width, height: height))
 		
@@ -39,12 +37,11 @@ enum Theme {
 			let r = CGFloat(rawData[i]) / 255
 			let g = CGFloat(rawData[i + 1]) / 255
 			let b = CGFloat(rawData[i + 2]) / 255
-			let color = UIColor(red: r, green: g, blue: b, alpha: 1)
 			var h: CGFloat = 0
 			var s: CGFloat = 0
 			var br: CGFloat = 0
 			
-			color.getHue(&h, saturation: &s, brightness: &br, alpha: nil)
+			UIColor(red: r, green: g, blue: b, alpha: 1).getHue(&h, saturation: &s, brightness: &br, alpha: nil)
 			
 			if s < 0.15 || br < 0.12 { continue }
 			
@@ -58,19 +55,15 @@ enum Theme {
 			buckets[bucketIndex] = bucket
 		}
 		
-		let sortedBuckets = buckets.values.sorted { $0.count > $1.count }.prefix(2)
 		var uiColors: [UIColor] = []
 		
-		for bucket in sortedBuckets {
+		for bucket in (buckets.values.sorted { $0.count > $1.count }.prefix(2)) {
 			
-			guard bucket.count > 0 else { continue }
+			let count = bucket.count
 			
-			let avgR = bucket.r / bucket.count
-			let avgG = bucket.g / bucket.count
-			let avgB = bucket.b / bucket.count
-			let uiColor = UIColor(red: avgR, green: avgG, blue: avgB, alpha: 1)
+			guard count > 0 else { continue }
 			
-			uiColors.append(uiColor)
+			uiColors.append(UIColor(red: bucket.r / count, green: bucket.g / count, blue: bucket.b / count, alpha: 1))
 		}
 		
 		while uiColors.count < 2 {

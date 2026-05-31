@@ -38,7 +38,6 @@ struct RecordingSession: SessionService {
   
   Have fun completing them all :)
   """
-	
 	let banner: ImageResource = .audioRecording
 	let recordingExample: ImageResource = .audioRecordingExample
 	let cardExample: ImageResource = .cardExample

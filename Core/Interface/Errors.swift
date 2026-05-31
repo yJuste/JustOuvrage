@@ -14,4 +14,5 @@ enum Errors: Error {
 	case CardDuplicationError
 	case ModelContextError
 	case AudioRecorder
+	case DataTransfer
 }

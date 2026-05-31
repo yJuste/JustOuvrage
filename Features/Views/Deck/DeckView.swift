@@ -16,6 +16,7 @@ struct DeckView: View {
 	var namespace: Namespace.ID?
 	
 	@Environment(FileImageStorage.self) private var storage
+	@Environment(Recording.self) private var recording
 	@Environment(\.colorScheme) private var colorScheme
 	@Environment(\.modelContext) private var modelContext
 	@Environment(\.dismiss) private var dismiss
@@ -28,6 +29,7 @@ struct DeckView: View {
 	@State private var selectedCard: Card?
 	@State private var argument: Argument?
 	@State private var colors: [Color]?
+	@State private var isDownloaded = false
 	@State private var showCard: Bool = false
 	@State private var showDepiction: Bool = false
 	@State private var showCardsToDeck: Bool = false
@@ -42,6 +44,7 @@ struct DeckView: View {
 	@State private var showRecording: Bool = false
 	@State private var showDecksToCard: Bool = false
 	@State private var showEditCard: Bool = false
+	@State private var showAddedBanner: Bool = false
 	@State private var showGradientBackground: Bool = Preferences.unique.gradientBackground
 	@State private var showAnimationBackground: Bool = Preferences.unique.animationBackground
 	
@@ -298,6 +301,17 @@ struct DeckView: View {
 			.onChange(of: deck.image) {
 				loadImageForBackground()
 			}
+			.overlay(alignment: .top) {
+				if showAddedBanner {
+					Label("Downloaded", systemImage: "checkmark.circle.fill")
+						.environment(\.layoutDirection, .rightToLeft)
+						.font(.subheadline.weight(.medium))
+						.padding(EdgeInsets(top: 10, leading: 14, bottom: 10, trailing: 14))
+						.background((colors?.first ?? globalColor).opacity(0.8))
+						.clipShape(Capsule())
+						.transition(.move(edge: .top).combined(with: .opacity))
+				}
+			}
 			.toolbar { toolbar }
 			.navigationDestination(isPresented: $showTimeTrial) {
 				if let argument = argument {
@@ -334,8 +348,17 @@ struct DeckView: View {
 			} message: {
 				Text("You can't start the Time Trial because there are no cards in the deck.")
 			}
-			.alert("Downloading is not implemented yet.", isPresented: $showDownload) {
-				Button("OK", role: .cancel) { }
+			.alert("Download Deck", isPresented: $showDownload) {
+				Button("Cancel", role: .cancel) { }
+				Button("Download") {
+					Task { await download(deck) }
+				}
+			} message: {
+				if let date = deck.lastDownloadAt {
+					Text("Last download: \(date.formatted(date: .abbreviated, time: .shortened))")
+				} else {
+					Text("This deck has never been downloaded.")
+				}
 			}
 			.navigationBarBackButtonHidden(true)
 		}
@@ -344,6 +367,26 @@ struct DeckView: View {
 
 /// Methods of DeckView.
 fileprivate extension DeckView {
+	
+	@MainActor private func showAdded() async {
+		withAnimation(.snappy) {
+			showAddedBanner.toggle()
+		}
+		try? await Task.sleep(for: .seconds(1.5))
+		withAnimation(.snappy) {
+			showAddedBanner.toggle()
+		}
+	}
+	
+	private func download(_ deck: Deck) async {
+		do {
+			let _ = try DataTransferObject.export(deck: deck, cards: deck.cards, recording: recording)
+			deck.lastDownloadAt = .now
+			await showAdded()
+		} catch {
+			//
+		}
+	}
 	
 	private func removeTheCard() {
 		if let card = selectedCard {
