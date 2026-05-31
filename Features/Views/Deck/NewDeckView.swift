@@ -132,7 +132,7 @@ fileprivate extension NewDeckView {
 					do {
 						image = try storage.save(image: uiimage)
 					} catch {
-						print(Errors.ImageError)
+						print(Errors.Image)
 					}
 				}
 				modelContext.insert(Deck(name: name, image: image))

@@ -212,7 +212,7 @@ fileprivate extension EditCardView {
 			onSave(card)
 			try modelContext.save()
 		} catch {
-			print(Errors.ModelContextError)
+			print(Errors.ModelContext)
 		}
 	}
 }

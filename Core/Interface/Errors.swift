@@ -8,11 +8,12 @@
 /// An Interface to throw `errors`.
 enum Errors: Error {
 	
-	case ImageError
-	case PasswordError
-	case SiteError
-	case CardDuplicationError
-	case ModelContextError
+	case Image
+	case Password
+	case Site
+	case DuplicationCard
+	case DuplicationRecording
+	case ModelContext
 	case AudioRecorder
 	case DataTransfer
 }

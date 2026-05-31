@@ -49,6 +49,7 @@ import Observation
 		case invertCards
 		case visibleCards
 		case sortCards
+		case languageFilterCards
 		
 		// In Deck
 		case gradientBackground
@@ -79,6 +80,7 @@ import Observation
 	private var invertCardsRaw: Bool = false
 	private var visibleCardsRaw: Bool = false
 	private var sortCardsRaw: [String] = []
+	private var languageFilterCardsRaw: Int = 0
 	private var gradientBackgroundRaw: Bool = false
 	private var animationBackgroundRaw: Bool = false
 	
@@ -115,6 +117,7 @@ import Observation
 		invertCardsRaw = userDefaults.bool(forKey: Key.invertCards.rawValue)
 		visibleCardsRaw = userDefaults.bool(forKey: Key.visibleCards.rawValue)
 		sortCardsRaw = userDefaults.stringArray(forKey: Key.sortCards.rawValue) ?? [SortCard.newestToOldest.rawValue]
+		languageFilterCardsRaw = userDefaults.integer(forKey: Key.languageFilterCards.rawValue)
 		gradientBackgroundRaw = userDefaults.bool(forKey: Key.gradientBackground.rawValue)
 		animationBackgroundRaw = userDefaults.bool(forKey: Key.animationBackground.rawValue)
 	}
@@ -283,6 +286,14 @@ import Observation
 		set {
 			sortCardsRaw = newValue.map(\.rawValue)
 			userDefaults.set(sortCardsRaw, forKey: Key.sortCards.rawValue)
+		}
+	}
+	
+	var languageFilter: LanguageFilter {
+		get { LanguageFilter(rawValue: languageFilterCardsRaw) ?? .atLeastOne }
+		set {
+			languageFilterCardsRaw = newValue.rawValue
+			userDefaults.set(languageFilterCardsRaw, forKey: Key.languageFilterCards.rawValue)
 		}
 	}
 	

@@ -190,7 +190,7 @@ fileprivate extension EditDeckView {
 				do {
 					try storage.delete(image: oldImage)
 				} catch {
-					print(Errors.ImageError)
+					print(Errors.Image)
 				}
 			}
 		} else if isChangedImage, let uiimage = selectedUIImage {
@@ -200,14 +200,14 @@ fileprivate extension EditDeckView {
 					try storage.delete(image: oldImage)
 				}
 			} catch {
-				print(Errors.ImageError)
+				print(Errors.Image)
 			}
 		}
 		do {
 			onSave(deck)
 			try modelContext.save()
 		} catch {
-			print(Errors.ModelContextError)
+			print(Errors.ModelContext)
 		}
 	}
 }

@@ -25,7 +25,7 @@
     "%@" : {
 
     },
-    "%@\n\nThis action scans all saved cards and removes duplicates.\n\nA duplicate is defined as identical front text, back text, and both languages.\n\nOnly the oldest version of each duplicate set is kept." : {
+    "%@\n\nThis action scans all saved cards and removes duplicates.\n\nA duplicate is defined as identical front text, back text, and both languages.\n\nOnly the oldest version of each duplicate set is kept.\n\nIt also removes unused audio recordings that are not linked to any cards." : {
 
     },
     "%@ : %@" : {
@@ -467,9 +467,6 @@
 
     },
     "Keep Editing" : {
-
-    },
-    "Languages" : {
 
     },
     "Last download: %@" : {

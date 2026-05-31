@@ -29,7 +29,7 @@ import UIKit
 		
 		let file = UUID().uuidString + ".png"
 		
-		guard let data = image.pngData() else { throw Errors.ImageError }
+		guard let data = image.pngData() else { throw Errors.Image }
 		
 		try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
 		try data.write(to: folder.appendingPathComponent(file))
@@ -41,11 +41,11 @@ import UIKit
 	
 	func load(image name: String, size: CGFloat = 1024) throws -> UIImage {
 		
-		if name == Constants.defaultDeckImage { throw Errors.ImageError }
+		if name == Constants.defaultDeckImage { throw Errors.Image }
 		if let cached = cache.object(forKey: name as NSString) { return cached }
 		
-		guard let source = CGImageSourceCreateWithURL(folder.appendingPathComponent(name) as CFURL, nil) else { throw Errors.ImageError }
-		guard let cgImage = CGImageSourceCreateThumbnailAtIndex(source, 0, [kCGImageSourceCreateThumbnailFromImageAlways: true, kCGImageSourceThumbnailMaxPixelSize: size, kCGImageSourceCreateThumbnailWithTransform: true] as CFDictionary) else { throw Errors.ImageError }
+		guard let source = CGImageSourceCreateWithURL(folder.appendingPathComponent(name) as CFURL, nil) else { throw Errors.Image }
+		guard let cgImage = CGImageSourceCreateThumbnailAtIndex(source, 0, [kCGImageSourceCreateThumbnailFromImageAlways: true, kCGImageSourceThumbnailMaxPixelSize: size, kCGImageSourceCreateThumbnailWithTransform: true] as CFDictionary) else { throw Errors.Image }
 		
 		let final = UIImage(cgImage: cgImage)
 		cache.setObject(final, forKey: name as NSString)

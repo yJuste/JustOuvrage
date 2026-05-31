@@ -22,7 +22,6 @@ struct SettingsView: View {
 			List {
 				Section {
 					Button {
-						try? modelContext.save()
 						cleanDuplicate()
 					} label: {
 						Label(title, systemImage: icon)
@@ -31,14 +30,16 @@ struct SettingsView: View {
 					.disabled(isCleaning)
 				} footer: {
 					Text("""
-  \(lastClean)
-  
-  This action scans all saved cards and removes duplicates.
-  
-  A duplicate is defined as identical front text, back text, and both languages.
-  
-  Only the oldest version of each duplicate set is kept.
-  """)
+ \(lastClean)
+ 
+ This action scans all saved cards and removes duplicates.
+ 
+ A duplicate is defined as identical front text, back text, and both languages.
+ 
+ Only the oldest version of each duplicate set is kept.
+ 
+ It also removes unused audio recordings that are not linked to any cards.
+ """)
 				}
 				Section {
 					VStack(alignment: .trailing) {
@@ -259,20 +260,28 @@ fileprivate extension SettingsView {
 	private func cleanDuplicate() {
 		
 		guard !isCleaning else { return }
-		state = .running
-		isCleaning = true; defer { isCleaning = false }
 		
-		do {
-			try CardDuplication.removeDuplicates(in: modelContext)
-			state = .success
-			preferences.lastCleanDuplicate = Date()
-			Task { @MainActor in
-				try? await Task.sleep(for: .seconds(1.5))
-				state = .idle
+		state = .running
+		isCleaning = true
+		
+		Task {
+			defer { isCleaning = false }
+			do {
+				try Duplication.removeCards(in: modelContext)
+				try Duplication.removeRecordings()
+				try Duplication.removeImages()
+				
+				state = .success
+				preferences.lastCleanDuplicate = Date()
+				
+				try? modelContext.save()
+				try await Task.sleep(for: .seconds(1.5))
+				
+				await MainActor.run { state = .idle }
+			} catch {
+				await MainActor.run { state = .failure }
+				print(Errors.DuplicationCard)
 			}
-		} catch {
-			state = .failure
-			print(Errors.CardDuplicationError)
 		}
 	}
 }
