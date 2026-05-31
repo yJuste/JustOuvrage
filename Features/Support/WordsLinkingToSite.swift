@@ -17,20 +17,28 @@ struct WordsLinkingToSite: View {
 	
 	@State private var globalColor: Color = Preferences.unique.globalColor.color
 	
+	private var cleanItems: [String] {
+		item.map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }.filter { !$0.isEmpty }
+	}
+	
 	var body: some View {
-		WrapHStack {
-			Text(title)
-				.font(.caption)
-				.foregroundStyle(globalColor)
-				.padding(.top, 14)
-			ForEach(item, id: \.self) { item in
-				Button {
-					action(item)
-				} label: {
-					Text(item)
-						.font(.system(size: 15, weight: .medium))
-						.padding(10)
-						.glassEffect(.regular.interactive())
+		if cleanItems.isEmpty {
+			EmptyView()
+		} else {
+			WrapHStack {
+				Text(title)
+					.font(.caption)
+					.foregroundStyle(globalColor)
+					.padding(.top, 14)
+				ForEach(cleanItems, id: \.self) { item in
+					Button {
+						action(item)
+					} label: {
+						Text(item)
+							.font(.system(size: 15, weight: .medium))
+							.padding(10)
+							.glassEffect(.regular.interactive())
+					}
 				}
 			}
 		}

@@ -59,26 +59,26 @@ struct CardView: View {
 						LabelTrailing(title: "\(frontLanguage.language)") {
 							Text(frontEntry)
 						}
-						WordsLinkingToSite(title: "Forvo", item: cleanFrontEntry) { entry in
-							destination = site.forvo.link(for: entry, in: frontLanguage)
+						WordsLinkingToSite(title: "Google", item: cleanFrontEntry) { entry in
+							destination = site.google.link(for: entry, in: frontLanguage)
 						}
 						WordsLinkingToSite(title: "WordReference", item: cleanFrontEntry) { entry in
 							destination = site.wordReference.link(for: entry, in: (frontLanguage, backLanguage))
 						}
-						WordsLinkingToSite(title: "Google", item: cleanFrontEntry) { entry in
-							destination = site.google.link(for: entry, in: frontLanguage)
+						WordsLinkingToSite(title: "Forvo", item: cleanFrontEntry) { entry in
+							destination = site.forvo.link(for: entry, in: frontLanguage)
 						}
 						LabelTrailing(title: "\(backLanguage.language)") {
 							Text(backEntry)
 						}
-						WordsLinkingToSite(title: "Forvo", item: cleanBackEntry) { entry in
-							destination = site.forvo.link(for: entry, in: backLanguage)
+						WordsLinkingToSite(title: "Google", item: cleanBackEntry) { entry in
+							destination = site.google.link(for: entry, in: backLanguage)
 						}
 						WordsLinkingToSite(title: "WordReference", item: cleanBackEntry) { entry in
 							destination = site.wordReference.link(for: entry, in: (backLanguage, frontLanguage))
 						}
-						WordsLinkingToSite(title: "Google", item: cleanBackEntry) { entry in
-							destination = site.google.link(for: entry, in: backLanguage)
+						WordsLinkingToSite(title: "Forvo", item: cleanBackEntry) { entry in
+							destination = site.forvo.link(for: entry, in: backLanguage)
 						}
 					} /// ``Entries``
 					.buttonStyle(.plain)
@@ -203,7 +203,11 @@ fileprivate extension CardView {
 		return expression
 			.components(separatedBy: ",")
 			.map {
-				$0.unicodeScalars.filter { !($0.properties.isEmoji && $0.properties.isEmojiPresentation) }.map { String($0) }.joined()
+				return removeDelimiters(from: $0, delimiters: [.parentheses, .brackets])
+					.unicodeScalars
+					.filter { !($0.properties.isEmoji && $0.properties.isEmojiPresentation) }
+					.map { String($0) }
+					.joined()
 					.trimmingCharacters(in: .whitespacesAndNewlines)
 			}
 			.filter { !$0.isEmpty }

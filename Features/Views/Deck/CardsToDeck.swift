@@ -20,13 +20,44 @@ struct CardsToDeck: View {
 	
 	@State private var search: String = ""
 	@State private var selectedCards: Set<Card.ID> = []
+	@State private var selectedLanguages: Set<String> = []
+	@State private var languageFilter: LanguageFilter = .atLeastOne
 	
 	private var filteredCards: [Card] {
-		guard !search.isEmpty else { return cards }
-		return cards.filter {
-			$0.frontEntry.localizedCaseInsensitiveContains(search)
-			|| $0.backEntry.localizedCaseInsensitiveContains(search)
+		let base: [Card]
+		
+		if search.isEmpty {
+			base = cards
+		} else {
+			base = cards.filter { $0.frontEntry.localizedCaseInsensitiveContains(search) || $0.backEntry.localizedCaseInsensitiveContains(search)
+			}
 		}
+		let filtered: [Card]
+		
+		if selectedLanguages.isEmpty {
+			filtered = base
+		} else {
+			switch languageFilter {
+			case .atLeastOne: filtered = base.filter {
+				selectedLanguages.contains($0.frontLanguage.code) || selectedLanguages.contains($0.backLanguage.code)
+			}
+			case .justOne: filtered = base.filter {
+				let front = $0.frontLanguage.code
+				let back = $0.backLanguage.code
+				guard front != back else { return false }
+				
+				if selectedLanguages.count == 1 {
+					return selectedLanguages.contains(front) || selectedLanguages.contains(back)
+				}
+				return selectedLanguages.contains(front) && selectedLanguages.contains(back)
+			}
+			case .needBoth: filtered = base.filter {
+				let front = $0.frontLanguage.code
+				return front == $0.backLanguage.code && selectedLanguages.contains(front)
+			}
+			}
+		}
+		return filtered
 	}
 	
 	var body: some View {
@@ -56,8 +87,9 @@ struct CardsToDeck: View {
 			.task {
 				selectedCards = Set(deck.cards.map(\.id))
 			}
-			.listStyle(.plain)
 			.toolbar { toolbar }
+			.tint(nil)
+			.listStyle(.plain)
 			.searchable(text: $search)
 		}
 	}
@@ -73,7 +105,6 @@ fileprivate extension CardsToDeck {
 			} label: {
 				Text("Cancel")
 			}
-			.tint(nil)
 		}
 		ToolbarItem(placement: .principal) {
 			VStack {
@@ -82,6 +113,44 @@ fileprivate extension CardsToDeck {
 				Text("for \"\(deck.name)\"")
 					.font(.caption)
 					.foregroundStyle(.secondary)
+			}
+		}
+		ToolbarItem(placement: .topBarTrailing) {
+			Menu {
+				
+				Section {
+					Button {
+						switch languageFilter {
+						case .atLeastOne: languageFilter = .justOne
+						case .justOne: languageFilter = .needBoth
+						case .needBoth: languageFilter = .atLeastOne
+						}
+					} label: {
+						Label(languageFilter.title, systemImage: languageFilter.icon)
+					}
+				}
+				
+				Section {
+					ForEach(Language.codes, id: \.self) { language in
+						let contain = selectedLanguages.contains(language)
+						
+						Button {
+							if contain {
+								selectedLanguages.remove(language)
+							} else {
+								selectedLanguages.insert(language)
+							}
+						} label: {
+							Label {
+								Text(language)
+							} icon: {
+								Image(systemName: contain ? "checkmark" : "")
+							}
+						}
+					}
+				}
+			} label: {
+				Label("Filter", systemImage: "line.3.horizontal.decrease.circle")
 			}
 		}
 		ToolbarItem(placement: .topBarTrailing) {
