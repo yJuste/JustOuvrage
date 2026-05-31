@@ -29,6 +29,7 @@ struct DeckView: View {
 	@State private var selectedCard: Card?
 	@State private var argument: Argument?
 	@State private var colors: [Color]?
+	@State private var exportURL: URL?
 	@State private var isDownloaded = false
 	@State private var showCard: Bool = false
 	@State private var showDepiction: Bool = false
@@ -45,6 +46,7 @@ struct DeckView: View {
 	@State private var showDecksToCard: Bool = false
 	@State private var showEditCard: Bool = false
 	@State private var showAddedBanner: Bool = false
+	@State private var showExporting: Bool = false
 	@State private var showGradientBackground: Bool = Preferences.unique.gradientBackground
 	@State private var showAnimationBackground: Bool = Preferences.unique.animationBackground
 	
@@ -59,7 +61,7 @@ struct DeckView: View {
 	}
 	
 	private var dismissItems: [Binding<Bool>] {
-		[$showCard, $showCardsToDeck, $showEditDeck, $showDepiction, $showMetaDataCard, $showMetaData, $showTimeTrial, $showRecording, $showDecksToCard, $showEditCard]
+		[$showCard, $showCardsToDeck, $showEditDeck, $showDepiction, $showMetaDataCard, $showMetaData, $showTimeTrial, $showRecording, $showDecksToCard, $showEditCard, $showExporting]
 	}
 	
 	var body: some View {
@@ -246,7 +248,7 @@ struct DeckView: View {
 								}
 								.sheet(isPresented: $showDecksToCard) {
 									if let card = selectedCard {
-										DecksToCard(card: card)
+										DecksToCardView(card: card)
 									}
 								}
 								.sheet(isPresented: $showRecording) {
@@ -301,17 +303,6 @@ struct DeckView: View {
 			.onChange(of: deck.image) {
 				loadImageForBackground()
 			}
-			.overlay(alignment: .top) {
-				if showAddedBanner {
-					Label("Downloaded", systemImage: "checkmark.circle.fill")
-						.environment(\.layoutDirection, .rightToLeft)
-						.font(.subheadline.weight(.medium))
-						.padding(EdgeInsets(top: 10, leading: 14, bottom: 10, trailing: 14))
-						.background((colors?.first ?? globalColor).opacity(0.8))
-						.clipShape(Capsule())
-						.transition(.move(edge: .top).combined(with: .opacity))
-				}
-			}
 			.toolbar { toolbar }
 			.navigationDestination(isPresented: $showTimeTrial) {
 				if let argument = argument {
@@ -332,7 +323,28 @@ struct DeckView: View {
 				EditDeckView(title: "Edit Deck", deck: deck)
 			}
 			.sheet(isPresented: $showCardsToDeck) {
-				CardsToDeck(deck: deck)
+				CardsToDeckView(deck: deck)
+			}
+			.sheet(isPresented: $showExporting) {
+				if let exportURL {
+					ShareSheet(items: [exportURL])
+						.presentationDetents([
+							.fraction(Constants.heightOfAShare[0]),
+							.fraction(Constants.heightOfAShare[1])
+						])
+						.presentationBackgroundInteraction(.enabled)
+				}
+			}
+			.overlay(alignment: .top) {
+				if showAddedBanner {
+					Label("Exportation", systemImage: "checkmark.circle.fill")
+						.environment(\.layoutDirection, .rightToLeft)
+						.font(.subheadline.weight(.medium))
+						.padding(EdgeInsets(top: 10, leading: 14, bottom: 10, trailing: 14))
+						.background((colors?.first ?? globalColor).opacity(0.8))
+						.clipShape(Capsule())
+						.transition(.move(edge: .top).combined(with: .opacity))
+				}
 			}
 			.alert("Delete Deck", isPresented: $showDeleteDeck) {
 				Button("Delete", role: .destructive) {
@@ -351,7 +363,7 @@ struct DeckView: View {
 			.alert("Download Deck", isPresented: $showDownload) {
 				Button("Cancel", role: .cancel) { }
 				Button("Download") {
-					Task { await download(deck) }
+					download(deck)
 				}
 			} message: {
 				if let date = deck.lastDownloadAt {
@@ -378,13 +390,14 @@ fileprivate extension DeckView {
 		}
 	}
 	
-	private func download(_ deck: Deck) async {
+	private func download(_ deck: Deck) {
 		do {
-			let _ = try DataTransferObject.export(deck: deck, cards: deck.cards, recording: recording)
+			Task { await showAdded() }
+			exportURL = try DataTransferObject.export(deck: deck, cards: deck.cards, recording: recording)
 			deck.lastDownloadAt = .now
-			await showAdded()
+			dismissItems.showOnly($showExporting)
 		} catch {
-			//
+			print(Errors.DataTransfer)
 		}
 	}
 	

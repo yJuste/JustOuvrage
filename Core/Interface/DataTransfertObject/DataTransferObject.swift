@@ -18,7 +18,9 @@ enum DataTransferObject {
 		
 		let fm = FileManager.default
 		
-		let packageURL = fm.temporaryDirectory.appendingPathComponent(UUID().uuidString).appendingPathExtension("jtouvrage")
+		let packageURL = fm.urls(for: .documentDirectory, in: .userDomainMask)[0].appendingPathComponent(UUID().uuidString).appendingPathExtension("jtouvrage")
+		
+		if fm.fileExists(atPath: packageURL.path) { try fm.removeItem(at: packageURL) }
 		
 		if fm.fileExists(atPath: packageURL.path) { try fm.removeItem(at: packageURL) }
 		
@@ -64,6 +66,7 @@ enum DataTransferObject {
 				}
 			}
 		}
+		
 		return packageURL
 	}
 	

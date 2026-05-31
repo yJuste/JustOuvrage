@@ -100,4 +100,19 @@ struct Duplication {
 			}
 		}
 	}
+	
+	static func removeJTouvrageFiles() {
+		
+		let fm = FileManager.default
+		
+		guard let files = try? fm.contentsOfDirectory(at: fm.urls(for: .documentDirectory, in: .userDomainMask)[0], includingPropertiesForKeys: nil) else { return }
+		
+		for file in files where file.pathExtension == "jtouvrage" {
+			do {
+				try fm.removeItem(at: file)
+			} catch {
+				print(Errors.DuplicationJTouvrage)
+			}
+		}
+	}
 }

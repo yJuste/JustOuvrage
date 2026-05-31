@@ -1,15 +1,15 @@
 //
-//  DecksToCard.swift
+//  DecksToCardView.swift
 //  JustOuvrage
 //
-//  Created by Jules Longin on 5/11/26.
+//  Created by Jules Longin on 5/31/26.
 //
 
 import SwiftUI
 import SwiftData
 
 /// A view that adds Decks to a Card.
-struct DecksToCard: View {
+struct DecksToCardView: View {
 	
 	let card: Card
 	
@@ -63,7 +63,7 @@ struct DecksToCard: View {
 }
 
 /// Toolbar.
-fileprivate extension DecksToCard {
+fileprivate extension DecksToCardView {
 	
 	@ToolbarContentBuilder private var toolbar: some ToolbarContent {
 		ToolbarItem(placement: .topBarLeading) {
@@ -93,4 +93,8 @@ fileprivate extension DecksToCard {
 			.buttonStyle(.borderedProminent)
 		}
 	}
+}
+
+#Preview {
+	DecksToCardView(card: Card(frontEntry: "Hello", backEntry: "No", frontLanguage: .fr_CA, backLanguage: .en_US))
 }

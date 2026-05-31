@@ -51,7 +51,7 @@ struct TransferView: View {
 							showExporting = true
 							//print("Export URL:", exportURL!)
 						} catch {
-							//print("Export error:", error)
+							print(Errors.DataTransfer)
 						}
 					}
 					Button("Import") {
@@ -90,9 +90,8 @@ struct TransferView: View {
 				do {
 					try DataTransferObject.import(from: url, context: context)
 					Task { await showAdded() }
-					print("Added")
 				} catch {
-					print("Import error:", error)
+					print(Errors.DataTransfer)
 				}
 			}
 		}

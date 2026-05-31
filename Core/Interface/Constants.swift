@@ -55,6 +55,9 @@ enum Constants {
 	// Height of the sheet of the Transfer view.
 	static let heightOfATransfer: [CGFloat] = [0.4, 1.0]
 	
+	// Height of the sheet of the Share view.
+	static let heightOfAShare: [CGFloat] = [0.55, 1.0]
+	
 	//	--- Icons -------------------------------------------------------
 	
 	// Icon for the new card view.

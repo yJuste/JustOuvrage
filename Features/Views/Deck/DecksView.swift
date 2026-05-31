@@ -180,7 +180,7 @@ struct DecksView: View {
 			}
 			.sheet(isPresented: $showCardsToDeck) {
 				if let deck = selectedDeck {
-					CardsToDeck(deck: deck)
+					CardsToDeckView(deck: deck)
 				}
 			}
 			.sheet(isPresented: $showNewCard) {

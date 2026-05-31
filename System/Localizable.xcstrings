@@ -4,6 +4,9 @@
     "" : {
 
     },
+    "  %@\n  \n  This action performs a full cleanup of the local database and stored files.\n  \n  It will:\n  • Remove duplicate cards (keeping the oldest version)\n  • Delete unused audio recordings\n  • Remove orphaned images\n  • Delete exported .jtouvrage packages\n  \n  This operation cannot be undone." : {
+
+    },
     "  Controls refresh speed of the trial system.\n\n  60 FPS = fastest updates, smoother behavior\n  10 FPS = slower but lighter on CPU" : {
 
     },
@@ -23,9 +26,6 @@
 
     },
     "%@" : {
-
-    },
-    "%@\n\nThis action scans all saved cards and removes duplicates.\n\nA duplicate is defined as identical front text, back text, and both languages.\n\nOnly the oldest version of each duplicate set is kept.\n\nIt also removes unused audio recordings that are not linked to any cards." : {
 
     },
     "%@ : %@" : {
@@ -386,6 +386,9 @@
 
     },
     "Export" : {
+
+    },
+    "Exportation" : {
 
     },
     "Filter" : {

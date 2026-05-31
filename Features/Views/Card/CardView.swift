@@ -37,6 +37,7 @@ struct CardView: View {
 	private var cleanFrontEntry: [String] {
 		cleanWords(expression: card.frontEntry)
 	}
+	
 	private var cleanBackEntry: [String] {
 		cleanWords(expression: card.backEntry)
 	}
@@ -128,7 +129,7 @@ struct CardView: View {
 				EditCardView(title: "Edit Card", card: card)
 			}
 			.sheet(isPresented: $showDecksToCard) {
-				DecksToCard(card: card)
+				DecksToCardView(card: card)
 			}
 			.sheet(isPresented: $showRecording) {
 				RecordingView(card: card)

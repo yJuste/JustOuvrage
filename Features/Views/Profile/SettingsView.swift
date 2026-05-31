@@ -30,16 +30,18 @@ struct SettingsView: View {
 					.disabled(isCleaning)
 				} footer: {
 					Text("""
- \(lastClean)
- 
- This action scans all saved cards and removes duplicates.
- 
- A duplicate is defined as identical front text, back text, and both languages.
- 
- Only the oldest version of each duplicate set is kept.
- 
- It also removes unused audio recordings that are not linked to any cards.
- """)
+  \(lastClean)
+  
+  This action performs a full cleanup of the local database and stored files.
+  
+  It will:
+  • Remove duplicate cards (keeping the oldest version)
+  • Delete unused audio recordings
+  • Remove orphaned images
+  • Delete exported .jtouvrage packages
+  
+  This operation cannot be undone.
+""")
 				}
 				Section {
 					VStack(alignment: .trailing) {
@@ -270,6 +272,7 @@ fileprivate extension SettingsView {
 				try Duplication.removeCards(in: modelContext)
 				try Duplication.removeRecordings()
 				try Duplication.removeImages()
+				Duplication.removeJTouvrageFiles()
 				
 				state = .success
 				preferences.lastCleanDuplicate = Date()
@@ -280,7 +283,7 @@ fileprivate extension SettingsView {
 				await MainActor.run { state = .idle }
 			} catch {
 				await MainActor.run { state = .failure }
-				print(Errors.DuplicationCard)
+				print(Errors.Duplication)
 			}
 		}
 	}

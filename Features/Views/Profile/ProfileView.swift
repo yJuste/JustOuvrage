@@ -14,8 +14,8 @@ struct ProfileView: View {
 	
 	@Environment(\.dismiss) private var dismiss
 	
-	@State private var showLogOut: Bool = false
 	@State private var color: Color = Preferences.unique.globalColor.color
+	@State private var showLogOut: Bool = false
 	@State private var showTransfer: Bool = false
 	
 	var body: some View {

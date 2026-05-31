@@ -6,7 +6,7 @@
 	<array>
 		<dict>
 			<key>CFBundleTypeName</key>
-			<string>JTouvrage Deck</string>
+			<string>Just Ouvrage Deck</string>
 			<key>LSItemContentTypes</key>
 			<array>
 				<string>com.jtouvrage.deck</string>
@@ -21,7 +21,7 @@
 				<string>com.apple.package</string>
 			</array>
 			<key>UTTypeDescription</key>
-			<string>JTouvrage Deck Package</string>
+			<string>Just Ouvrage Deck Package</string>
 			<key>UTTypeIdentifier</key>
 			<string>com.jtouvrage.deck</string>
 			<key>UTTypeTagSpecification</key>

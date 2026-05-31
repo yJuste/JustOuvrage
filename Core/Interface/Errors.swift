@@ -11,8 +11,10 @@ enum Errors: Error {
 	case Image
 	case Password
 	case Site
+	case Duplication
 	case DuplicationCard
 	case DuplicationRecording
+	case DuplicationJTouvrage
 	case ModelContext
 	case AudioRecorder
 	case DataTransfer

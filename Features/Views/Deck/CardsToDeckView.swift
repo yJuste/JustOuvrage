@@ -1,8 +1,8 @@
 //
-//  CardsToDeck.swift
+//  CardsToDeckView.swift
 //  JustOuvrage
 //
-//  Created by Jules Longin on 4/28/26.
+//  Created by Jules Longin on 5/31/26.
 //
 
 import SwiftUI
@@ -10,7 +10,7 @@ import SwiftData
 
 /// A view that adds Cards to a Deck.
 /// External Dependencies: Card, Deck
-struct CardsToDeck: View {
+struct CardsToDeckView: View {
 	
 	let deck: Deck
 	
@@ -22,6 +22,7 @@ struct CardsToDeck: View {
 	@State private var selectedCards: Set<Card.ID> = []
 	@State private var selectedLanguages: Set<String> = []
 	@State private var languageFilter: LanguageFilter = .atLeastOne
+	@State private var sorts: [SortCard] = [.newestToOldest]
 	
 	private var filteredCards: [Card] {
 		let base: [Card]
@@ -57,7 +58,14 @@ struct CardsToDeck: View {
 			}
 			}
 		}
-		return filtered
+		return filtered.sorted { lhs, rhs in
+			for sort in sorts {
+				if let result = sort.compare(lhs, rhs) {
+					return result == .orderedAscending
+				}
+			}
+			return false
+		}
 	}
 	
 	var body: some View {
@@ -95,8 +103,26 @@ struct CardsToDeck: View {
 	}
 }
 
+/// Methods of CardsToDeckView.
+fileprivate extension CardsToDeckView {
+	
+	private func toggleSort(first: SortCard, second: SortCard) {
+		if sorts.contains(first) {
+			sorts.removeAll { $0 == first }
+			if !sorts.contains(second) {
+				sorts.insert(second, at: 0)
+			}
+		} else {
+			sorts.removeAll { $0 == second }
+			if !sorts.contains(first) {
+				sorts.insert(first, at: 0)
+			}
+		}
+	}
+}
+
 /// Toolbar.
-fileprivate extension CardsToDeck {
+fileprivate extension CardsToDeckView {
 	
 	@ToolbarContentBuilder private var toolbar: some ToolbarContent {
 		ToolbarItem(placement: .topBarLeading) {
@@ -117,7 +143,23 @@ fileprivate extension CardsToDeck {
 		}
 		ToolbarItem(placement: .topBarTrailing) {
 			Menu {
-				
+				Section {
+					Button {
+						toggleSort(first: .newestToOldest, second: .oldestToNewest)
+					} label: {
+						let contain = sorts.contains(.newestToOldest)
+						Label("Date", systemImage: contain ? "text.line.first.and.arrowtriangle.forward" : "text.line.last.and.arrowtriangle.forward")
+						Text(contain ? "Newest to Oldest" : "Oldest to Newest")
+					}
+					
+					Button {
+						toggleSort(first: .alphabeticalAscending, second: .alphabeticalDescending)
+					} label: {
+						let contain = sorts.contains(.alphabeticalAscending)
+						Label("Name", systemImage: contain ? "text.line.first.and.arrowtriangle.forward" : "text.line.last.and.arrowtriangle.forward")
+						Text(contain ? "Ascending" : "Descending")
+					}
+				}
 				Section {
 					Button {
 						switch languageFilter {
@@ -128,12 +170,8 @@ fileprivate extension CardsToDeck {
 					} label: {
 						Label(languageFilter.title, systemImage: languageFilter.icon)
 					}
-				}
-				
-				Section {
 					ForEach(Language.codes, id: \.self) { language in
 						let contain = selectedLanguages.contains(language)
-						
 						Button {
 							if contain {
 								selectedLanguages.remove(language)
@@ -166,5 +204,5 @@ fileprivate extension CardsToDeck {
 }
 
 #Preview {
-	CardsToDeck(deck: Deck(name: "LOL Taylor", image: "deck"))
+	CardsToDeckView(deck: Deck(name: "LOL Taylor", image: "deck"))
 }

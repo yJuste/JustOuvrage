@@ -181,7 +181,7 @@ struct CardsView: View {
 			}
 			.sheet(isPresented: $showDecksToCard) {
 				if let card = selectedCard {
-					DecksToCard(card: card)
+					DecksToCardView(card: card)
 				}
 			}
 			.sheet(isPresented: $showRecording) {
