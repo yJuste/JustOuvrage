@@ -11,6 +11,7 @@ enum Session: CaseIterable {
 	case audioRecording
 	case timeTrial
 	case leitner
+	case achievements
 	
 	static let unique = Sessions()
 	
@@ -19,6 +20,7 @@ enum Session: CaseIterable {
 		lazy var audioRecording = RecordingSession()
 		lazy var timeTrial = TimeTrialSession()
 		lazy var leitner = LeitnerSession()
+		lazy var achievements = AchievementsSession()
 		
 		fileprivate init() {}
 	}

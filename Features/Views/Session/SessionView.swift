@@ -17,10 +17,12 @@ struct SessionView: View {
 	@State private var showAudioRecording: Bool = false
 	@State private var showTimeTrial: Bool = false
 	@State private var showLeitner: Bool = false
+	@State private var showAchievements: Bool = false
 	
 	private var audioRecording: RecordingSession = Session.unique.audioRecording
 	private var timeTrial: TimeTrialSession = Session.unique.timeTrial
 	private var leitner: LeitnerSession = Session.unique.leitner
+	private var achievements: AchievementsSession = Session.unique.achievements
 	
 	var body: some View {
 		NavigationStack {
@@ -35,6 +37,9 @@ struct SessionView: View {
 					SessionBanner(id: leitner.id, namespace: namespace, title: leitner.title, image: leitner.banner) {
 						showLeitner.toggle()
 					}
+					SessionBanner(id: achievements.id, namespace: namespace, title: achievements.title, image: achievements.banner) {
+						showAchievements.toggle()
+					}
 				}
 				.padding()
 			}
@@ -46,6 +51,9 @@ struct SessionView: View {
 			}
 			.navigationDestination(isPresented: $showLeitner) {
 				SessionLeitnerView(id: leitner.id, namespace: namespace)
+			}
+			.navigationDestination(isPresented: $showAchievements) {
+				SessionAchievementsView(id: achievements.id, namespace: namespace)
 			}
 			.navigationTitle("Session")
 			.toolbarTitleDisplayMode(.inlineLarge)

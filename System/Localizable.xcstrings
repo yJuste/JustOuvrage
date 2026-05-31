@@ -10,6 +10,9 @@
     "  Controls refresh speed of the trial system.\n\n  60 FPS = fastest updates, smoother behavior\n  10 FPS = slower but lighter on CPU" : {
 
     },
+    "..........." : {
+
+    },
     "\"%@\"" : {
 
     },
@@ -140,6 +143,12 @@
 
     },
     "Account" : {
+
+    },
+    "Achieve" : {
+
+    },
+    "Achievements" : {
 
     },
     "Add" : {
