@@ -6,22 +6,30 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct SessionAchievementsView: View {
 	
 	let id: UUID
 	let namespace: Namespace.ID
 	
+	@Environment(\.modelContext) private var modelContext
 	@Environment(\.dismiss) private var dismiss
 	
+	@Query private var cards: [Card]
+	@Query private var decks: [Deck]
+	
 	@State private var verticalOffset: CGFloat = 0
+	@State private var selectedAchievement: Achievements?
 	@State private var showDepiction: Bool = false
 	@State private var showDownload: Bool = false
+	@State private var showAchievement: Bool = false
 	
 	private let session: AchievementsSession = Session.unique.achievements
 	
 	var body: some View {
 		NavigationStack {
+			let context = AchievementContext(cards: cards, decks: decks)
 			GeometryReader { geo in
 				
 				let width = geo.size.width
@@ -43,16 +51,34 @@ struct SessionAchievementsView: View {
 							mainInformation(paddingText: height > width ? 10 : 100)
 								.offset(y: 20)
 						}
+					LazyVStack(alignment: .leading, spacing: 15) {
+						ForEach(Achievements.allCases) { achievement in
+							AchievementView(achievement: achievement, context: context) {
+								selectedAchievement = achievement
+								showAchievement = true
+							}
+						}
+					}
+					.padding()
 				}
 				.ignoresSafeArea(.container, edges: [.horizontal, .top])
 				.onScrollGeometryChange(for: CGFloat.self, of: { $0.contentOffset.y + $0.contentInsets.top }, action: { _, newValue in verticalOffset = -newValue })
+			}
+			.sheet(isPresented: $showAchievement) {
+				if let achievement = selectedAchievement {
+					AchievementMetaDataView(achievement: achievement, context: context)
+						.presentationDetents([
+							.fraction(Constants.heightOfARecording[0]),
+							.fraction(Constants.heightOfARecording[1])
+						])
+						.presentationBackgroundInteraction(.enabled)
+				}
 			}
 			.toolbar { toolbar }
 			.alert("Downloading is not implemented yet.", isPresented: $showDownload) {
 				Button("OK", role: .cancel) { }
 			}
 		}
-		//.environment(\.editMode, $editMode)
 	}
 }
 

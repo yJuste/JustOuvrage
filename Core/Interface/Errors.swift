@@ -18,4 +18,5 @@ enum Errors: Error {
 	case ModelContext
 	case AudioRecorder
 	case DataTransfer
+	case Transfer
 }

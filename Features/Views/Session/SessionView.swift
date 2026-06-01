@@ -7,6 +7,7 @@
 
 import SwiftUI
 import SwiftData
+import UniformTypeIdentifiers
 
 // MARK: In future updates, add Session for creating record audio, site session, language session, trial mode session
 
@@ -18,6 +19,8 @@ struct SessionView: View {
 	@State private var showTimeTrial: Bool = false
 	@State private var showLeitner: Bool = false
 	@State private var showAchievements: Bool = false
+	@State private var order: [SessionKind] = Preferences.unique.sessionOrder
+	@State private var isReordering: Bool = false
 	
 	private var audioRecording: RecordingSession = Session.unique.audioRecording
 	private var timeTrial: TimeTrialSession = Session.unique.timeTrial
@@ -28,21 +31,27 @@ struct SessionView: View {
 		NavigationStack {
 			ScrollView {
 				VStack(spacing: 10) {
-					SessionBanner(id: audioRecording.id, namespace: namespace, title: audioRecording.title, image: audioRecording.banner) {
-						showAudioRecording.toggle()
-					}
-					SessionBanner(id: timeTrial.id, namespace: namespace, title: timeTrial.title, image: timeTrial.banner) {
-						showTimeTrial.toggle()
-					}
-					SessionBanner(id: leitner.id, namespace: namespace, title: leitner.title, image: leitner.banner) {
-						showLeitner.toggle()
-					}
-					SessionBanner(id: achievements.id, namespace: namespace, title: achievements.title, image: achievements.banner) {
-						showAchievements.toggle()
+					ForEach(order) { kind in
+						banner(for: kind)
+							.scaleEffect(isReordering ? 1.02 : 1)
+							.opacity(isReordering ? 0.95 : 1)
+							.animation(.easeInOut, value: isReordering)
+							.draggable(kind)
+							.dropDestination(for: SessionKind.self) { items, _ in
+								guard let from = items.first, let fromIndex = order.firstIndex(of: from), let toIndex = order.firstIndex(of: kind) else { return false }
+								withAnimation(.spring(response: 0.35, dampingFraction: 0.85)) {
+									let moved = order.remove(at: fromIndex)
+									order.insert(moved, at: toIndex)
+									Preferences.unique.sessionOrder = order
+								}
+								return true
+							}
 					}
 				}
 				.padding()
 			}
+			.navigationTitle("Session")
+			.toolbarTitleDisplayMode(.inlineLarge)
 			.navigationDestination(isPresented: $showAudioRecording) {
 				SessionRecordingView(id: audioRecording.id, namespace: namespace)
 			}
@@ -55,9 +64,42 @@ struct SessionView: View {
 			.navigationDestination(isPresented: $showAchievements) {
 				SessionAchievementsView(id: achievements.id, namespace: namespace)
 			}
-			.navigationTitle("Session")
-			.toolbarTitleDisplayMode(.inlineLarge)
-			.listStyle(.plain)
+		}
+	}
+	
+	@ViewBuilder private func banner(for kind: SessionKind) -> some View {
+		switch kind {
+		case .audioRecording: SessionBanner(id: audioRecording.id, namespace: namespace, title: audioRecording.title, image: audioRecording.banner) {
+			showAudioRecording.toggle()
+		}
+		case .timeTrial: SessionBanner(id: timeTrial.id, namespace: namespace, title: timeTrial.title, image: timeTrial.banner) {
+			showTimeTrial.toggle()
+		}
+		case .leitner: SessionBanner(id: leitner.id, namespace: namespace, title: leitner.title, image: leitner.banner) {
+			showLeitner.toggle()
+		}
+		case .achievements: SessionBanner(id: achievements.id, namespace: namespace, title: achievements.title, image: achievements.banner) {
+			showAchievements.toggle()
+		}
+		}
+	}
+}
+
+enum SessionKind: String, CaseIterable, Identifiable, Transferable {
+	
+	case audioRecording
+	case timeTrial
+	case leitner
+	case achievements
+	
+	var id: String { rawValue }
+	
+	static var transferRepresentation: some TransferRepresentation {
+		ProxyRepresentation { kind in
+			kind.rawValue
+		} importing: { rawValue in
+			guard let kind = SessionKind(rawValue: rawValue) else { throw Errors.Transfer }
+			return kind
 		}
 	}
 }

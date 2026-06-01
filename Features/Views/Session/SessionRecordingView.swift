@@ -106,7 +106,7 @@ struct SessionRecordingView: View {
 										dismissItems.showOnly($showRecording)
 									} label: {
 										Image(systemName: "waveform")
-											.font(.system(size: 28))
+											.font(.title)
 											.padding(12)
 											.background(Circle().glassEffect(.clear.tint(card.frontRecording != nil && card.backRecording != nil ? .green : card.frontRecording != nil || card.backRecording != nil ? .orange : .clear).interactive()))
 									}
