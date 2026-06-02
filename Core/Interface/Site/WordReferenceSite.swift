@@ -31,4 +31,12 @@ struct WordReferenceSite: SiteService {
 		
 		return Destination(url: url)
 	}
+	
+	func link(for expression: String, in language: Language) -> URL {
+		link(for: expression, in: language)?.url ?? URL(string: "https://www.wordreference.com")!
+	}
+	
+	func link(for expression: String, in language: (Language, Language)) -> URL {
+		link(for: expression, in: language)?.url ?? URL(string: "https://www.wordreference.com")!
+	}
 }

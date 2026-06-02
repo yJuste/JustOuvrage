@@ -11,6 +11,8 @@ import Foundation
 protocol SiteService {
 	
 	func specificLanguage(language: Language) -> String
+	func link(for expression: String, in language: Language) -> URL
+	func link(for expression: String, in language: (Language, Language)) -> URL
 	func link(for expression: String, in language: Language) -> Destination?
 	func link(for expression: String, in language: (Language, Language)) -> Destination?
 }

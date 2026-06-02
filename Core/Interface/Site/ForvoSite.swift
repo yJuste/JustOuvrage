@@ -19,6 +19,14 @@ struct ForvoSite: SiteService {
 		}
 	}
 	
+	func link(for expression: String, in language: Language) -> URL {
+		link(for: expression, in: language)?.url ?? URL(string: "https://www.forvo.com")!
+	}
+	
+	func link(for expression: String, in language: (Language, Language)) -> URL {
+		link(for: expression, in: language.0)?.url ?? URL(string: "https://www.forvo.com")!
+	}
+	
 	func link(for expression: String, in language: Language) -> Destination? {
 		
 		let languageCode = specificLanguage(language: language)
@@ -29,5 +37,7 @@ struct ForvoSite: SiteService {
 		return Destination(url: url)
 	}
 	
-	func link(for expression: String, in language: (Language, Language)) -> Destination? { link(for: expression, in: language.0) }
+	func link(for expression: String, in language: (Language, Language)) -> Destination? {
+		link(for: expression, in: language.0)
+	}
 }

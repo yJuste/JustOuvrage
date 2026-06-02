@@ -7,6 +7,7 @@
 
 import SwiftUI
 import SwiftData
+import SafariServices
 
 /// A view that displays a draft card.
 struct DraftView: View {
@@ -15,12 +16,12 @@ struct DraftView: View {
 	let site: Site.Sites = Site.unique
 	
 	@Environment(\.modelContext) private var modelContext
+	@Environment(\.openURL) var openURL
 	
 	@Query(sort: \Card.createdAt, order: .reverse) private var cards: [Card]
 	
 	@Bindable private var preferences: Preferences = .unique
 	@State private var card: Card?
-	@State private var destination: Destination?
 	@State private var showLanguage: Bool = false
 	@State private var showNewCard: Bool = false
 	@State private var showAddedBanner: Bool = false
@@ -42,14 +43,14 @@ struct DraftView: View {
 						LabelTrailing(title: "\(selectedLanguage.language)") {
 							Text("\(draft.entry)")
 						}
+						WordsLinkingToSite(title: "Google", item: cleanEntry) { entry in
+							openURL(site.google.link(for: entry, in: selectedLanguage))
+						}
 						WordsLinkingToSite(title: "Forvo", item: cleanEntry) { entry in
-							destination = site.forvo.link(for: entry, in: selectedLanguage)
+							openURL(site.forvo.link(for: entry, in: selectedLanguage))
 						}
 						WordsLinkingToSite(title: "WordReference", item: cleanEntry) { entry in
-							destination = site.wordReference.link(for: entry, in: (selectedLanguage, preferences.backLanguage))
-						}
-						WordsLinkingToSite(title: "Google", item: cleanEntry) { entry in
-							destination = site.google.link(for: entry, in: selectedLanguage)
+							openURL(site.wordReference.link(for: entry, in: (selectedLanguage, preferences.backLanguage)))
 						}
 					} /// ``Entry``
 					Section {
@@ -71,28 +72,19 @@ struct DraftView: View {
 						.padding(EdgeInsets(top: 10, leading: 14, bottom: 10, trailing: 14))
 						.background(.regularMaterial)
 						.clipShape(Capsule())
-						.offset(y: -55)
 						.transition(.move(edge: .top).combined(with: .opacity))
 				}
 			}
 			.toolbar { toolbar }
-			.fullScreenCover(item: $destination) { destination in
-				SFSafariViewWrapper(url: destination.url)
-			}
+			.navigationTitle("Recent Searches")
+			.navigationBarTitleDisplayMode(.inline)
 			.sheet(item: $card) { card in
-				EditCardView(
-					title: "Add Card To Library",
-					card: card,
-					onSave: { card in
-						Task { await showAdded() }
-						modelContext.insert(card)
-					}
-				)
-				.presentationDetents([
-					.fraction(Constants.heightOfANewCard),
-					.large
-				])
-				.presentationDragIndicator(.visible)
+				EditCardView(title: "Add Card To Library", card: card, onSave: { card in Task { await showAdded() }; modelContext.insert(card)})
+					.presentationDetents([
+						.fraction(Constants.heightOfANewCard),
+						.large
+					])
+					.presentationDragIndicator(.visible)
 			}
 			.scrollIndicators(.hidden)
 		}
@@ -159,10 +151,6 @@ fileprivate extension DraftView {
 					.padding(25)
 					.presentationCompactAdaptation(.none)
 			}
-		}
-		ToolbarItem(placement: .principal) {
-			Text("Recent searches")
-				.font(.caption)
 		}
 	}
 }

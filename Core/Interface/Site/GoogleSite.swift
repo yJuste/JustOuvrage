@@ -19,6 +19,14 @@ struct GoogleSite: SiteService {
 		}
 	}
 	
+	func link(for expression: String, in language: Language) -> URL {
+		return link(for: expression, in: language)?.url ?? URL(string: "https://www.google.com")!
+	}
+	
+	func link(for expression: String, in language: (Language, Language)) -> URL {
+		return link(for: expression, in: language.0)?.url ?? URL(string: "https://www.google.com")!
+	}
+	
 	func link(for expression: String, in language: Language) -> Destination? {
 		
 		let languageCode = specificLanguage(language: language).components(separatedBy: "_")

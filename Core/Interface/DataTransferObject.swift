@@ -10,7 +10,7 @@ import SwiftData
 
 enum DataTransferObject {
 	
-	static var documentsURL: URL { FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first! }
+	static var documentsURL: URL { FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!	}
 	static var imagesURL: URL { documentsURL.appendingPathComponent("Images", isDirectory: true) }
 	static var audioURL: URL { documentsURL.appendingPathComponent("Audio", isDirectory: true) }
 	
@@ -18,9 +18,7 @@ enum DataTransferObject {
 		
 		let fm = FileManager.default
 		
-		let packageURL = fm.urls(for: .documentDirectory, in: .userDomainMask)[0].appendingPathComponent(UUID().uuidString).appendingPathExtension("jtouvrage")
-		
-		if fm.fileExists(atPath: packageURL.path) { try fm.removeItem(at: packageURL) }
+		let packageURL = documentsURL.appendingPathComponent(UUID().uuidString).appendingPathExtension("jtouvrage")
 		
 		if fm.fileExists(atPath: packageURL.path) { try fm.removeItem(at: packageURL) }
 		
@@ -32,6 +30,11 @@ enum DataTransferObject {
 		try fm.createDirectory(at: imagesFolder, withIntermediateDirectories: true)
 		try fm.createDirectory(at: audioFolder, withIntermediateDirectories: true)
 		
+		let decksToExport: [Deck] = {
+			if let deck { return [deck] }
+			return Array(Set(cards.flatMap { $0.decks }))
+		}()
+		
 		let payload = Payload(deck: deck.map(Payload.Deck.init), cards: cards.map(Payload.Card.init))
 		
 		let encoder = JSONEncoder()
@@ -39,15 +42,12 @@ enum DataTransferObject {
 		encoder.dateEncodingStrategy = .iso8601
 		
 		let json = try encoder.encode(payload)
-		
 		try json.write(to: packageURL.appendingPathComponent("export.json"))
 		
-		if let deck {
-			let sourceImage = imagesURL.appendingPathComponent(deck.image)
+		for deck in decksToExport {
+			let source = imagesURL.appendingPathComponent(deck.image)
 			
-			if fm.fileExists(atPath: sourceImage.path) {
-				try fm.copyItem(at: sourceImage, to: imagesFolder.appendingPathComponent(deck.image))
-			}
+			if fm.fileExists(atPath: source.path) { try fm.copyItem(at: source, to: imagesFolder.appendingPathComponent(deck.image)) }
 		}
 		
 		for card in cards {
@@ -55,15 +55,13 @@ enum DataTransferObject {
 				
 				guard let filename else { continue }
 				
-				let sourceAudio = recording.url(for: filename)
+				let source = recording.url(for: filename)
 				
-				guard fm.fileExists(atPath: sourceAudio.path) else { continue }
+				guard fm.fileExists(atPath: source.path) else { continue }
 				
-				let destinationAudio = audioFolder.appendingPathComponent(filename)
+				let destination = audioFolder.appendingPathComponent(filename)
 				
-				if !fm.fileExists(atPath: destinationAudio.path) {
-					try fm.copyItem(at: sourceAudio, to: destinationAudio)
-				}
+				if !fm.fileExists(atPath: destination.path) { try fm.copyItem(at: source, to: destination) }
 			}
 		}
 		
@@ -73,7 +71,6 @@ enum DataTransferObject {
 	static func `import`(from packageURL: URL, context: ModelContext) throws {
 		
 		guard packageURL.startAccessingSecurityScopedResource() else { throw Errors.DataTransfer }
-		
 		defer { packageURL.stopAccessingSecurityScopedResource() }
 		
 		let data = try Data(contentsOf: packageURL.appendingPathComponent("export.json"))
@@ -89,7 +86,6 @@ enum DataTransferObject {
 		if let exportedDeck = payload.deck {
 			
 			let deck = Deck(name: exportedDeck.name, image: exportedDeck.image)
-			
 			deck.depiction = exportedDeck.depiction
 			deck.author = exportedDeck.author
 			context.insert(deck)
@@ -100,10 +96,7 @@ enum DataTransferObject {
 				context.insert(card)
 			}
 		} else {
-			for dto in payload.cards {
-				let card = makeCard(dto)
-				context.insert(card)
-			}
+			for dto in payload.cards { context.insert(makeCard(dto)) }
 		}
 		try context.save()
 	}
@@ -118,11 +111,9 @@ enum DataTransferObject {
 		
 		for file in try fm.contentsOfDirectory(at: source, includingPropertiesForKeys: nil) {
 			
-			let destinationFile = destination.appendingPathComponent(file.lastPathComponent)
+			let dest = destination.appendingPathComponent(file.lastPathComponent)
 			
-			if !fm.fileExists(atPath: destinationFile.path) {
-				try fm.copyItem(at: file, to: destinationFile)
-			}
+			if !fm.fileExists(atPath: dest.path) { try fm.copyItem(at: file, to: dest) }
 		}
 	}
 	
@@ -171,31 +162,25 @@ extension DataTransferObject {
 	}
 }
 
-private extension DataTransferObject.Payload.Deck {
-	
-	init(_ deck: Deck) {
-		self.init(
-			name: deck.name,
-			image: deck.image,
-			depiction: deck.depiction,
-			author: deck.author
-		)
+extension DataTransferObject.Payload.Deck {
+	init(model deck: Deck) {
+		self.name = deck.name
+		self.image = deck.image
+		self.depiction = deck.depiction
+		self.author = deck.author
 	}
 }
 
-private extension DataTransferObject.Payload.Card {
-	
-	init(_ card: Card) {
-		self.init(
-			frontEntry: card.frontEntry,
-			backEntry: card.backEntry,
-			frontLanguage: card.frontLanguage,
-			backLanguage: card.backLanguage,
-			frontRecording: card.frontRecording,
-			backRecording: card.backRecording,
-			leitnerScore: card.leitnerScore,
-			nextLeitnerAt: card.nextLeitnerAt,
-			author: card.author
-		)
+extension DataTransferObject.Payload.Card {
+	init(model card: Card) {
+		self.frontEntry = card.frontEntry
+		self.backEntry = card.backEntry
+		self.frontLanguage = card.frontLanguage
+		self.backLanguage = card.backLanguage
+		self.frontRecording = card.frontRecording
+		self.backRecording = card.backRecording
+		self.leitnerScore = card.leitnerScore
+		self.nextLeitnerAt = card.nextLeitnerAt
+		self.author = card.author
 	}
 }
