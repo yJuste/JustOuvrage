@@ -24,6 +24,9 @@ import Observation
 		// Session
 		case sessionOrder
 		
+		// Languages
+		case recentLanguages
+		
 		// In New Card
 		case frontLanguage
 		case backLanguage
@@ -65,6 +68,7 @@ import Observation
 	private var globalColorRaw: String = ""
 	private var tabBarRaw: String = ""
 	private var sessionOrderRaw: [String] = []
+	private var recentLanguagesRaw: [String] = []
 	private var frontLanguageRaw: String = ""
 	private var backLanguageRaw: String = ""
 	private var exactMatchRaw: String = ""
@@ -103,6 +107,7 @@ import Observation
 		globalColorRaw = userDefaults.string(forKey: Key.globalColor.rawValue) ?? AccentColor.firGreen.rawValue
 		tabBarRaw = userDefaults.string(forKey: Key.tabBar.rawValue) ?? TabBar.new.rawValue
 		sessionOrderRaw = userDefaults.stringArray(forKey: Key.sessionOrder.rawValue) ?? SessionKind.allCases.map(\.rawValue)
+		recentLanguagesRaw = userDefaults.stringArray(forKey: Key.recentLanguages.rawValue) ?? []
 		frontLanguageRaw = userDefaults.string(forKey: Key.frontLanguage.rawValue) ?? defaultLanguage
 		backLanguageRaw = userDefaults.string(forKey: Key.backLanguage.rawValue) ?? defaultLanguage
 		exactMatchRaw = userDefaults.string(forKey: Key.exactMatch.rawValue) ?? defaultLanguage
@@ -148,6 +153,14 @@ import Observation
 		set {
 			sessionOrderRaw = newValue.map(\.rawValue)
 			userDefaults.set(sessionOrderRaw, forKey: Key.sessionOrder.rawValue)
+		}
+	}
+	
+	var recentLanguages: [Language] {
+		get { recentLanguagesRaw.compactMap(Language.init(rawValue:)) }
+		set {
+			recentLanguagesRaw = newValue.map(\.rawValue)
+			userDefaults.set(recentLanguagesRaw, forKey: Key.recentLanguages.rawValue)
 		}
 	}
 	

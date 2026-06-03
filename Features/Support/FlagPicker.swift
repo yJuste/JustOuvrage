@@ -15,11 +15,39 @@ struct FlagPicker: View {
 	
 	@Environment(\.dismiss) private var dismiss
 	
+	@State private var recentLanguages = Array(Preferences.unique.recentLanguages.prefix(10))
+	
 	var body: some View {
 		ScrollView {
-			VStack(spacing: 12) {
+			VStack(alignment: .leading, spacing: 12) {
+				if !recentLanguages.isEmpty {
+					Text("Recently Used")
+						.foregroundStyle(.secondary)
+					ForEach(recentLanguages, id: \.self) { language in
+						Button {
+							registerLanguageSelection(language)
+							selected = language
+							dismiss()
+						} label: {
+							HStack(spacing: 10) {
+								Image(language.flagAsset)
+									.resizable()
+									.scaledToFit()
+									.frame(width: 28, height: 24)
+								Text(language.language)
+									.foregroundStyle(.primary)
+								Spacer()
+							}
+						}
+						.buttonStyle(.plain)
+					}
+				}
+				Divider()
+				Text("All")
+					.foregroundStyle(.secondary)
 				ForEach(Language.allCases, id: \.self) { language in
 					Button {
+						registerLanguageSelection(language)
 						selected = language
 						dismiss()
 					} label: {
@@ -38,6 +66,16 @@ struct FlagPicker: View {
 			}
 		}
 		.frame(maxWidth: .infinity, maxHeight: .infinity)
+	}
+}
+
+fileprivate extension FlagPicker {
+	
+	func registerLanguageSelection(_ language: Language) {
+		var updated = recentLanguages.filter { $0 != language }
+		updated.insert(language, at: 0)
+		let recent = Array(updated.prefix(10))
+		Preferences.unique.recentLanguages = recent
 	}
 }
 

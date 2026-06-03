@@ -23,7 +23,7 @@ struct TimeTrialSetupView: View {
 	@State private var showTimeTrial: Bool = false
 	@State private var showNoCards: Bool = false
 	
-	private let optionsOfTimer: [TimeInterval] = [1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0, Constants.infinityYear]
+	private let optionsOfTimer: [TimeInterval] = [1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, Constants.infinityYear]
 	private let optionsOfNumberOfCards: [Int] = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160, 170, 180, 190, 200]
 	private let optionsOfOrder: [SortTrial] = SortTrial.allCases
 	private let optionsOfMode: [Mode] = Mode.allCases
