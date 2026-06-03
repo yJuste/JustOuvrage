@@ -10,7 +10,7 @@ import SwiftData
 
 enum DataTransferObject {
 	
-	static var documentsURL: URL { FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!	}
+	static var documentsURL: URL { FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first! }
 	static var imagesURL: URL { documentsURL.appendingPathComponent("Images", isDirectory: true) }
 	static var audioURL: URL { documentsURL.appendingPathComponent("Audio", isDirectory: true) }
 	
@@ -30,12 +30,8 @@ enum DataTransferObject {
 		try fm.createDirectory(at: imagesFolder, withIntermediateDirectories: true)
 		try fm.createDirectory(at: audioFolder, withIntermediateDirectories: true)
 		
-		let decksToExport: [Deck] = {
-			if let deck { return [deck] }
-			return Array(Set(cards.flatMap { $0.decks }))
-		}()
-		
-		let payload = Payload(deck: deck.map(Payload.Deck.init), cards: cards.map(Payload.Card.init))
+		let decksToExport = Array(Set(cards.flatMap { $0.decks }))
+		let payload = Payload(decks: decksToExport.map(Payload.Deck.init), cards: cards.map(Payload.Card.init))
 		
 		let encoder = JSONEncoder()
 		encoder.outputFormatting = [.prettyPrinted]
@@ -45,12 +41,14 @@ enum DataTransferObject {
 		try json.write(to: packageURL.appendingPathComponent("export.json"))
 		
 		for deck in decksToExport {
+			
 			let source = imagesURL.appendingPathComponent(deck.image)
 			
 			if fm.fileExists(atPath: source.path) { try fm.copyItem(at: source, to: imagesFolder.appendingPathComponent(deck.image)) }
 		}
 		
 		for card in cards {
+			
 			for filename in [card.frontRecording, card.backRecording] {
 				
 				guard let filename else { continue }
@@ -68,9 +66,10 @@ enum DataTransferObject {
 		return packageURL
 	}
 	
-	static func `import`(from packageURL: URL, context: ModelContext) throws {
+	@MainActor static func `import`(from packageURL: URL, context: ModelContext) throws {
 		
 		guard packageURL.startAccessingSecurityScopedResource() else { throw Errors.DataTransfer }
+		
 		defer { packageURL.stopAccessingSecurityScopedResource() }
 		
 		let data = try Data(contentsOf: packageURL.appendingPathComponent("export.json"))
@@ -80,25 +79,58 @@ enum DataTransferObject {
 		
 		let payload = try decoder.decode(Payload.self, from: data)
 		
+		var existingDecks: [UUID: Deck] = [:]
+		var existingCards: [UUID: Card] = [:]
+		
+		for deck in try context.fetch(FetchDescriptor<Deck>()) { existingDecks[deck.id] = deck }
+		for card in try context.fetch(FetchDescriptor<Card>()) { existingCards[card.id] = card }
+		
 		try copyAssets(from: packageURL.appendingPathComponent("Images"), to: imagesURL)
 		try copyAssets(from: packageURL.appendingPathComponent("Audio"), to: audioURL)
 		
-		if let exportedDeck = payload.deck {
+		var deckMap: [UUID: Deck] = [:]
+		
+		for dto in payload.decks {
 			
-			let deck = Deck(name: exportedDeck.name, image: exportedDeck.image)
-			deck.depiction = exportedDeck.depiction
-			deck.author = exportedDeck.author
-			context.insert(deck)
-			
-			for dto in payload.cards {
-				let card = makeCard(dto)
-				deck.cards.append(card)
-				context.insert(card)
+			if let existing = existingDecks[dto.id] {
+				deckMap[dto.id] = existing
+				continue
 			}
-		} else {
-			for dto in payload.cards { context.insert(makeCard(dto)) }
+			
+			let deck = Deck(name: dto.name, image: dto.image)
+			deck.id = dto.id
+			deck.depiction = dto.depiction
+			deck.author = dto.author
+			
+			context.insert(deck)
+			deckMap[dto.id] = deck
 		}
+		
+		let importedCards: [(Card, Payload.Card)] = payload.cards.map { dto in
+			
+			if let existing = existingCards[dto.id] { return (existing, dto) }
+			
+			let card = makeCard(dto)
+			card.id = dto.id
+			
+			context.insert(card)
+			return (card, dto)
+		}
+		
+		for (card, dto) in importedCards {
+			
+			for deckID in dto.decks {
+				
+				if let deck = deckMap[deckID] {
+					if !deck.cards.contains(where: { $0.id == card.id }) {
+						deck.cards.append(card)
+					}
+				}
+			}
+		}
+		
 		try context.save()
+		try? FileManager.default.removeItem(at: packageURL)
 	}
 	
 	static func copyAssets(from source: URL, to destination: URL) throws {
@@ -107,13 +139,15 @@ enum DataTransferObject {
 		
 		guard fm.fileExists(atPath: source.path) else { return }
 		
-		if !fm.fileExists(atPath: destination.path) { try fm.createDirectory(at: destination, withIntermediateDirectories: true) }
+		try fm.createDirectory(at: destination, withIntermediateDirectories: true)
 		
 		for file in try fm.contentsOfDirectory(at: source, includingPropertiesForKeys: nil) {
 			
 			let dest = destination.appendingPathComponent(file.lastPathComponent)
 			
-			if !fm.fileExists(atPath: dest.path) { try fm.copyItem(at: file, to: dest) }
+			if fm.fileExists(atPath: dest.path) { try fm.removeItem(at: dest) }
+			
+			try fm.copyItem(at: file, to: dest)
 		}
 	}
 	
@@ -125,11 +159,13 @@ enum DataTransferObject {
 			frontLanguage: dto.frontLanguage,
 			backLanguage: dto.backLanguage
 		)
+		
 		card.frontRecording = dto.frontRecording
 		card.backRecording = dto.backRecording
 		card.leitnerScore = dto.leitnerScore
 		card.nextLeitnerAt = dto.nextLeitnerAt
 		card.author = dto.author
+		
 		return card
 	}
 }
@@ -138,10 +174,11 @@ extension DataTransferObject {
 	
 	struct Payload: Codable {
 		
-		let deck: Deck?
+		let decks: [Deck]
 		let cards: [Card]
 		
 		struct Deck: Codable {
+			let id: UUID
 			let name: String
 			let image: String
 			let depiction: String
@@ -149,6 +186,7 @@ extension DataTransferObject {
 		}
 		
 		struct Card: Codable {
+			let id: UUID
 			let frontEntry: String
 			let backEntry: String
 			let frontLanguage: Language
@@ -158,12 +196,15 @@ extension DataTransferObject {
 			let leitnerScore: Int
 			let nextLeitnerAt: Date?
 			let author: String
+			let decks: [UUID]
 		}
 	}
 }
 
 extension DataTransferObject.Payload.Deck {
+	
 	init(model deck: Deck) {
+		self.id = deck.id
 		self.name = deck.name
 		self.image = deck.image
 		self.depiction = deck.depiction
@@ -172,7 +213,9 @@ extension DataTransferObject.Payload.Deck {
 }
 
 extension DataTransferObject.Payload.Card {
+	
 	init(model card: Card) {
+		self.id = card.id
 		self.frontEntry = card.frontEntry
 		self.backEntry = card.backEntry
 		self.frontLanguage = card.frontLanguage
@@ -182,5 +225,6 @@ extension DataTransferObject.Payload.Card {
 		self.leitnerScore = card.leitnerScore
 		self.nextLeitnerAt = card.nextLeitnerAt
 		self.author = card.author
+		self.decks = card.decks.map { $0.id }
 	}
 }

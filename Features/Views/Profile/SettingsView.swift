@@ -22,7 +22,7 @@ struct SettingsView: View {
 			List {
 				Section {
 					Button {
-						cleanDuplicate()
+						cleanup()
 					} label: {
 						Label(title, systemImage: icon)
 							.foregroundStyle(color)
@@ -35,9 +35,9 @@ struct SettingsView: View {
   This action performs a full cleanup of the local database and stored files.
   
   It will:
-  • Remove duplicate cards (keeping the oldest version)
+  • Remove duplicate cards (keeping the newest version)
   • Delete unused audio recordings
-  • Remove orphaned images
+  • Remove unused images
   • Delete exported .jtouvrage packages
   
   This operation cannot be undone.
@@ -224,10 +224,10 @@ fileprivate extension SettingsView {
 	
 	private var title: String {
 		switch state {
-		case .idle: return "Clean Duplicate"
-		case .running: return "Cleaning duplicates ..."
-		case .success: return "Clean completed"
-		case .failure: return "Clean failed"
+		case .idle: return "Cleanup"
+		case .running: return "Cleaning..."
+		case .success: return "Cleanup completed"
+		case .failure: return "Cleanup failed"
 		}
 	}
 	
@@ -251,15 +251,15 @@ fileprivate extension SettingsView {
 	
 	private var lastClean: String {
 		
-		guard let date = preferences.lastCleanDuplicate else { return "Never cleaned" }
+		guard let date = preferences.lastCleanup else { return "Never cleaned" }
 		let formatter = DateFormatter()
 		
 		formatter.dateStyle = .medium
 		formatter.timeStyle = .short
-		return "Last clean: \(formatter.string(from: date))"
+		return "Last cleanup: \(formatter.string(from: date))"
 	}
 	
-	private func cleanDuplicate() {
+	private func cleanup() {
 		
 		guard !isCleaning else { return }
 		
@@ -269,13 +269,13 @@ fileprivate extension SettingsView {
 		Task {
 			defer { isCleaning = false }
 			do {
-				try Duplication.removeCards(in: modelContext)
-				try Duplication.removeRecordings()
-				try Duplication.removeImages()
-				Duplication.removeJTouvrageFiles()
+				try Cleanup.cards(in: modelContext)
+				try Cleanup.recordings(in: modelContext)
+				try Cleanup.images(in: modelContext)
+				try Cleanup.jtouvrages()
 				
 				state = .success
-				preferences.lastCleanDuplicate = Date()
+				preferences.lastCleanup = Date()
 				
 				try? modelContext.save()
 				try await Task.sleep(for: .seconds(1.5))

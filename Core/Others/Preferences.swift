@@ -41,7 +41,7 @@ import Observation
 		case trialSide
 		
 		// In Settings
-		case lastCleanDuplicate
+		case lastCleanup
 		case audioQuality
 		
 		// Decks
@@ -77,7 +77,7 @@ import Observation
 	private var trialRefreshTimerRaw: Double = 0
 	private var trialSwipeThresholdRaw: Double = 0
 	private var trialSideRaw: Int = 0
-	private var lastCleanDuplicateRaw: Double = 0
+	private var lastCleanupRaw: Double = 0
 	private var audioQualityRaw: String = ""
 	private var visibleDecksRaw: Bool = false
 	private var sortDecksRaw: [String] = []
@@ -115,7 +115,7 @@ import Observation
 		trialRefreshTimerRaw = userDefaults.double(forKey: Key.trialRefreshTimer.rawValue)
 		trialSwipeThresholdRaw = userDefaults.double(forKey: Key.trialSwipeThreshold.rawValue)
 		trialSideRaw = userDefaults.integer(forKey: Key.trialSide.rawValue)
-		lastCleanDuplicateRaw = userDefaults.double(forKey: Key.lastCleanDuplicate.rawValue)
+		lastCleanupRaw = userDefaults.double(forKey: Key.lastCleanup.rawValue)
 		audioQualityRaw = userDefaults.string(forKey: Key.audioQuality.rawValue) ?? AudioQuality.high.rawValue
 		visibleDecksRaw = userDefaults.bool(forKey: Key.visibleDecks.rawValue)
 		sortDecksRaw = userDefaults.stringArray(forKey: Key.sortDecks.rawValue) ?? [SortDeck.newestToOldest.rawValue]
@@ -247,11 +247,11 @@ import Observation
 		}
 	}
 	
-	var lastCleanDuplicate: Date? {
-		get { lastCleanDuplicateRaw == 0 ? nil : Date(timeIntervalSince1970: lastCleanDuplicateRaw) }
+	var lastCleanup: Date? {
+		get { lastCleanupRaw == 0 ? nil : Date(timeIntervalSince1970: lastCleanupRaw) }
 		set {
-			lastCleanDuplicateRaw = newValue?.timeIntervalSince1970 ?? 0
-			userDefaults.set(lastCleanDuplicateRaw, forKey: Key.lastCleanDuplicate.rawValue) }
+			lastCleanupRaw = newValue?.timeIntervalSince1970 ?? 0
+			userDefaults.set(lastCleanupRaw, forKey: Key.lastCleanup.rawValue) }
 	}
 	
 	var audioQuality: AudioQuality {
