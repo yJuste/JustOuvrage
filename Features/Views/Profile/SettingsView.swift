@@ -73,8 +73,6 @@ struct SettingsView: View {
 				}
 				Section {
 					Picker("Audio Quality", selection: $preferences.audioQuality) {
-						Text("Very Low")
-							.tag(AudioQuality.veryLow)
 						Text("Low")
 							.tag(AudioQuality.low)
 						Text("Medium")
@@ -91,21 +89,19 @@ struct SettingsView: View {
 					Text("""
   Choose the audio quality of recordings.
   
-  Very Low: smallest files, lowest CPU usage
-  Low: lightweight, reduced clarity
+  Low: lightweight, smallest files, lowest CPU usage
   Medium: balanced quality and size
   High: clear audio for everyday use
   Ultra: high fidelity, larger files
   Max: stereo, highest quality, highest resource usage
   
-  Storage estimate (for 100 Mo, 3-second recordings):
+  Storage estimate (for 100 Mo, 2-second recordings):
   
-  Very Low ≈ 11,300 recordings
-  Low ≈ 8,500 recordings
-  Medium ≈ 5,700 recordings
-  High ≈ 4,200 recordings
-  Ultra ≈ 2,800 recordings
-  Max ≈ 1,500 recordings
+  Low ≈ 2,440 recordings
+  Medium ≈ 1,980 recordings
+  High ≈ 1,297 recordings
+  Ultra ≈ 1,207 recordings
+  Max ≈ 1,140 recordings
   
   Tip: lower quality improves battery life and storage usage.
   """)
