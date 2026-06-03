@@ -41,8 +41,8 @@ struct FlagPicker: View {
 						}
 						.buttonStyle(.plain)
 					}
+					Divider()
 				}
-				Divider()
 				Text("All")
 					.foregroundStyle(.secondary)
 				ForEach(Language.allCases, id: \.self) { language in

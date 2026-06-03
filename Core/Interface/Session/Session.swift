@@ -8,19 +8,19 @@
 /// Creates a Session Interface. (Session can creates multiple service for JustOuvrage)
 enum Session: CaseIterable {
 	
+	case achievements
 	case audioRecording
 	case timeTrial
 	case leitner
-	case achievements
 	
 	static let unique = Sessions()
 	
 	final class Sessions {
 		
+		lazy var achievements = AchievementsSession()
 		lazy var audioRecording = RecordingSession()
 		lazy var timeTrial = TimeTrialSession()
 		lazy var leitner = LeitnerSession()
-		lazy var achievements = AchievementsSession()
 		
 		fileprivate init() {}
 	}

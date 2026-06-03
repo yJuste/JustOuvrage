@@ -15,6 +15,6 @@ struct AchievementsSession: SessionService {
 	let depiction: String = """
  Earn trophies and medals by reaching your goals and improving your performance.
  """
-	let banner: ImageResource = .wall
-	let leitnerExample: ImageResource = .wall
+	let banner: ImageResource = .achievements
+	let leitnerExample: ImageResource = .achievements
 }

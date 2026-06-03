@@ -22,10 +22,10 @@ struct SessionView: View {
 	@State private var order: [SessionKind] = Preferences.unique.sessionOrder
 	@State private var isReordering: Bool = false
 	
+	private var achievements: AchievementsSession = Session.unique.achievements
 	private var audioRecording: RecordingSession = Session.unique.audioRecording
 	private var timeTrial: TimeTrialSession = Session.unique.timeTrial
 	private var leitner: LeitnerSession = Session.unique.leitner
-	private var achievements: AchievementsSession = Session.unique.achievements
 	
 	var body: some View {
 		NavigationStack {
@@ -52,6 +52,9 @@ struct SessionView: View {
 			}
 			.navigationTitle("Session")
 			.toolbarTitleDisplayMode(.inlineLarge)
+			.navigationDestination(isPresented: $showAchievements) {
+				SessionAchievementsView(id: achievements.id, namespace: namespace)
+			}
 			.navigationDestination(isPresented: $showAudioRecording) {
 				SessionRecordingView(id: audioRecording.id, namespace: namespace)
 			}
@@ -61,14 +64,14 @@ struct SessionView: View {
 			.navigationDestination(isPresented: $showLeitner) {
 				SessionLeitnerView(id: leitner.id, namespace: namespace)
 			}
-			.navigationDestination(isPresented: $showAchievements) {
-				SessionAchievementsView(id: achievements.id, namespace: namespace)
-			}
 		}
 	}
 	
 	@ViewBuilder private func banner(for kind: SessionKind) -> some View {
 		switch kind {
+		case .achievements: SessionBanner(id: achievements.id, namespace: namespace, title: achievements.title, image: achievements.banner) {
+			showAchievements.toggle()
+		}
 		case .audioRecording: SessionBanner(id: audioRecording.id, namespace: namespace, title: audioRecording.title, image: audioRecording.banner) {
 			showAudioRecording.toggle()
 		}
@@ -78,19 +81,16 @@ struct SessionView: View {
 		case .leitner: SessionBanner(id: leitner.id, namespace: namespace, title: leitner.title, image: leitner.banner) {
 			showLeitner.toggle()
 		}
-		case .achievements: SessionBanner(id: achievements.id, namespace: namespace, title: achievements.title, image: achievements.banner) {
-			showAchievements.toggle()
-		}
 		}
 	}
 }
 
 enum SessionKind: String, CaseIterable, Identifiable, Transferable {
 	
+	case achievements
 	case audioRecording
 	case timeTrial
 	case leitner
-	case achievements
 	
 	var id: String { rawValue }
 	

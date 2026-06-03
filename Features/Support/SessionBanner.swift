@@ -43,5 +43,5 @@ struct SessionBanner: View {
 	
 	@Previewable @Namespace var namespace
 	let id: UUID = UUID()
-	SessionBanner(id: id, namespace: namespace, title: "Hello Girl", image: .wall) { }
+	SessionBanner(id: id, namespace: namespace, title: "Hello Girl", image: .artAnthology) { }
 }

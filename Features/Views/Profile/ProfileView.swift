@@ -130,5 +130,5 @@ fileprivate extension ProfileView {
 }
 
 #Preview {
-	ProfileView(profile: .wall)
+	ProfileView(profile: .artAnthology)
 }

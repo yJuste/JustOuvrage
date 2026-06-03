@@ -18,7 +18,10 @@ enum DataTransferObject {
 		
 		let fm = FileManager.default
 		
-		let packageURL = documentsURL.appendingPathComponent(UUID().uuidString).appendingPathExtension("jtouvrage")
+		let formatter = DateFormatter()
+		formatter.dateFormat = "yyyy-MM-dd_HH-mm-ss"
+		
+		let packageURL = documentsURL.appendingPathComponent("\(formatter.string(from: .now))_\(UUID().uuidString)").appendingPathExtension("jtouvrage")
 		
 		if fm.fileExists(atPath: packageURL.path) { try fm.removeItem(at: packageURL) }
 		

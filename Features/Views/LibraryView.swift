@@ -19,7 +19,7 @@ struct LibraryView: View {
 	@Query(sort: [SortDescriptor(\Deck.lastOpenedAt, order: .reverse), SortDescriptor(\Deck.createdAt, order: .reverse)]) private var decks: [Deck]
 	
 	@State private var selectedDeck: Deck?
-	@State private var profilePicture: ImageResource = .Flags.fr
+	@State private var profilePicture: ImageResource = .artAnthology
 	@State private var showNewCard: Bool = false
 	@State private var showNewDeck: Bool = false
 	@State private var showProfile: Bool = false
@@ -43,7 +43,7 @@ struct LibraryView: View {
 					Text("Recently Opened")
 						.font(.system(size: 23, weight: .semibold))
 						.padding(EdgeInsets(top: 5, leading: 3, bottom: -20, trailing: 0))
-					LazyVGrid(columns: [GridItem(.adaptive(minimum: 140), spacing: 10)], spacing: 10) {
+					LazyVGrid(columns: [GridItem(.adaptive(minimum: 140), spacing: 10, alignment: .top)], spacing: 10) {
 						ForEach(decks) { deck in
 							Button {
 								selectedDeck = deck
