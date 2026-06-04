@@ -22,6 +22,8 @@ struct DraftView: View {
 	
 	@Bindable private var preferences: Preferences = .unique
 	@State private var card: Card?
+	@State private var destination: Destination?
+	@State private var globalBrowser = Preferences.unique.globalBrowser
 	@State private var showLanguage: Bool = false
 	@State private var showNewCard: Bool = false
 	@State private var showAddedBanner: Bool = false
@@ -44,13 +46,13 @@ struct DraftView: View {
 							Text("\(draft.entry)")
 						}
 						WordsLinkingToSite(title: "Google", item: cleanEntry) { entry in
-							openURL(site.google.link(for: entry, in: selectedLanguage))
+							globalBrowser ? destination = site.forvo.link(for: entry, in: selectedLanguage) : openURL(site.google.link(for: entry, in: selectedLanguage))
 						}
 						WordsLinkingToSite(title: "Forvo", item: cleanEntry) { entry in
-							openURL(site.forvo.link(for: entry, in: selectedLanguage))
+							globalBrowser ? destination = site.wordReference.link(for: entry, in: (selectedLanguage, preferences.backLanguage)) : openURL(site.forvo.link(for: entry, in: selectedLanguage))
 						}
 						WordsLinkingToSite(title: "WordReference", item: cleanEntry) { entry in
-							openURL(site.wordReference.link(for: entry, in: (selectedLanguage, preferences.backLanguage)))
+							globalBrowser ? destination = site.google.link(for: entry, in: selectedLanguage) : openURL(site.wordReference.link(for: entry, in: (selectedLanguage, preferences.backLanguage)))
 						}
 					} /// ``Entry``
 					Section {
@@ -76,6 +78,10 @@ struct DraftView: View {
 				}
 			}
 			.toolbar { toolbar }
+			.fullScreenCover(item: $destination) { destination in
+				SFSafariViewWrapper(url: destination.url)
+					.ignoresSafeArea()
+			}
 			.navigationTitle("Recent Searches")
 			.navigationBarTitleDisplayMode(.inline)
 			.sheet(item: $card) { card in

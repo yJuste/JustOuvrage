@@ -59,12 +59,16 @@ struct SettingsView: View {
 					}
 					.pickerStyle(.menu)
 				} footer: {
-					Text("Choose the global color for the app.")
+					Text("""
+Choose the global color for the app.
+
+Exiting the app permanently saves the changes.
+""")
 				}
 				Section {
 					Toggle("Open links internally", isOn: $preferences.globalBrowser)
 				} footer: {
-					Text("If enabled, links open inside the app. Otherwise, they open in the external browser.")
+					Text("If enabled, links open inside the app. Otherwise, they open in an external browser.")
 				}
 				Section {
 					VStack(alignment: .trailing) {

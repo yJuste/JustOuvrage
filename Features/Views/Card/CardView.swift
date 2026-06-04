@@ -24,6 +24,8 @@ struct CardView: View {
 	@Environment(\.openURL) var openURL
 	
 	@Bindable private var preferences: Preferences = .unique
+	@State private var destination: Destination?
+	@State private var globalBrowser = Preferences.unique.globalBrowser
 	@State private var player: AVAudioPlayer?
 	@State private var activePlaying: String?
 	@State private var playerDelegate = PlayerDelegate()
@@ -61,25 +63,25 @@ struct CardView: View {
 							Text(frontEntry)
 						}
 						WordsLinkingToSite(title: "Google", item: cleanFrontEntry) { entry in
-							openURL(site.google.link(for: entry, in: frontLanguage))
+							globalBrowser ? destination = site.google.link(for: entry, in: frontLanguage) : openURL(site.google.link(for: entry, in: frontLanguage))
 						}
 						WordsLinkingToSite(title: "WordReference", item: cleanFrontEntry) { entry in
-							openURL(site.wordReference.link(for: entry, in: (frontLanguage, backLanguage)))
+							globalBrowser ? destination = site.wordReference.link(for: entry, in: (frontLanguage, backLanguage)) : openURL(site.wordReference.link(for: entry, in: (frontLanguage, backLanguage)))
 						}
 						WordsLinkingToSite(title: "Forvo", item: cleanFrontEntry) { entry in
-							openURL(site.forvo.link(for: entry, in: frontLanguage))
+							globalBrowser ? destination = site.forvo.link(for: entry, in: frontLanguage) : openURL(site.forvo.link(for: entry, in: frontLanguage))
 						}
 						LabelTrailing(title: "\(backLanguage.language)") {
 							Text(backEntry)
 						}
 						WordsLinkingToSite(title: "Google", item: cleanBackEntry) { entry in
-							openURL(site.google.link(for: entry, in: backLanguage))
+							globalBrowser ? destination = site.google.link(for: entry, in: backLanguage) : openURL(site.google.link(for: entry, in: backLanguage))
 						}
 						WordsLinkingToSite(title: "WordReference", item: cleanBackEntry) { entry in
-							openURL(site.wordReference.link(for: entry, in: (backLanguage, frontLanguage)))
+							globalBrowser ? destination = site.wordReference.link(for: entry, in: (backLanguage, frontLanguage)) : openURL(site.wordReference.link(for: entry, in: (backLanguage, frontLanguage)))
 						}
 						WordsLinkingToSite(title: "Forvo", item: cleanBackEntry) { entry in
-							openURL(site.forvo.link(for: entry, in: backLanguage))
+							globalBrowser ? destination = site.forvo.link(for: entry, in: backLanguage) : openURL(site.forvo.link(for: entry, in: backLanguage))
 						}
 					} /// ``Entries``
 					.buttonStyle(.plain)
@@ -118,6 +120,10 @@ struct CardView: View {
 			}
 			.onDisappear {
 				stopPlaying()
+			}
+			.fullScreenCover(item: $destination) { destination in
+				SFSafariViewWrapper(url: destination.url)
+					.ignoresSafeArea()
 			}
 			.toolbar { toolbar }
 			.tint(nil)
