@@ -38,18 +38,8 @@ struct SessionRecordingView: View {
 		}
 	}
 	
-	private var percentageLeft: Int {
-		let total = cards.count * 2
-		guard total > 0 else { return 0 }
-		let completed = cards.reduce(into: 0) { result, card in
-			if card.frontRecording != nil {
-				result += 1
-			}
-			if card.backRecording != nil {
-				result += 1
-			}
-		}
-		return Int((Double(completed) / Double(total)) * 100)
+	private var percentageLeft: Double {
+		cards.isEmpty ? 0 : Double(cards.reduce(0) { $0 + ($1.frontRecording != nil ? 1 : 0) + ($1.backRecording != nil ? 1 : 0) }) / Double(cards.count * 2)
 	}
 	
 	private var oldestCardWithoutRecording: Card? {
@@ -71,6 +61,7 @@ struct SessionRecordingView: View {
 				ScrollView {
 					Image(session.banner)
 						.resizable()
+						.scaledToFill()
 						.aspectRatio(contentMode: .fill)
 						.frame(maxWidth: isPortrait ? width : .infinity)
 						.containerRelativeFrame(.vertical) { height, _ in
@@ -213,7 +204,7 @@ fileprivate extension SessionRecordingView {
 				.font(.system(size: 50, weight: .black))
 			Text(session.subtitle)
 				.font(.system(size: 20, weight: .semibold))
-			Text("\(audioLeft) left ⋅ \(percentageLeft)% done")
+			Text("\(audioLeft) left ⋅ \(percentageLeft, format: .percent.precision(.fractionLength(0))) done")
 				.font(.system(size: 16, weight: .semibold))
 				.padding(.top, 10)
 			Button {
@@ -246,6 +237,7 @@ fileprivate extension SessionRecordingView {
 					NavigationStack {
 						ScrollView {
 							VStack {
+								let rectangle = RoundedRectangle(cornerRadius: 15)
 								Text(session.title)
 									.font(.system(size: 28, weight: .bold))
 									.foregroundStyle(Color.accentColor)
@@ -256,11 +248,13 @@ fileprivate extension SessionRecordingView {
 								Text(session.depiction)
 								Image(session.recordingExample)
 									.resizable()
-									.scaledToFit()
+									.scaledToFill()
+									.clipShape(rectangle)
 								Text(session.depiction2)
 								Image(session.cardExample)
 									.resizable()
-									.scaledToFit()
+									.scaledToFill()
+									.clipShape(rectangle)
 								Text(session.depiction3)
 							}
 							.padding(.horizontal, 15)

@@ -254,6 +254,7 @@ fileprivate extension CardView {
 		ToolbarItem(placement: .topBarLeading) {
 			Image(card.frontLanguage.flagAsset)
 				.resizable()
+				.scaledToFill()
 				.frame(width: 36, height: 36)
 				.clipShape(Circle())
 				.onTapGesture {
@@ -264,6 +265,7 @@ fileprivate extension CardView {
 		ToolbarItem(placement: .topBarLeading) {
 			Image(card.backLanguage.flagAsset)
 				.resizable()
+				.scaledToFill()
 				.frame(width: 36, height: 36)
 				.clipShape(Circle())
 				.onTapGesture {

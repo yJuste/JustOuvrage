@@ -79,9 +79,9 @@ struct ProfileView: View {
 				}
 				Section {
 					NavigationLink {
-						MoreInformationsView()
+						MoreInformationView()
 					} label: {
-						Text("More informations")
+						Text("More information")
 					}
 				} footer: {
 					Text("")

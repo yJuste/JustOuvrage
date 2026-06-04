@@ -38,6 +38,7 @@ struct SessionAchievementsView: View {
 				ScrollView {
 					Image(session.banner)
 						.resizable()
+						.scaledToFill()
 						.aspectRatio(contentMode: .fill)
 						.frame(maxWidth: isPortrait ? width : .infinity)
 						.containerRelativeFrame(.vertical) { height, _ in

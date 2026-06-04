@@ -126,6 +126,7 @@ fileprivate extension LibraryView {
 		ToolbarItem(placement: .topBarTrailing) {
 			Image(image: profileImage, storage: storage, defaultAsset: Constants.defaultProfileImage)
 				.resizable()
+				.scaledToFill()
 				.frame(width: 36, height: 36)
 				.clipShape(Circle())
 				.onTapGesture {

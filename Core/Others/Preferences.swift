@@ -49,6 +49,7 @@ import Observation
 		case profileImage
 		case profileName
 		case profileUUID
+		case globalBrowser
 		
 		// Decks
 		case visibleDecks
@@ -89,6 +90,7 @@ import Observation
 	private var profileImageRaw: String = ""
 	private var profileNameRaw: String = ""
 	private var profileUUIDRaw: String = ""
+	private var globalBrowserRaw: Bool = false
 	private var visibleDecksRaw: Bool = false
 	private var sortDecksRaw: [String] = []
 	private var invertCardsRaw: Bool = false
@@ -132,6 +134,7 @@ import Observation
 		profileNameRaw = userDefaults.string(forKey: Key.profileName.rawValue) ?? Constants.noAuthor
 		profileUUIDRaw = (UUID(uuidString: userDefaults.string(forKey: Key.profileUUID.rawValue) ?? "") ?? UUID()).uuidString
 		userDefaults.set(profileUUIDRaw, forKey: Key.profileUUID.rawValue)
+		globalBrowserRaw = userDefaults.bool(forKey: Key.globalBrowser.rawValue)
 		visibleDecksRaw = userDefaults.bool(forKey: Key.visibleDecks.rawValue)
 		sortDecksRaw = userDefaults.stringArray(forKey: Key.sortDecks.rawValue) ?? [SortDeck.newestToOldest.rawValue]
 		invertCardsRaw = userDefaults.bool(forKey: Key.invertCards.rawValue)
@@ -306,6 +309,14 @@ import Observation
 		set {
 			profileUUIDRaw = newValue.uuidString
 			userDefaults.set(profileUUIDRaw, forKey: Key.profileUUID.rawValue)
+		}
+	}
+	
+	var globalBrowser: Bool {
+		get { globalBrowserRaw }
+		set {
+			globalBrowserRaw = newValue
+			userDefaults.set(globalBrowserRaw, forKey: Key.globalBrowser.rawValue)
 		}
 	}
 	

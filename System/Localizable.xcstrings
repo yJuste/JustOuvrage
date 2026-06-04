@@ -87,22 +87,22 @@
         }
       }
     },
-    "%lld left ⋅ %lld%% done" : {
+    "%lld left ⋅ %@ done" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "%1$lld left ⋅ %2$lld%% done"
+            "value" : "%1$lld left ⋅ %2$@ done"
           }
         }
       }
     },
-    "%lld sessions ⋅ %lld%% success" : {
+    "%lld sessions ⋅ %@" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "%1$lld sessions ⋅ %2$lld%% success"
+            "value" : "%1$lld sessions ⋅ %2$@"
           }
         }
       }
@@ -182,7 +182,13 @@
     "Added" : {
 
     },
+    "Advanced" : {
+
+    },
     "All" : {
+
+    },
+    "All data will be permanently deleted when the app is uninstalled.\n\nYou can export your cards and decks at any time; this will generate a .jtouvrage bundle." : {
 
     },
     "Are you sure you want to clear this audio?" : {
@@ -234,6 +240,9 @@
 
     },
     "Back" : {
+
+    },
+    "Behavior" : {
 
     },
     "Both" : {
@@ -332,6 +341,9 @@
     "Custom" : {
 
     },
+    "Data" : {
+
+    },
     "Date" : {
 
     },
@@ -395,9 +407,6 @@
     "Downloaded" : {
 
     },
-    "Downloading / Data Export" : {
-
-    },
     "Edit Card" : {
 
     },
@@ -419,13 +428,13 @@
     "Filter" : {
 
     },
-    "First of all, it’s a great honor that you are using this flashcard/dictionary application.\n\nThis app was originally designed for my personal needs because I felt it was important to have an app like this for language learning, allowing me to store every learned word and track progress in real time.\n\nThat’s also why the application is completely free. If you enjoy it, feel free to leave your feedback." : {
+    "First of all, it's a great honor that you are using this flashcard/dictionary application.\n\nThis app was originally designed for my personal needs because I felt it was important to have an app like this for language learning, allowing me to store every learned word and track progress in real time.\n\nThat's also why the application is completely free. If you enjoy it, feel free to leave your feedback." : {
 
     },
     "for \"%@\"" : {
 
     },
-    "For more information, feel free to contact: [No mail yet]" : {
+    "For more information, contact: [No mail yet]" : {
 
     },
     "From Deck" : {
@@ -434,7 +443,7 @@
     "Front" : {
 
     },
-    "Future updates will include sessions to create your own website links as well as your own languages." : {
+    "General" : {
 
     },
     "Global Color" : {
@@ -468,6 +477,9 @@
 
     },
     "How many cards to include in this session." : {
+
+    },
+    "If enabled, links open inside the app. Otherwise, they open in the external browser." : {
 
     },
     "If you encounter any bugs in the application, feel free to report them to the provided email address." : {
@@ -545,10 +557,10 @@
     "Mode" : {
 
     },
-    "More informations" : {
+    "More information" : {
 
     },
-    "More Informations" : {
+    "More Information" : {
 
     },
     "Name" : {
@@ -599,10 +611,13 @@
     "Only Decks" : {
 
     },
+    "Open links internally" : {
+
+    },
     "Optimization" : {
 
     },
-    "Optimizations are regularly included in patches. If you experience stability or performance issues, lower the settings to the minimum." : {
+    "Optimizations are regularly included in patches. If you experience performance issues, lower the settings to the minimum." : {
 
     },
     "Options" : {
@@ -728,9 +743,6 @@
     "Side" : {
 
     },
-    "Since downloading and data export are not implemented yet, all data, without any exception, will be permanently deleted if or when the app is removed." : {
-
-    },
     "Standard" : {
 
     },
@@ -777,6 +789,9 @@
 
     },
     "Unlocked" : {
+
+    },
+    "Upcoming updates will introduce sessions for creating your own website links and custom languages.\n\nAvailable now:\n- Achievements\n- Leitner system\n- Recording\n- Time Trial" : {
 
     },
     "View Metadata" : {

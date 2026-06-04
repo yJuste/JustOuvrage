@@ -17,7 +17,7 @@ struct RecordingSession: SessionService {
  
  All cards are sorted by date added, with the newest ones right at the top.
  
- On the right side of each expression, you’ll find a waveform button that opens a sheet where you can record your audio.
+ On the right side of each expression, you'll find a waveform button that opens a sheet where you can record your audio.
  
  A color indicator helps you quickly track your recording progress:
  • Green — both recordings are completed

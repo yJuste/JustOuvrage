@@ -67,6 +67,7 @@ struct SessionLeitnerView: View {
 				ScrollView {
 					Image(session.banner)
 						.resizable()
+						.scaledToFill()
 						.aspectRatio(contentMode: .fill)
 						.frame(maxWidth: isPortrait ? width : .infinity)
 						.containerRelativeFrame(.vertical) { height, _ in
@@ -259,7 +260,8 @@ fileprivate extension SessionLeitnerView {
 								Text(session.depiction)
 								Image(session.leitnerExample)
 									.resizable()
-									.scaledToFit()
+									.scaledToFill()
+									.clipShape(RoundedRectangle(cornerRadius: 15))
 							}
 							.padding(.horizontal, 15)
 						}

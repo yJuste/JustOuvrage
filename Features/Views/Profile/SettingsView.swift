@@ -28,6 +28,8 @@ struct SettingsView: View {
 							.foregroundStyle(color)
 					}
 					.disabled(isCleaning)
+				} header: {
+					Text("General")
 				} footer: {
 					Text("""
   \(lastClean)
@@ -42,6 +44,60 @@ struct SettingsView: View {
   
   This operation cannot be undone.
 """)
+				}
+				Section {
+					Picker("Global Color", selection: $preferences.globalColor) {
+						ForEach(AccentColor.allCases, id: \.self) { color in
+							HStack {
+								Circle()
+									.fill(color.color)
+									.frame(width: 16, height: 16)
+								Text(color.rawValue.capitalized)
+							}
+							.tag(color)
+						}
+					}
+					.pickerStyle(.menu)
+				} footer: {
+					Text("Choose the global color for the app.")
+				}
+				Section {
+					Toggle("Open links internally", isOn: $preferences.globalBrowser)
+				} footer: {
+					Text("If enabled, links open inside the app. Otherwise, they open in the external browser.")
+				}
+				Section {
+					VStack(alignment: .trailing) {
+						HStack {
+							Text("Swipe Trigger")
+							Spacer()
+							Text("\(preferences.trialSwipeThreshold, specifier: "%.0f") pt")
+								.font(.caption)
+								.foregroundStyle(.secondary)
+						}
+						Slider(value: Binding(
+							get: {
+								preferences.trialSwipeThreshold
+							},
+							set: { value in
+								preferences.trialSwipeThreshold = value
+							}
+						), in: 10...150, step: 1)
+						.font(.footnote)
+						.foregroundStyle(.secondary)
+					}
+				} header: {
+					Text("Behavior")
+				} footer: {
+					Text("""
+   Controls how far a card must be dragged before it is swiped away.
+   
+   150 pt = very long swipe
+   100 pt = long swipe
+   80 pt = moderate swipe
+   50 pt = quick swipe
+   10 pt = very fast swipe
+   """)
 				}
 				Section {
 					VStack(alignment: .trailing) {
@@ -85,6 +141,8 @@ struct SettingsView: View {
 							.tag(AudioQuality.max)
 					}
 					.pickerStyle(.menu)
+				} header: {
+					Text("Advanced")
 				} footer: {
 					Text("""
   Choose the audio quality of recordings.
@@ -143,66 +201,9 @@ struct SettingsView: View {
   Moderate impact on memory (~1.5x) and significant and continuous energy consumption (~2.5x)
   """)
 				}
-				Section {
-					VStack(alignment: .trailing) {
-						HStack {
-							Text("Swipe Trigger")
-							Spacer()
-							Text("\(preferences.trialSwipeThreshold, specifier: "%.0f") pt")
-								.font(.caption)
-								.foregroundStyle(.secondary)
-						}
-						Slider(value: Binding(
-							get: {
-								preferences.trialSwipeThreshold
-							},
-							set: { value in
-								preferences.trialSwipeThreshold = value
-							}
-						), in: 10...150, step: 1)
-						.font(.footnote)
-						.foregroundStyle(.secondary)
-					}
-				} footer: {
-					Text("""
-   Controls how far a card must be dragged before it is swiped away.
-   
-   150 pt = very long swipe
-   100 pt = long swipe
-   80 pt = moderate swipe
-   50 pt = quick swipe
-   10 pt = very fast swipe
-   """)
-				}
-				Section {
-					Picker("Global Color", selection: $preferences.globalColor) {
-						ForEach(AccentColor.allCases, id: \.self) { color in
-							HStack {
-								Circle()
-									.fill(color.color)
-									.frame(width: 16, height: 16)
-								Text(color.rawValue.capitalized)
-							}
-							.tag(color)
-						}
-					}
-					.pickerStyle(.menu)
-				} footer: {
-					Text("Choose the global color for the app.")
-				}
 			}
-			.toolbar { toolbar }
-		}
-	}
-}
-
-/// Toolbar.
-fileprivate extension SettingsView {
-	
-	@ToolbarContentBuilder private var toolbar: some ToolbarContent {
-		ToolbarItem(placement: .principal) {
-			Text("Settings")
-				.font(.headline)
+			.navigationTitle("Settings")
+			.navigationBarTitleDisplayMode(.inline)
 		}
 	}
 }

@@ -42,9 +42,8 @@ struct SessionTimeTrialView: View {
 		}
 	}
 	
-	private var averagePercentage: Int {
-		guard !timeTrials.isEmpty else { return 0 }
-		return Int((timeTrials.map(\.success).reduce(0, +) / Double(timeTrials.count) * 100).rounded())
+	private var averagePercentage: Double {
+		timeTrials.isEmpty ? 0 : timeTrials.map(\.success).reduce(0, +) / Double(timeTrials.count)
 	}
 	
 	private var dismissItems: [Binding<Bool>] {
@@ -62,6 +61,7 @@ struct SessionTimeTrialView: View {
 				ScrollView {
 					Image(session.banner)
 						.resizable()
+						.scaledToFill()
 						.aspectRatio(contentMode: .fill)
 						.frame(maxWidth: isPortrait ? width : .infinity)
 						.containerRelativeFrame(.vertical) { height, _ in
@@ -197,7 +197,7 @@ fileprivate extension SessionTimeTrialView {
 				.font(.system(size: 50, weight: .black))
 			Text(session.subtitle)
 				.font(.system(size: 20, weight: .semibold))
-			Text("\(timeTrials.count) sessions ⋅ \(averagePercentage)% success")
+			Text("\(timeTrials.count) sessions ⋅ \(averagePercentage, format: .percent.precision(.fractionLength(0)))")
 				.font(.system(size: 16, weight: .semibold))
 				.padding(.top, 10)
 			Button {
@@ -232,7 +232,8 @@ fileprivate extension SessionTimeTrialView {
 								Text(session.depiction)
 								Image(session.timeTrialExample)
 									.resizable()
-									.scaledToFit()
+									.scaledToFill()
+									.clipShape(RoundedRectangle(cornerRadius: 15))
 							}
 							.padding(.horizontal, 15)
 						}

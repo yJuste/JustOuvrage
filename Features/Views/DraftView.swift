@@ -145,6 +145,7 @@ fileprivate extension DraftView {
 			} label: {
 				Image(selectedLanguage.flagAsset)
 					.resizable()
+					.scaledToFill()
 					.frame(width: 36, height: 36)
 					.clipShape(Circle())
 			}

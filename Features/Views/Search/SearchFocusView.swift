@@ -144,6 +144,7 @@ struct SearchFocusView: View {
 		} else {
 			if !hasSearch {
 				VStack {
+					let rectangle = RoundedRectangle(cornerRadius: 15)
 					Text("How does it work?")
 						.font(.headline)
 					Spacer(minLength: 20)
@@ -152,16 +153,16 @@ struct SearchFocusView: View {
 						.foregroundStyle(.secondary)
 					Image(.searchPickerExample)
 						.resizable()
-						.scaledToFit()
-						.clipShape(RoundedRectangle(cornerRadius: 15))
+						.scaledToFill()
+						.clipShape(rectangle)
 					Spacer(minLength: 100)
 					Text("Select the language you want to search in at the top of the toolbar on the left.")
 						.font(.caption2)
 						.foregroundStyle(.secondary)
 					Image(.searchDraftExample)
 						.resizable()
-						.scaledToFit()
-						.clipShape(RoundedRectangle(cornerRadius: 15))
+						.scaledToFill()
+						.clipShape(rectangle)
 				}
 				.padding()
 				.frame(maxWidth: .infinity)

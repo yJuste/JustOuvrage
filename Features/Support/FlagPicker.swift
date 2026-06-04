@@ -32,7 +32,7 @@ struct FlagPicker: View {
 							HStack(spacing: 10) {
 								Image(language.flagAsset)
 									.resizable()
-									.scaledToFit()
+									.scaledToFill()
 									.frame(width: 28, height: 24)
 								Text(language.language)
 									.foregroundStyle(.primary)
@@ -54,7 +54,7 @@ struct FlagPicker: View {
 						HStack(spacing: 10) {
 							Image(language.flagAsset)
 								.resizable()
-								.scaledToFit()
+								.scaledToFill()
 								.frame(width: 28, height: 24)
 							Text(language.language)
 								.foregroundStyle(.primary)
