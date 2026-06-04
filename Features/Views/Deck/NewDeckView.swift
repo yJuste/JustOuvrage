@@ -21,7 +21,9 @@ struct NewDeckView: View {
 	@State private var selectedUIImage: UIImage?
 	@State private var deckName: String = ""
 	@State private var showCancel: Bool = false
+	@State private var showCameraPicker: Bool = false
 	@State private var showPhotoPicker: Bool = false
+	@State private var showFilePicker: Bool = false
 	
 	let rectangle: RoundedRectangle = RoundedRectangle(cornerRadius: 10, style: .continuous)
 	
@@ -43,7 +45,7 @@ struct NewDeckView: View {
 							.clipShape(rectangle)
 						Menu {
 							Button {
-								// Take Photo
+								showCameraPicker.toggle()
 							} label: {
 								Label("Take Photo", systemImage: "camera")
 							}
@@ -53,20 +55,16 @@ struct NewDeckView: View {
 								Label("Choose Photo", systemImage: "photo.on.rectangle")
 							}
 							Button {
-								// Open Files
+								showFilePicker.toggle()
 							} label: {
 								Label("Choose File", systemImage: "folder")
 							}
 						} label: {
-							Button {
-								//
-							} label: {
-								Image(systemName: "photo")
-									.font(.system(size: 19))
-									.foregroundStyle(Color.white)
-									.frame(width: 65, height: 65)
-									.background(Circle().fill(Color.accentColor))
-							}
+							Image(systemName: "photo")
+								.font(.system(size: 19))
+								.foregroundStyle(Color.white)
+								.frame(width: 65, height: 65)
+								.background(Circle().fill(Color.accentColor))
 						}
 					}
 					TextField("Deck Name", text: $deckName)
@@ -89,6 +87,29 @@ struct NewDeckView: View {
 			.onDisappear {
 				selectedUIImage = nil
 				selectedPhotoItem = nil
+			}
+			.fileImporter(isPresented: $showFilePicker, allowedContentTypes: [.image], allowsMultipleSelection: false) { result in
+				switch result {
+				case .success(let urls):
+					guard let url = urls.first else { return }
+					guard url.startAccessingSecurityScopedResource() else { return }
+					defer { url.stopAccessingSecurityScopedResource() }
+					
+					do {
+						let data = try Data(contentsOf: url)
+						if let image = UIImage(data: data) {
+							selectedUIImage = image
+						}
+					} catch {
+						print(Errors.FileManager)
+					}
+				case .failure: print(Errors.FileManager)
+				}
+			}
+			.sheet(isPresented: $showCameraPicker) {
+				CameraCaptureView { image in
+					selectedUIImage = image
+				}
 			}
 			.toolbar { toolbar }
 			.photosPicker(isPresented: $showPhotoPicker, selection: $selectedPhotoItem, matching: .images)

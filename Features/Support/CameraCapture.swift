@@ -24,82 +24,84 @@ struct CameraCaptureView: View {
 	@State private var showConfigured: Bool = false
 	
 	var body: some View {
-		ZStack {
-			if let image = capturedImage {
-				Image(uiImage: image)
-					.resizable()
-					.scaledToFill()
-					.ignoresSafeArea()
-				VStack(alignment: .center) {
-					Spacer()
-					HStack(alignment: .center, spacing: 25) {
-						Button {
-							capturedImage = nil
-						} label: {
-							Text("Retake")
-								.frame(width: 100, height: 50)
-								.overlay { RoundedRectangle(cornerRadius: 25).stroke(.black.opacity(0.2), lineWidth: 6) }
-								.glassEffect(.clear.tint(.white).interactive(), in: .rect(cornerRadius: 25))
-						}
-						Button {
-							onCapture(image)
-							dismiss()
-						} label: {
-							Text("Use Photo")
-								.foregroundStyle(.white)
-								.frame(width: 140, height: 50)
-								.overlay { RoundedRectangle(cornerRadius: 25).stroke(.black.opacity(0.2), lineWidth: 6) }
-								.glassEffect(.clear.tint(Color.accentColor).interactive(), in: .rect(cornerRadius: 25))
-						}
-					}
-					.font(.system(size: 20, weight: .semibold))
-				}
-				.padding(.bottom, 40)
-			} else {
-				GeometryReader { geo in
-					ZStack {
-						CameraPreview(session: session)
-							.ignoresSafeArea()
-						VStack {
-							Spacer()
-							let spacing: CGFloat = 90
-							ZStack {
-								Button {
-									capture()
-								} label: {
-									Circle()
-										.fill(.white)
-										.frame(width: 72, height: 72)
-										.overlay { Circle().stroke(.black.opacity(0.2), lineWidth: 6) }
-								}
-								Button {
-									switchCamera()
-								} label: {
-									Image(systemName: "arrow.trianglehead.2.clockwise.rotate.90")
-										.font(.system(size: 25))
-										.foregroundStyle(.white)
-										.padding()
-								}
-								.glassEffect(.regular.tint(.black.opacity(0.2)).interactive(), in: .circle)
-								.offset(x: spacing)
+		NavigationStack {
+			ZStack {
+				if let image = capturedImage {
+					Image(uiImage: image)
+						.resizable()
+						.scaledToFill()
+						.ignoresSafeArea()
+					VStack(alignment: .center) {
+						Spacer()
+						HStack(alignment: .center, spacing: 25) {
+							Button {
+								capturedImage = nil
+							} label: {
+								Text("Retake")
+									.frame(width: 100, height: 50)
+									.overlay { RoundedRectangle(cornerRadius: 25).stroke(.black.opacity(0.2), lineWidth: 6) }
+									.glassEffect(.clear.tint(.white).interactive(), in: .rect(cornerRadius: 25))
 							}
-							.frame(maxWidth: .infinity)
-							.padding(.bottom, 30)
+							Button {
+								onCapture(image)
+								dismiss()
+							} label: {
+								Text("Use Photo")
+									.foregroundStyle(.white)
+									.frame(width: 140, height: 50)
+									.overlay { RoundedRectangle(cornerRadius: 25).stroke(.black.opacity(0.2), lineWidth: 6) }
+									.glassEffect(.clear.tint(Color.accentColor).interactive(), in: .rect(cornerRadius: 25))
+							}
+						}
+						.font(.system(size: 20, weight: .semibold))
+					}
+					.padding(.bottom, 40)
+				} else {
+					GeometryReader { geo in
+						ZStack {
+							CameraPreview(session: session)
+								.ignoresSafeArea()
+							VStack {
+								Spacer()
+								let spacing: CGFloat = 90
+								ZStack {
+									Button {
+										capture()
+									} label: {
+										Circle()
+											.fill(.white)
+											.frame(width: 72, height: 72)
+											.overlay { Circle().stroke(.black.opacity(0.2), lineWidth: 6) }
+									}
+									Button {
+										switchCamera()
+									} label: {
+										Image(systemName: "arrow.trianglehead.2.clockwise.rotate.90")
+											.font(.system(size: 25))
+											.foregroundStyle(.white)
+											.padding()
+									}
+									.glassEffect(.regular.tint(.black.opacity(0.2)).interactive(), in: .circle)
+									.offset(x: spacing)
+								}
+								.frame(maxWidth: .infinity)
+								.padding(.bottom, 30)
+							}
 						}
 					}
 				}
 			}
-		}
-		.task {
-			guard !showConfigured else { return }
-			configure()
-			session.startRunning()
-			showConfigured = true
-		}
-		.onDisappear {
-			session.stopRunning()
-			capturedImage = nil
-			photoDelegate = nil
+			.task {
+				guard !showConfigured else { return }
+				configure()
+				session.startRunning()
+				showConfigured = true
+			}
+			.onDisappear {
+				session.stopRunning()
+				capturedImage = nil
+				photoDelegate = nil
+			}
 		}
 	}
 	

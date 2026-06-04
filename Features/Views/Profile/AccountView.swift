@@ -17,13 +17,12 @@ struct AccountView: View {
 	
 	@State private var selectedPhotoItem: PhotosPickerItem?
 	@State private var selectedUIImage: UIImage?
-	@State private var pendingUIImage: UIImage?
 	@State private var profileName: String = ""
 	@State private var showAddedBanner: Bool = false
+	@State private var showClearImage: Bool = false
 	@State private var showCameraPicker: Bool = false
 	@State private var showPhotoPicker: Bool = false
 	@State private var showFilePicker: Bool = false
-	@State private var showClearImage: Bool = false
 	
 	private let circle = Circle()
 	
@@ -108,7 +107,6 @@ struct AccountView: View {
 				
 				Task {
 					guard let data = try? await item.loadTransferable(type: Data.self), let image = UIImage(data: data) else { return }
-					pendingUIImage = image
 					selectedUIImage = image
 				}
 			}
@@ -123,10 +121,10 @@ struct AccountView: View {
 				let trimmed = profileName.trimmingCharacters(in: .whitespacesAndNewlines)
 				preferences.profileName = trimmed.isEmpty ? Constants.noAuthor : trimmed
 				
-				if let pendingUIImage {
+				if let selectedUIImage {
 					let oldImage = preferences.profileImage
 					do {
-						let newImage = try storage.save(image: pendingUIImage)
+						let newImage = try storage.save(image: selectedUIImage)
 						preferences.profileImage = newImage
 						
 						if !oldImage.isEmpty {
@@ -138,7 +136,6 @@ struct AccountView: View {
 				}
 				selectedPhotoItem = nil
 				selectedUIImage = nil
-				pendingUIImage = nil
 			}
 			.photosPicker(isPresented: $showPhotoPicker, selection: $selectedPhotoItem, matching: .images)
 			.fileImporter(isPresented: $showFilePicker, allowedContentTypes: [.image], allowsMultipleSelection: false) { result in
@@ -151,7 +148,6 @@ struct AccountView: View {
 					do {
 						let data = try Data(contentsOf: url)
 						if let image = UIImage(data: data) {
-							pendingUIImage = image
 							selectedUIImage = image
 						}
 					} catch {
@@ -162,7 +158,6 @@ struct AccountView: View {
 			}
 			.sheet(isPresented: $showCameraPicker) {
 				CameraCaptureView { image in
-					pendingUIImage = image
 					selectedUIImage = image
 				}
 			}
@@ -181,12 +176,11 @@ struct AccountView: View {
 			.navigationBarTitleDisplayMode(.inline)
 			.alert("Clear Image", isPresented: $showClearImage) {
 				Button("Clear", role: .destructive) {
-					if selectedUIImage != nil || pendingUIImage != nil {
+					if selectedUIImage != nil {
 						try? storage.delete(image: preferences.profileImage)
 					}
 					selectedPhotoItem = nil
 					selectedUIImage = nil
-					pendingUIImage = nil
 					preferences.profileImage = Constants.defaultProfileImage
 				}
 				Button("Cancel", role: .cancel) { }

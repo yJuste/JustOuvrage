@@ -27,10 +27,12 @@ struct EditDeckView: View {
 	@State private var selectedPhotoItem: PhotosPickerItem?
 	@State private var selectedUIImage: UIImage?
 	@State private var showCancel: Bool = false
-	@State private var showPhotoPicker: Bool = false
 	@State private var showClearImage: Bool = false
 	@State private var isChangedImage: Bool = false
 	@State private var isInitialImage: Bool = false
+	@State private var showCameraPicker: Bool = false
+	@State private var showPhotoPicker: Bool = false
+	@State private var showFilePicker: Bool = false
 	
 	private let rectangle: RoundedRectangle = RoundedRectangle(cornerRadius: 10, style: .continuous)
 	
@@ -60,7 +62,7 @@ struct EditDeckView: View {
 							.clipShape(rectangle)
 						Menu {
 							Button {
-								// Take Photo
+								showCameraPicker.toggle()
 							} label: {
 								Label("Take Photo", systemImage: "camera")
 							}
@@ -70,20 +72,16 @@ struct EditDeckView: View {
 								Label("Choose Photo", systemImage: "photo.on.rectangle")
 							}
 							Button {
-								// Open Files
+								showFilePicker.toggle()
 							} label: {
 								Label("Choose File", systemImage: "folder")
 							}
 						} label: {
-							Button {
-								//
-							} label: {
-								Image(systemName: "photo")
-									.font(.system(size: 19))
-									.foregroundStyle(Color.white)
-									.frame(width: 65, height: 65)
-									.background(Circle().fill(Color.accentColor))
-							}
+							Image(systemName: "photo")
+								.font(.system(size: 19))
+								.foregroundStyle(Color.white)
+								.frame(width: 65, height: 65)
+								.background(Circle().fill(Color.accentColor))
 						}
 					}
 					VStack(spacing: 20) {
@@ -147,6 +145,29 @@ struct EditDeckView: View {
 				selectedUIImage = nil
 				selectedPhotoItem = nil
 			}
+			.fileImporter(isPresented: $showFilePicker, allowedContentTypes: [.image], allowsMultipleSelection: false) { result in
+				switch result {
+				case .success(let urls):
+					guard let url = urls.first else { return }
+					guard url.startAccessingSecurityScopedResource() else { return }
+					defer { url.stopAccessingSecurityScopedResource() }
+					
+					do {
+						let data = try Data(contentsOf: url)
+						if let image = UIImage(data: data) {
+							selectedUIImage = image
+						}
+					} catch {
+						print(Errors.FileManager)
+					}
+				case .failure: print(Errors.FileManager)
+				}
+			}
+			.sheet(isPresented: $showCameraPicker) {
+				CameraCaptureView { image in
+					selectedUIImage = image
+				}
+			}
 			.toolbar { toolbar }
 			.photosPicker(isPresented: $showPhotoPicker, selection: $selectedPhotoItem, matching: .images)
 			.alert("New Deck", isPresented: $showCancel) {
@@ -166,6 +187,14 @@ struct EditDeckView: View {
 				Button("Cancel", role: .cancel) { }
 			} message: {
 				Text("Are you sure you want to clear your deck image?")
+			}
+			.alert("Edit Deck", isPresented: $showCancel) {
+				Button("Discard Changes", role: .destructive) {
+					dismiss()
+				}
+				Button("Keep Editing", role: .cancel) { }
+			} message: {
+				Text("Are you sure you want to discard modification for this deck?")
 			}
 			.scrollDismissesKeyboard(.interactively)
 			.scrollIndicators(.hidden)
@@ -219,7 +248,10 @@ fileprivate extension EditDeckView {
 		let name = name.trimmingCharacters(in: .whitespacesAndNewlines)
 		ToolbarItem(placement: .topBarLeading) {
 			Button {
-				//
+				if name != deck.name || isChangedImage {
+					return showCancel.toggle()
+				}
+				dismiss()
 			} label: {
 				Text("Cancel")
 			}
