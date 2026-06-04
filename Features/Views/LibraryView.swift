@@ -19,7 +19,6 @@ struct LibraryView: View {
 	@Query(sort: [SortDescriptor(\Deck.lastOpenedAt, order: .reverse), SortDescriptor(\Deck.createdAt, order: .reverse)]) private var decks: [Deck]
 	
 	@State private var selectedDeck: Deck?
-	@State private var profileImage = Preferences.unique.profileImage
 	@State private var showNewCard: Bool = false
 	@State private var showNewDeck: Bool = false
 	@State private var showProfile: Bool = false
@@ -124,7 +123,7 @@ fileprivate extension LibraryView {
 		}
 		ToolbarSpacer(.fixed, placement: .topBarTrailing)
 		ToolbarItem(placement: .topBarTrailing) {
-			Image(image: profileImage, storage: storage, defaultAsset: Constants.defaultProfileImage)
+			Image(image: Preferences.unique.profileImage, storage: storage, defaultAsset: Constants.defaultProfileImage)
 				.resizable()
 				.scaledToFill()
 				.frame(width: 36, height: 36)
