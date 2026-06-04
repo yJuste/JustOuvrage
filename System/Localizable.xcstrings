@@ -10,9 +10,6 @@
     "  Controls refresh speed of the trial system.\n\n  60 FPS = fastest updates, smoother behavior\n  10 FPS = slower but lighter on CPU" : {
 
     },
-    "..........." : {
-
-    },
     "\"%@\"" : {
 
     },
@@ -130,6 +127,16 @@
         }
       }
     },
+    "%lld/%lld reached" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$lld/%2$lld reached"
+          }
+        }
+      }
+    },
     "~ %.0f FPS" : {
 
     },
@@ -143,6 +150,9 @@
 
     },
     "Account" : {
+
+    },
+    "Account name" : {
 
     },
     "Achieve" : {
@@ -178,7 +188,10 @@
     "Are you sure you want to clear this audio?" : {
 
     },
-    "Are you sure you want to clear your image?" : {
+    "Are you sure you want to clear your deck image?" : {
+
+    },
+    "Are you sure you want to clear your profile image?" : {
 
     },
     "Are you sure you want to delete all the selection?" : {
@@ -313,6 +326,9 @@
     "Controls how far a card must be dragged before it is swiped away.\n\n150 pt = very long swipe\n100 pt = long swipe\n80 pt = moderate swipe\n50 pt = quick swipe\n10 pt = very fast swipe" : {
 
     },
+    "Copied" : {
+
+    },
     "Custom" : {
 
     },
@@ -382,9 +398,6 @@
     "Downloading / Data Export" : {
 
     },
-    "Downloading is not implemented yet." : {
-
-    },
     "Edit Card" : {
 
     },
@@ -392,6 +405,9 @@
 
     },
     "Every Card" : {
+
+    },
+    "Exiting the app permanently saves the changes." : {
 
     },
     "Export" : {
@@ -434,9 +450,6 @@
 
     },
     "Gradient + Animation" : {
-
-    },
-    "Hello" : {
 
     },
     "Here is your last entries." : {
@@ -538,9 +551,6 @@
     "More Informations" : {
 
     },
-    "My friend" : {
-
-    },
     "Name" : {
 
     },
@@ -575,9 +585,6 @@
 
     },
     "Normal" : {
-
-    },
-    "Not available yet." : {
 
     },
     "OK" : {
@@ -778,6 +785,9 @@
     "Visible" : {
 
     },
+    "You can update your author name." : {
+
+    },
     "You can't start the session because there are no cards in Library." : {
 
     },
@@ -791,6 +801,9 @@
 
     },
     "You have to enable the microphone in the settings." : {
+
+    },
+    "your ID:" : {
 
     },
     "Your Just Account provides a unique identifier that connects you across all Just Anthology productions." : {

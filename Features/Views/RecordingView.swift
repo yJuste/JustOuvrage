@@ -283,7 +283,8 @@ fileprivate extension RecordingView {
 		frontEntry: "hello my na🇺🇸m fjdofjdo l,",
 		backEntry: ",,,bonjour,,,,",
 		frontLanguage: .en_US,
-		backLanguage: .fr_CA
+		backLanguage: .fr_CA,
+		author: "yJuste"
 	))
 	.environment(Recording())
 }

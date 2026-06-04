@@ -46,6 +46,9 @@ import Observation
 		// In Settings
 		case lastCleanup
 		case audioQuality
+		case profileImage
+		case profileName
+		case profileUUID
 		
 		// Decks
 		case visibleDecks
@@ -83,6 +86,9 @@ import Observation
 	private var trialSideRaw: Int = 0
 	private var lastCleanupRaw: Double = 0
 	private var audioQualityRaw: String = ""
+	private var profileImageRaw: String = ""
+	private var profileNameRaw: String = ""
+	private var profileUUIDRaw: String = ""
 	private var visibleDecksRaw: Bool = false
 	private var sortDecksRaw: [String] = []
 	private var invertCardsRaw: Bool = false
@@ -122,6 +128,10 @@ import Observation
 		trialSideRaw = userDefaults.integer(forKey: Key.trialSide.rawValue)
 		lastCleanupRaw = userDefaults.double(forKey: Key.lastCleanup.rawValue)
 		audioQualityRaw = userDefaults.string(forKey: Key.audioQuality.rawValue) ?? AudioQuality.high.rawValue
+		profileImageRaw = userDefaults.string(forKey: Key.profileImage.rawValue) ?? Constants.defaultProfileImage
+		profileNameRaw = userDefaults.string(forKey: Key.profileName.rawValue) ?? Constants.noAuthor
+		profileUUIDRaw = (UUID(uuidString: userDefaults.string(forKey: Key.profileUUID.rawValue) ?? "") ?? UUID()).uuidString
+		userDefaults.set(profileUUIDRaw, forKey: Key.profileUUID.rawValue)
 		visibleDecksRaw = userDefaults.bool(forKey: Key.visibleDecks.rawValue)
 		sortDecksRaw = userDefaults.stringArray(forKey: Key.sortDecks.rawValue) ?? [SortDeck.newestToOldest.rawValue]
 		invertCardsRaw = userDefaults.bool(forKey: Key.invertCards.rawValue)
@@ -272,6 +282,30 @@ import Observation
 		set {
 			audioQualityRaw = newValue.rawValue
 			userDefaults.set(audioQualityRaw, forKey: Key.audioQuality.rawValue)
+		}
+	}
+	
+	var profileImage: String {
+		get { profileImageRaw }
+		set {
+			profileImageRaw = newValue
+			userDefaults.set(profileImageRaw, forKey: Key.profileImage.rawValue)
+		}
+	}
+	
+	var profileName: String {
+		get { profileNameRaw }
+		set {
+			profileNameRaw = newValue
+			userDefaults.set(profileNameRaw, forKey: Key.profileName.rawValue)
+		}
+	}
+	
+	var profileUUID: UUID {
+		get { UUID(uuidString: profileUUIDRaw)! }
+		set {
+			profileUUIDRaw = newValue.uuidString
+			userDefaults.set(profileUUIDRaw, forKey: Key.profileUUID.rawValue)
 		}
 	}
 	

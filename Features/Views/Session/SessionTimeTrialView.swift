@@ -28,7 +28,6 @@ struct SessionTimeTrialView: View {
 	@State private var showDepiction: Bool = false
 	@State private var showTimeTrial: Bool = false
 	@State private var showMetaData: Bool = false
-	@State private var showDownload: Bool = false
 	@State private var showDeleteTimeTrial: Bool = false
 	@State private var showSelectedTimeTrial: Bool = false
 	
@@ -183,9 +182,6 @@ struct SessionTimeTrialView: View {
 			} message: {
 				Text("Are you sure you want to delete the selection?")
 			}
-			.alert("Downloading is not implemented yet.", isPresented: $showDownload) {
-				Button("OK", role: .cancel) { }
-			}
 		}
 		.environment(\.editMode, $editMode)
 	}
@@ -204,27 +200,16 @@ fileprivate extension SessionTimeTrialView {
 			Text("\(timeTrials.count) sessions ⋅ \(averagePercentage)% success")
 				.font(.system(size: 16, weight: .semibold))
 				.padding(.top, 10)
-			GlassEffectContainer {
-				HStack(alignment: .center, spacing: 15) {
-					Button {
-						dismissItems.setAll(to: false)
-						navigation.selectedTab = .trial
-					} label: {
-						Label("Session", systemImage: "flag.pattern.checkered.2.crossed")
-							.frame(width: 160, height: 50)
-							.glassEffect(.regular.tint(Color.accentColor).interactive())
-					}
-					Button {
-						showDownload.toggle()
-					} label: {
-						Image(systemName: "arrow.down")
-							.frame(width: 50, height: 50)
-							.glassEffect(.clear.interactive())
-					}
-				}
-				.font(.system(size: 20, weight: .semibold))
+			Button {
+				dismissItems.setAll(to: false)
+				navigation.selectedTab = .trial
+			} label: {
+				Label("Session", systemImage: "flag.pattern.checkered.2.crossed")
+					.font(.system(size: 20, weight: .semibold))
+					.tint(.primary)
+					.frame(width: 200, height: 50)
+					.glassEffect(.regular.tint(Color.accentColor).interactive())
 			}
-			.tint(.primary)
 			.padding(.top, 10)
 			Text(session.depiction)
 				.lineLimit(2)
@@ -342,10 +327,10 @@ fileprivate extension SessionTimeTrialView {
 	let config = ModelConfiguration(isStoredInMemoryOnly: true)
 	let container = try! ModelContainer(for: Card.self, Deck.self, TimeTrial.self, configurations: config)
 	let context = container.mainContext
-	let cards: [Card] = [Card(frontEntry: "FrontEntry", backEntry: "BackEntry", frontLanguage: .fr_CA, backLanguage: .en_GB)]
-	let deck1 = Deck(name: "Hello", image: "deck")
-	let deck2 = Deck(name: "Lucas", image: "deck")
-	let deck3 = Deck(name: "All", image: "deck")
+	let cards: [Card] = [Card(frontEntry: "FrontEntry", backEntry: "BackEntry", frontLanguage: .fr_CA, backLanguage: .en_GB, author: "yJuste")]
+	let deck1 = Deck(name: "Hello", image: "deck", author: "yJuste")
+	let deck2 = Deck(name: "Lucas", image: "deck", author: "yJuste")
+	let deck3 = Deck(name: "All", image: "deck", author: "yJuste")
 	
 	let argument = Argument.make(deck: nil, cards: cards, side: .front, mode: .chill, directions: [.left], timeInterval: 4.0, order: .alphabeticalAscending, numberOfCards: 30)
 	context.insert(deck1)

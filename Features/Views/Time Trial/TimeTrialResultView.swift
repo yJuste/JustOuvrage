@@ -102,8 +102,8 @@ fileprivate extension TimeTrialResultView {
 
 #Preview {
 	
-	let cards: [Card] = [Card(frontEntry: "FrontEntry", backEntry: "BackEntry", frontLanguage: .fr_CA, backLanguage: .en_GB)]
-	let deck = Deck(name: "Title deck", image: "deck")
+	let cards: [Card] = [Card(frontEntry: "FrontEntry", backEntry: "BackEntry", frontLanguage: .fr_CA, backLanguage: .en_GB, author: "yJuste")]
+	let deck = Deck(name: "Title deck", image: "deck", author: "yJuste")
 	let res: [SwipeDirection] = [.left, .right, .right]
 	let argument = Argument.make(deck: deck, cards: cards, side: .front, mode: .chill, directions: res, timeInterval: 4.0, order: .alphabeticalAscending, numberOfCards: 30)
 	

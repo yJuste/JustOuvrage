@@ -204,5 +204,5 @@ fileprivate extension CardsToDeckView {
 }
 
 #Preview {
-	CardsToDeckView(deck: Deck(name: "LOL Taylor", image: "deck"))
+	CardsToDeckView(deck: Deck(name: "LOL Taylor", image: "deck", author: "yJuste"))
 }

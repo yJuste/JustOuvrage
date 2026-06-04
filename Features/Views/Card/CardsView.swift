@@ -396,13 +396,15 @@ fileprivate extension CardsView {
 			frontEntry: "dig in hiogjsodklhk",
 			backEntry: "mangez!",
 			frontLanguage: .en_US,
-			backLanguage: .fr_FR
+			backLanguage: .fr_FR,
+			author: "yJuste"
 		))
 		context.insert(Card(
 			frontEntry: "hello",
 			backEntry: "bonjourj kjj kksdhkldh ",
 			frontLanguage: .en_US,
-			backLanguage: .fr_FR
+			backLanguage: .fr_FR,
+			author: "yJuste"
 		))
 		return CardsView()
 			.modelContainer(container)

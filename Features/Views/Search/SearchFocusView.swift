@@ -212,11 +212,12 @@ fileprivate extension SearchFocusView {
 				frontEntry: "Hello",
 				backEntry: "World",
 				frontLanguage: .en_US,
-				backLanguage: .en_US
+				backLanguage: .en_US,
+				author: "yJuste"
 			)
 			card.lastViewedAt = .now
 			
-			let deck = Deck(name: "Lol", image: "deck")
+			let deck = Deck(name: "Lol", image: "deck", author: "yJuste")
 			deck.lastViewedAt = .now
 			
 			let draft = Draft(entry: "Draft test", language: .en_US)

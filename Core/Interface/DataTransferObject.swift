@@ -100,7 +100,7 @@ enum DataTransferObject {
 				continue
 			}
 			
-			let deck = Deck(name: dto.name, image: dto.image)
+			let deck = Deck(name: dto.name, image: dto.image, author: dto.author)
 			deck.id = dto.id
 			deck.depiction = dto.depiction
 			deck.author = dto.author
@@ -160,7 +160,8 @@ enum DataTransferObject {
 			frontEntry: dto.frontEntry,
 			backEntry: dto.backEntry,
 			frontLanguage: dto.frontLanguage,
-			backLanguage: dto.backLanguage
+			backLanguage: dto.backLanguage,
+			author: dto.author
 		)
 		
 		card.frontRecording = dto.frontRecording

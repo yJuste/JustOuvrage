@@ -10,11 +10,12 @@ import SwiftData
 
 struct ProfileView: View {
 	
-	let profile: ImageResource
-	
+	@Environment(FileImageStorage.self) var storage
 	@Environment(\.dismiss) private var dismiss
 	
+	@Bindable private var preferences: Preferences = .unique
 	@State private var color: Color = Preferences.unique.globalColor.color
+	@State private var profileImage: String = Preferences.unique.profileImage
 	@State private var showLogOut: Bool = false
 	@State private var showTransfer: Bool = false
 	
@@ -22,18 +23,23 @@ struct ProfileView: View {
 		NavigationStack {
 			List {
 				Section {
+					if preferences.profileName == Constants.noAuthor {
+						Text("You can update your author name.")
+							.font(.caption)
+							.foregroundStyle(.orange)
+					}
 					NavigationLink {
 						AccountView()
 					} label: {
 						HStack(spacing: 12) {
-							Image(profile)
+							Image(image: profileImage, storage: storage, defaultAsset: Constants.defaultProfileImage)
 								.resizable()
 								.scaledToFill()
 								.frame(width: 58, height: 58)
 								.clipShape(Circle())
 							VStack(alignment: .leading, spacing: 2) {
-								Text("Hello")
-								Text("My friend")
+								Text(preferences.profileName)
+								Text(preferences.profileUUID.uuidString)
 									.foregroundStyle(.secondary)
 							}
 							.font(.system(size: 15))
@@ -130,5 +136,5 @@ fileprivate extension ProfileView {
 }
 
 #Preview {
-	ProfileView(profile: .artAnthology)
+	ProfileView()
 }

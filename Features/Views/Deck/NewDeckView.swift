@@ -62,7 +62,7 @@ struct NewDeckView: View {
 								//
 							} label: {
 								Image(systemName: "photo")
-									.font(.custom("picture icon", size: 19))
+									.font(.system(size: 19))
 									.foregroundStyle(Color.white)
 									.frame(width: 65, height: 65)
 									.background(Circle().fill(Color.accentColor))
@@ -135,7 +135,7 @@ fileprivate extension NewDeckView {
 						print(Errors.Image)
 					}
 				}
-				modelContext.insert(Deck(name: name, image: image))
+				modelContext.insert(Deck(name: name, image: image, author: Preferences.unique.profileName))
 				dismiss()
 			} label: {
 				Label("Done", systemImage: "checkmark")

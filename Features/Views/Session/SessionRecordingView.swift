@@ -27,7 +27,6 @@ struct SessionRecordingView: View {
 	@State private var showCard: Bool = false
 	@State private var showRecording: Bool = false
 	@State private var showSelectedRecording: Bool = false
-	@State private var showDownload: Bool = false
 	@State private var showDone: Bool = false
 	@State private var showClearRecording: Bool = false
 	
@@ -199,9 +198,6 @@ struct SessionRecordingView: View {
 			.alert("You completed every recording.", isPresented: $showDone) {
 				Button("OK", role: .cancel) { }
 			}
-			.alert("Downloading is not implemented yet.", isPresented: $showDownload) {
-				Button("OK", role: .cancel) { }
-			}
 		}
 		.environment(\.editMode, $editMode)
 	}
@@ -220,35 +216,24 @@ fileprivate extension SessionRecordingView {
 			Text("\(audioLeft) left ⋅ \(percentageLeft)% done")
 				.font(.system(size: 16, weight: .semibold))
 				.padding(.top, 10)
-			GlassEffectContainer {
-				HStack(alignment: .center, spacing: 15) {
-					Button {
-						showRecording = false
-						if let card = oldestCardWithoutRecording {
-							Task {
-								try? await Task.sleep(for: .milliseconds(1))
-								selectedCard = card
-								dismissItems.showOnly($showRecording)
-							}
-						} else {
-							showDone.toggle()
-						}
-					} label: {
-						Label("Record", systemImage: "record.circle")
-							.frame(width: 160, height: 50)
-							.glassEffect(.regular.tint(Color.accentColor).interactive())
+			Button {
+				showRecording = false
+				if let card = oldestCardWithoutRecording {
+					Task {
+						try? await Task.sleep(for: .milliseconds(1))
+						selectedCard = card
+						dismissItems.showOnly($showRecording)
 					}
-					Button {
-						showDownload.toggle()
-					} label: {
-						Image(systemName: "arrow.down")
-							.frame(width: 50, height: 50)
-							.glassEffect(.clear.interactive())
-					}
+				} else {
+					showDone.toggle()
 				}
-				.font(.system(size: 20, weight: .semibold))
+			} label: {
+				Label("Record", systemImage: "record.circle")
+					.font(.system(size: 20, weight: .semibold))
+					.tint(.primary)
+					.frame(width: 200, height: 50)
+					.glassEffect(.regular.tint(Color.accentColor).interactive())
 			}
-			.tint(.primary)
 			.padding(.top, 10)
 			Text(session.depiction)
 				.lineLimit(2)
@@ -378,31 +363,36 @@ fileprivate extension SessionRecordingView {
 		frontEntry: "hello",
 		backEntry: "bonjour",
 		frontLanguage: .en_US,
-		backLanguage: .fr_FR
+		backLanguage: .fr_FR,
+		author: "yJuste"
 	))
 	context.insert(Card(
 		frontEntry: "hello",
 		backEntry: "bonjour",
 		frontLanguage: .en_US,
-		backLanguage: .fr_FR
+		backLanguage: .fr_FR,
+		author: "yJuste"
 	))
 	context.insert(Card(
 		frontEntry: "hello",
 		backEntry: "bonjour",
 		frontLanguage: .en_US,
-		backLanguage: .fr_FR
+		backLanguage: .fr_FR,
+		author: "yJuste"
 	))
 	context.insert(Card(
 		frontEntry: "hello",
 		backEntry: "bonjour",
 		frontLanguage: .en_US,
-		backLanguage: .fr_FR
+		backLanguage: .fr_FR,
+		author: "yJuste"
 	))
 	context.insert(Card(
 		frontEntry: "hello",
 		backEntry: "bonjour",
 		frontLanguage: .en_US,
-		backLanguage: .fr_FR
+		backLanguage: .fr_FR,
+		author: "yJuste"
 	))
 
 	return SessionRecordingView(id: UUID(), namespace: namespace)

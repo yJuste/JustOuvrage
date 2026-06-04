@@ -63,7 +63,7 @@ fileprivate extension TimeTrialMetaDataView {
 
 #Preview {
 	
-	let cards: [Card] = [Card(frontEntry: "FrontEntry", backEntry: "BackEntry", frontLanguage: .fr_CA, backLanguage: .en_GB)]
+	let cards: [Card] = [Card(frontEntry: "FrontEntry", backEntry: "BackEntry", frontLanguage: .fr_CA, backLanguage: .en_GB, author: "yJuste")]
 	
 	let res: [SwipeDirection] = [.left, .right, .right]
 	

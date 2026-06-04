@@ -262,7 +262,8 @@ fileprivate extension EditCardView {
 			frontEntry: "hello my na🇺🇸m on, l, l,",
 			backEntry: ",,,bonjour,,,,",
 			frontLanguage: .en_US,
-			backLanguage: .fr_CA
+			backLanguage: .fr_CA,
+			author: "yJuste"
 		),
 		onSave: { _ in }
 	)

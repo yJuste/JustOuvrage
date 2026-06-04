@@ -29,14 +29,14 @@ import Foundation
 	
 	private(set) var createdAt: Date
 	
-	init(frontEntry: String, backEntry: String, frontLanguage: Language, backLanguage: Language) {
+	init(frontEntry: String, backEntry: String, frontLanguage: Language, backLanguage: Language, author: String) {
 		self.id = UUID()
 		self.frontEntry = frontEntry
 		self.backEntry = backEntry
 		self.frontLanguage = frontLanguage
 		self.backLanguage = backLanguage
 		self.leitnerScore = 1
-		self.author = "[author]"
+		self.author = author
 		self.decks = []
 		self.createdAt = .now
 	}

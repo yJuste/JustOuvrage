@@ -119,15 +119,17 @@ fileprivate extension DraftView {
 fileprivate extension DraftView {
 	
 	@ToolbarContentBuilder private var toolbar: some ToolbarContent {
+		let entry = draft.entry
+		let profileName = preferences.profileName
 		ToolbarItem(placement: .topBarTrailing) {
 			Menu {
 				Button {
-					card = Card(frontEntry: draft.entry, backEntry: "", frontLanguage: selectedLanguage, backLanguage: selectedLanguage)
+					card = Card(frontEntry: entry, backEntry: "", frontLanguage: selectedLanguage, backLanguage: selectedLanguage, author: profileName)
 				} label: {
 					Label("Add to Library", systemImage: "slider.horizontal.3")
 				}
 				Button {
-					modelContext.insert(Card(frontEntry: draft.entry, backEntry: draft.entry, frontLanguage: selectedLanguage, backLanguage: selectedLanguage))
+					modelContext.insert(Card(frontEntry: entry, backEntry: entry, frontLanguage: selectedLanguage, backLanguage: selectedLanguage, author: profileName))
 					Task { await showAdded() }
 				} label: {
 					Label("Quick Add", systemImage: "plus.square.fill")

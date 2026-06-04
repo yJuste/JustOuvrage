@@ -109,10 +109,10 @@ enum SessionKind: String, CaseIterable, Identifiable, Transferable {
 	let config = ModelConfiguration(isStoredInMemoryOnly: true)
 	let container = try! ModelContainer(for: Deck.self, TimeTrial.self, configurations: config)
 	let context = container.mainContext
-	let cards: [Card] = [Card(frontEntry: "FrontEntry", backEntry: "BackEntry", frontLanguage: .fr_CA, backLanguage: .en_GB)]
-	let deck1 = Deck(name: "Hello", image: "deck")
-	let deck2 = Deck(name: "Lucas", image: "deck")
-	let deck3 = Deck(name: "All", image: "deck")
+	let cards: [Card] = [Card(frontEntry: "FrontEntry", backEntry: "BackEntry", frontLanguage: .fr_CA, backLanguage: .en_GB, author: "yJuste")]
+	let deck1 = Deck(name: "Hello", image: "deck", author: "yJuste")
+	let deck2 = Deck(name: "Lucas", image: "deck", author: "yJuste")
+	let deck3 = Deck(name: "All", image: "deck", author: "yJuste")
 	
 	let argument = Argument.make(deck: deck1, cards: cards, side: .front, mode: .chill, directions: [.left], timeInterval: 4.0, order: .alphabeticalAscending, numberOfCards: 30)
 	context.insert(deck1)

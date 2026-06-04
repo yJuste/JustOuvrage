@@ -90,7 +90,7 @@ fileprivate extension CardMetaDataView {
 
 #Preview {
 	
-	let card = Card(frontEntry: "Je suis la", backEntry: "I am here", frontLanguage: .fr_FR, backLanguage: .en_US)
+	let card = Card(frontEntry: "Je suis la", backEntry: "I am here", frontLanguage: .fr_FR, backLanguage: .en_US, author: "yJuste")
 	card.frontRecording = nil
 	card.backRecording = nil
 	

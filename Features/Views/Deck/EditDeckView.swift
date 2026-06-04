@@ -79,7 +79,7 @@ struct EditDeckView: View {
 								//
 							} label: {
 								Image(systemName: "photo")
-									.font(.custom("picture icon", size: 19))
+									.font(.system(size: 19))
 									.foregroundStyle(Color.white)
 									.frame(width: 65, height: 65)
 									.background(Circle().fill(Color.accentColor))
@@ -165,7 +165,7 @@ struct EditDeckView: View {
 				}
 				Button("Cancel", role: .cancel) { }
 			} message: {
-				Text("Are you sure you want to clear your image?")
+				Text("Are you sure you want to clear your deck image?")
 			}
 			.scrollDismissesKeyboard(.interactively)
 			.scrollIndicators(.hidden)
@@ -248,10 +248,7 @@ fileprivate extension EditDeckView {
 	
 	EditDeckView(
 		title: "Edit Deck",
-		deck: Deck(
-			name: "",
-			image: "deck"
-		),
+		deck: Deck(name: "", image: "deck", author: "yJuste"),
 		onSave: { _ in }
 	)
 	.modelContainer(container)

@@ -24,11 +24,11 @@ extension Image {
 	/// ```swift
 	/// Image(image: "path/card_01.png", storage: fileImageStorage)
 	/// ```
-	init(image: String, storage: ImageStorageService, size: CGFloat = 1024) {
+	init(image: String, storage: ImageStorageService, size: CGFloat = 1024, defaultAsset: String = Constants.defaultDeckImage) {
 		if let uiImage = try? storage.load(image: image, size: size) {
 			self = Image(uiImage: uiImage)
 		} else {
-			self = Image(Constants.defaultDeckImage)
+			self = Image(defaultAsset)
 		}
 	}
 }

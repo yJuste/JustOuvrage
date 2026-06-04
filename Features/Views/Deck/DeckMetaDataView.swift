@@ -66,7 +66,7 @@ fileprivate extension DeckMetaDataView {
 
 #Preview {
 	
-	let deck = Deck(name: "Hello", image: "deck")
+	let deck = Deck(name: "Hello", image: "deck", author: "yJuste")
 	
 	DeckMetaDataView(deck: deck)
 }

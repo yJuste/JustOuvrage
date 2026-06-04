@@ -20,6 +20,12 @@ enum Constants {
 	// ⚠️ Assets catalog -> "deck" (image)
 	static let defaultDeckImage: String = "deck"
 	
+	// ⚠️ Assets catalog -> "artAnthology" (image)
+	static let defaultProfileImage: String = "artAnthology"
+	
+	// Default name for author.
+	static let noAuthor: String = "[No Author]"
+	
 	// The time in seconds that represents a year.
 	static let infinityYear: Double = 31_536_000.0
 	

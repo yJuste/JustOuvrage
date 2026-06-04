@@ -197,7 +197,7 @@ fileprivate extension NewCardView {
 		if front.isEmpty || back.isEmpty {
 			showAddedCard.toggle()
 		} else {
-			let card = Card(frontEntry: front, backEntry: back, frontLanguage: frontLanguage, backLanguage: backLanguage)
+			let card = Card(frontEntry: front, backEntry: back, frontLanguage: frontLanguage, backLanguage: backLanguage, author: preferences.profileName)
 			if let deck = selectedDeck.wrappedValue {
 				card.decks.append(deck)
 			}

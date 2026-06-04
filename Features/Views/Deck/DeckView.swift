@@ -477,7 +477,7 @@ fileprivate extension DeckView {
 
 #Preview {
 	
-	@Previewable @State var deck = Deck(name: "Hello", image: "deck")
+	@Previewable @State var deck = Deck(name: "Hello", image: "deck", author: "yJuste")
 	@Previewable @Namespace var namespace
 	
 	DeckView(deck: deck, namespace: namespace)

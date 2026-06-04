@@ -19,7 +19,7 @@ struct LibraryView: View {
 	@Query(sort: [SortDescriptor(\Deck.lastOpenedAt, order: .reverse), SortDescriptor(\Deck.createdAt, order: .reverse)]) private var decks: [Deck]
 	
 	@State private var selectedDeck: Deck?
-	@State private var profilePicture: ImageResource = .artAnthology
+	@State private var profileImage = Preferences.unique.profileImage
 	@State private var showNewCard: Bool = false
 	@State private var showNewDeck: Bool = false
 	@State private var showProfile: Bool = false
@@ -90,7 +90,7 @@ struct LibraryView: View {
 					.presentationDragIndicator(.visible)
 			}
 			.sheet(isPresented: $showProfile) {
-				ProfileView(profile: profilePicture)
+				ProfileView()
 					.presentationDetents([.large])
 					.presentationDragIndicator(.hidden)
 			}
@@ -124,7 +124,7 @@ fileprivate extension LibraryView {
 		}
 		ToolbarSpacer(.fixed, placement: .topBarTrailing)
 		ToolbarItem(placement: .topBarTrailing) {
-			Image(profilePicture)
+			Image(image: profileImage, storage: storage, defaultAsset: Constants.defaultProfileImage)
 				.resizable()
 				.frame(width: 36, height: 36)
 				.clipShape(Circle())
@@ -139,10 +139,10 @@ fileprivate extension LibraryView {
 	
 	let container = try! ModelContainer(for: Deck.self, configurations: ModelConfiguration(isStoredInMemoryOnly: true))
 	let context = container.mainContext
-	context.insert(Deck(name: "Hello", image: "deck"))
-	context.insert(Deck(name: "Lucas", image: "deck"))
-	context.insert(Deck(name: "I love you", image: "deck"))
-	context.insert(Deck(name: "Hello", image: "deck"))
+	context.insert(Deck(name: "Hello", image: "deck", author: "yJuste"))
+	context.insert(Deck(name: "Lucas", image: "deck", author: "yJuste"))
+	context.insert(Deck(name: "I love you", image: "deck", author: "yJuste"))
+	context.insert(Deck(name: "Hello", image: "deck", author: "yJuste"))
 	return LibraryView()
 		.modelContainer(container)
 		.environment(FileImageStorage())

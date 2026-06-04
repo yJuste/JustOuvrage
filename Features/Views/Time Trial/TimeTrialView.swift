@@ -335,9 +335,9 @@ fileprivate extension TimeTrialView {
 
 #Preview {
 	
-	let cards: [Card] = [Card(frontEntry: "FrontEntry", backEntry: "BackEntry", frontLanguage: .fr_CA, backLanguage: .en_GB)]
+	let cards: [Card] = [Card(frontEntry: "FrontEntry", backEntry: "BackEntry", frontLanguage: .fr_CA, backLanguage: .en_GB, author: "yJuste")]
 	
-	let deck = Deck(name: "Title deck", image: "deck")
+	let deck = Deck(name: "Title deck", image: "deck", author: "yJuste")
 	
 	let argument = Argument.make(deck: deck, cards: cards, side: .front, mode: .chill, directions: [.left], timeInterval: 4.0, order: .alphabeticalAscending, numberOfCards: 30)
 	

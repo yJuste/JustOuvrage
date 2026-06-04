@@ -54,7 +54,7 @@ enum Cleanup {
 				continue
 			}
 			
-			let hash = data.sha256
+			let hash = SHA256.hash(data: data).map { String(format: "%02x", $0) }.joined()
 			
 			if seenNames.contains(name) || seenHashes.contains(hash) {
 				try? fm.removeItem(at: file)
@@ -68,7 +68,9 @@ enum Cleanup {
 	static func images(in modelContext: ModelContext) throws {
 		
 		let fm = FileManager.default
-		let referencedImages = Set(try modelContext.fetch(FetchDescriptor<Deck>()).map { $0.image.lowercased() })
+		var referencedImages = Set(try modelContext.fetch(FetchDescriptor<Deck>()).map { $0.image.lowercased() })
+		
+		referencedImages.insert(Preferences.unique.profileImage.lowercased())
 		
 		var seenNames = Set<String>()
 		var seenHashes = Set<String>()

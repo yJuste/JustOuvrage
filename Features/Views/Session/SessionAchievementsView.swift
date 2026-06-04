@@ -22,7 +22,6 @@ struct SessionAchievementsView: View {
 	@State private var verticalOffset: CGFloat = 0
 	@State private var selectedAchievement: Achievements?
 	@State private var showDepiction: Bool = false
-	@State private var showDownload: Bool = false
 	@State private var showAchievement: Bool = false
 	
 	private let session: AchievementsSession = Session.unique.achievements
@@ -48,7 +47,7 @@ struct SessionAchievementsView: View {
 						.navigationTransition(id: id, namespace: namespace)
 						.offset(y: verticalOffset > 0 ? -verticalOffset : 0)
 						.overlay(alignment: .bottom) {
-							mainInformation(paddingText: height > width ? 10 : 100)
+							mainInformation(paddingText: height > width ? 10 : 100, context: context)
 								.offset(y: 20)
 						}
 					LazyVStack(alignment: .leading, spacing: 15) {
@@ -75,9 +74,6 @@ struct SessionAchievementsView: View {
 				}
 			}
 			.toolbar { toolbar }
-			.alert("Downloading is not implemented yet.", isPresented: $showDownload) {
-				Button("OK", role: .cancel) { }
-			}
 		}
 	}
 }
@@ -85,36 +81,25 @@ struct SessionAchievementsView: View {
 /// Methods of SessionRecordingView.
 fileprivate extension SessionAchievementsView {
 	
-	@ViewBuilder private func mainInformation(paddingText: CGFloat) -> some View {
+	@ViewBuilder private func mainInformation(paddingText: CGFloat, context: AchievementContext) -> some View {
 		
 		VStack(alignment: .center, spacing: 6) {
 			Text(session.title)
 				.font(.system(size: 50, weight: .black))
 			Text(session.subtitle)
 				.font(.system(size: 20, weight: .semibold))
-			Text("...........")
+			Text("\(Achievements.allCases.filter { $0.isUnlocked(in: context) }.count)/\(Achievements.allCases.count) reached")
 				.font(.system(size: 16, weight: .semibold))
 				.padding(.top, 10)
-			GlassEffectContainer {
-				HStack(alignment: .center, spacing: 15) {
-					Button {
-						//
-					} label: {
-						Label("Achieve", systemImage: "flag.2.crossed")
-							.frame(width: 160, height: 50)
-							.glassEffect(.regular.tint(Color.accentColor).interactive())
-					}
-					Button {
-						//
-					} label: {
-						Image(systemName: "arrow.down")
-							.frame(width: 50, height: 50)
-							.glassEffect(.clear.interactive())
-					}
-				}
-				.font(.system(size: 20, weight: .semibold))
+			Button {
+				//
+			} label: {
+				Label("Achieve", systemImage: "flag.2.crossed")
+					.font(.system(size: 20, weight: .semibold))
+					.tint(.primary)
+					.frame(width: 200, height: 50)
+					.glassEffect(.regular.tint(Color.accentColor).interactive())
 			}
-			.tint(.primary)
 			.padding(.top, 10)
 			Text(session.depiction)
 				.lineLimit(2)

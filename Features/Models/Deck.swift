@@ -25,12 +25,12 @@ import Foundation
 	
 	private(set) var createdAt: Date
 	
-	init(name: String, image: String) {
+	init(name: String, image: String, author: String) {
 		self.id = UUID()
 		self.name = name
 		self.image = image
 		self.depiction = ""
-		self.author = "[author]"
+		self.author = author
 		self.cards = []
 		self.createdAt = .now
 	}

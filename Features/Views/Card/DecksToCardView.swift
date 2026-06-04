@@ -96,5 +96,5 @@ fileprivate extension DecksToCardView {
 }
 
 #Preview {
-	DecksToCardView(card: Card(frontEntry: "Hello", backEntry: "No", frontLanguage: .fr_CA, backLanguage: .en_US))
+	DecksToCardView(card: Card(frontEntry: "Hello", backEntry: "No", frontLanguage: .fr_CA, backLanguage: .en_US, author: "yJuste"))
 }
