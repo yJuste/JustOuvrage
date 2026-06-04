@@ -20,7 +20,9 @@ struct AccountView: View {
 	@State private var pendingUIImage: UIImage?
 	@State private var profileName: String = ""
 	@State private var showAddedBanner: Bool = false
+	@State private var showCameraPicker: Bool = false
 	@State private var showPhotoPicker: Bool = false
+	@State private var showFilePicker: Bool = false
 	@State private var showClearImage: Bool = false
 	
 	private let circle = Circle()
@@ -31,7 +33,7 @@ struct AccountView: View {
 				VStack(spacing: 30) {
 					Menu {
 						Button {
-							// Take Photo
+							showCameraPicker.toggle()
 						} label: {
 							Label("Take Photo", systemImage: "camera")
 						}
@@ -41,7 +43,7 @@ struct AccountView: View {
 							Label("Choose Photo", systemImage: "photo.on.rectangle")
 						}
 						Button {
-							// Choose File
+							showFilePicker.toggle()
 						} label: {
 							Label("Choose File", systemImage: "folder")
 						}
@@ -139,6 +141,31 @@ struct AccountView: View {
 				pendingUIImage = nil
 			}
 			.photosPicker(isPresented: $showPhotoPicker, selection: $selectedPhotoItem, matching: .images)
+			.fileImporter(isPresented: $showFilePicker, allowedContentTypes: [.image], allowsMultipleSelection: false) { result in
+				switch result {
+				case .success(let urls):
+					guard let url = urls.first else { return }
+					guard url.startAccessingSecurityScopedResource() else { return }
+					defer { url.stopAccessingSecurityScopedResource() }
+					
+					do {
+						let data = try Data(contentsOf: url)
+						if let image = UIImage(data: data) {
+							pendingUIImage = image
+							selectedUIImage = image
+						}
+					} catch {
+						print(Errors.FileManager)
+					}
+				case .failure: print(Errors.FileManager)
+				}
+			}
+			.sheet(isPresented: $showCameraPicker) {
+				CameraCaptureView { image in
+					pendingUIImage = image
+					selectedUIImage = image
+				}
+			}
 			.overlay(alignment: .top) {
 				if showAddedBanner {
 					Label("Copied", systemImage: "checkmark.circle.fill")

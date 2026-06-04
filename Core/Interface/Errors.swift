@@ -19,4 +19,5 @@ enum Errors: Error {
 	case AudioRecorder
 	case DataTransfer
 	case Transfer
+	case FileManager
 }

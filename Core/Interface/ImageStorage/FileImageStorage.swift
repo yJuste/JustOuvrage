@@ -41,7 +41,7 @@ import UIKit
 	
 	func load(image name: String, size: CGFloat = 1024) throws -> UIImage {
 		
-		if name == Constants.defaultDeckImage { throw Errors.Image }
+		if name == Constants.defaultDeckImage || name == Constants.defaultProfileImage { throw Errors.Image }
 		if let cached = cache.object(forKey: name as NSString) { return cached }
 		
 		guard let source = CGImageSourceCreateWithURL(folder.appendingPathComponent(name) as CFURL, nil) else { throw Errors.Image }

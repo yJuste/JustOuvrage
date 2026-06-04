@@ -284,6 +284,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "JustOuvrage-Info.plist";
 				INFOPLIST_KEY_LSSupportsOpeningDocumentsInPlace = YES;
+				INFOPLIST_KEY_NSCameraUsageDescription = "Used to take a profile photo for your account.";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Need to record for Audio Recording.";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "We need access to your photo library to select images for your decks.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -321,6 +322,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "JustOuvrage-Info.plist";
 				INFOPLIST_KEY_LSSupportsOpeningDocumentsInPlace = YES;
+				INFOPLIST_KEY_NSCameraUsageDescription = "Used to take a profile photo for your account.";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Need to record for Audio Recording.";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "We need access to your photo library to select images for your decks.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
