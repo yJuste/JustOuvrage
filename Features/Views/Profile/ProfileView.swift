@@ -77,21 +77,15 @@ struct ProfileView: View {
 				} footer: {
 					Text("Manage your app preferences, maintenance tools, and data-related settings.")
 				}
-				Section {
-					NavigationLink {
-						MoreInformationView()
-					} label: {
-						Text("More information")
-					}
-				} footer: {
-					Text("")
+				NavigationLink {
+					MoreInformationView()
+				} label: {
+					Text("More information")
 				}
 				Section {
-					Button {
-						showLogOut.toggle()
-					} label: {
-						Text("Log out")
-					}
+					Text("Version 0.9.2 ⋅ June 7, 2026")
+						.font(.caption)
+						.foregroundStyle(.secondary)
 				}
 			}
 			.onAppear {
@@ -106,12 +100,6 @@ struct ProfileView: View {
 					.presentationBackgroundInteraction(.enabled)
 			}
 			.toolbar { toolbar }
-			.alert("Log out", isPresented: $showLogOut) {
-				Button("Log out", role: .destructive) { dismiss() }
-				Button("Cancel", role: .cancel) {}
-			} message: {
-				Text("Are you sure you want to log out to your account?")
-			}
 		}
 	}
 }

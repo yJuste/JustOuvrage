@@ -227,9 +227,6 @@
     "Are you sure you want to discard this new deck?" : {
 
     },
-    "Are you sure you want to log out to your account?" : {
-
-    },
     "Are you sure you want to remove this card from this deck?" : {
 
     },
@@ -527,9 +524,6 @@
     "Library" : {
 
     },
-    "Log out" : {
-
-    },
     "Low" : {
 
     },
@@ -795,6 +789,9 @@
 
     },
     "Use Photo" : {
+
+    },
+    "Version 0.9.2 ⋅ June 7, 2026" : {
 
     },
     "View Metadata" : {
