@@ -18,7 +18,9 @@ struct SessionAchievementsView: View {
 	
 	@Query private var cards: [Card]
 	@Query private var decks: [Deck]
+	@Query private var timeTrials: [TimeTrial]
 	
+	@Bindable private var preferences: Preferences = .unique
 	@State private var verticalOffset: CGFloat = 0
 	@State private var selectedAchievement: Achievements?
 	@State private var showDepiction: Bool = false
@@ -28,12 +30,13 @@ struct SessionAchievementsView: View {
 	
 	var body: some View {
 		NavigationStack {
-			let context = AchievementContext(cards: cards, decks: decks)
+			let context = AchievementContext(cards: cards, decks: decks, timeTrials: timeTrials, cleanupDate: preferences.lastCleanup, profileName: preferences.profileName)
 			GeometryReader { geo in
 				
 				let width = geo.size.width
 				let height = geo.size.height
 				let isPortrait = height > width
+				let padding = isPortrait ? 15.0 : 55.0
 				
 				ScrollView {
 					Image(session.banner)
@@ -59,20 +62,20 @@ struct SessionAchievementsView: View {
 							}
 						}
 					}
-					.padding()
+					.padding(EdgeInsets(top: 15, leading: padding, bottom: 15, trailing: padding))
+					.sheet(isPresented: $showAchievement) {
+						if let achievement = selectedAchievement {
+							AchievementMetaDataView(achievement: achievement, context: context)
+								.presentationDetents([
+									.fraction(Constants.heightOfAMetaData[0]),
+									.fraction(Constants.heightOfAMetaData[1])
+								])
+								.presentationBackgroundInteraction(.enabled)
+						}
+					}
 				}
 				.ignoresSafeArea(.container, edges: [.horizontal, .top])
 				.onScrollGeometryChange(for: CGFloat.self, of: { $0.contentOffset.y + $0.contentInsets.top }, action: { _, newValue in verticalOffset = -newValue })
-			}
-			.sheet(isPresented: $showAchievement) {
-				if let achievement = selectedAchievement {
-					AchievementMetaDataView(achievement: achievement, context: context)
-						.presentationDetents([
-							.fraction(Constants.heightOfARecording[0]),
-							.fraction(Constants.heightOfARecording[1])
-						])
-						.presentationBackgroundInteraction(.enabled)
-				}
 			}
 			.toolbar { toolbar }
 		}
@@ -83,17 +86,19 @@ struct SessionAchievementsView: View {
 fileprivate extension SessionAchievementsView {
 	
 	@ViewBuilder private func mainInformation(paddingText: CGFloat, context: AchievementContext) -> some View {
-		
+		let all = Achievements.allCases
 		VStack(alignment: .center, spacing: 6) {
 			Text(session.title)
 				.font(.system(size: 50, weight: .black))
 			Text(session.subtitle)
 				.font(.system(size: 20, weight: .semibold))
-			Text("\(Achievements.allCases.filter { $0.isUnlocked(in: context) }.count)/\(Achievements.allCases.count) reached")
+			Text("\(all.filter { $0.isUnlocked(in: context) }.count)/\(all.count) reached")
 				.font(.system(size: 16, weight: .semibold))
 				.padding(.top, 10)
 			Button {
-				//
+				guard let (achievement, _) = (all.map { achievement in (achievement, achievement.pourcentage(in: context)) }.filter { $0.1 < 1.0 }.max(by: { $0.1 < $1.1 })) else { return }
+				selectedAchievement = achievement
+				showAchievement = true
 			} label: {
 				Label("Achieve", systemImage: "flag.2.crossed")
 					.font(.system(size: 20, weight: .semibold))

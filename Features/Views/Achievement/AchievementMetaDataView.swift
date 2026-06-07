@@ -18,14 +18,13 @@ struct AchievementMetaDataView: View {
 	
 	var body: some View {
 		NavigationStack {
-			let pourcentage = achievement.pourcentage(in: context)
-			let _ = achievement.isUnlocked(pourcentage: pourcentage)
 			ScrollView {
 				VStack(alignment: .leading, spacing: 15) {
 					Text(achievement.description)
-					Text(pourcentage, format: .percent.precision(.fractionLength(0...2)))
+					Text(achievement.pourcentage(in: context), format: .percent.precision(.fractionLength(0...2)))
 				}
-				.padding(15)
+				.frame(maxWidth: .infinity, alignment: .leading)
+				.padding(20)
 			}
 			.navigationTitle("Achievements")
 			.navigationBarTitleDisplayMode(.inline)

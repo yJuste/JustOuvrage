@@ -49,6 +49,7 @@ struct NewCardView: View {
 			GeometryReader { geo in
 				ScrollViewReader { proxy in
 					ScrollView {
+						let color = Color(.systemGray6)
 						VStack {
 							VStack {
 								NavigationLink {
@@ -65,9 +66,7 @@ struct NewCardView: View {
 								}
 								.buttonStyle(.plain)
 							}
-							.background(.thinMaterial)
-							.clipShape(RoundedRectangle(cornerRadius: 16))
-							.padding(.horizontal, 25)
+							.padding(.horizontal, 20)
 							VStack(spacing: 40) {
 								HStack(spacing: 40) {
 									Button {
@@ -110,17 +109,20 @@ struct NewCardView: View {
 									}
 								}
 								VStack(spacing: 50) {
-									SplendidField(title: "Front Entry", text: $frontEntry)
+									SplendidField(title: "Front Entry", colorBackground: color, text: $frontEntry)
 										.id(FocusField.front)
 										.focused($focusField, equals: .front)
-									SplendidField(title: "Back Entry", text: $backEntry)
+									SplendidField(title: "Back Entry", colorBackground: color, text: $backEntry)
 										.id(FocusField.back)
 										.focused($focusField, equals: .back)
 								}
 							}
-							.padding(30)
+							.padding(20)
 						}
 						.frame(maxWidth: .infinity, minHeight: geo.size.height * 0.95, alignment: .center)
+						.background(color)
+						.clipShape(RoundedRectangle(cornerRadius: 15))
+						.padding(20)
 					}
 					.scrollDismissesKeyboard(.interactively)
 					.scrollIndicators(.hidden)

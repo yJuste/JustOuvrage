@@ -63,6 +63,7 @@ struct SessionLeitnerView: View {
 				let width = geo.size.width
 				let height = geo.size.height
 				let isPortrait = height > width
+				let padding = isPortrait ? 15.0 : 55.0
 				
 				ScrollView {
 					Image(session.banner)
@@ -97,7 +98,7 @@ struct SessionLeitnerView: View {
 						}
 					}
 					.id(editMode == .active || showClearLeitner)
-					.padding()
+					.padding(EdgeInsets(top: 15, leading: padding, bottom: 15, trailing: padding))
 				}
 				.ignoresSafeArea(.container, edges: [.horizontal, .top])
 				.onScrollGeometryChange(for: CGFloat.self, of: { $0.contentOffset.y + $0.contentInsets.top }, action: { _, newValue in verticalOffset = -newValue })

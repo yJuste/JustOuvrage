@@ -19,11 +19,10 @@ struct AchievementView: View {
 	
 	var body: some View {
 		let pourcentage = achievement.pourcentage(in: context)
-		let unlocked = achievement.isUnlocked(pourcentage: pourcentage)
 		return HStack(spacing: 8) {
 			VStack(alignment: .leading, spacing: 5) {
 				Text(achievement.title)
-				Text(unlocked ? "Unlocked" : "Locked")
+				Text(achievement.shortDescription)
 					.foregroundStyle(.secondary)
 			}
 			.font(.subheadline)
@@ -39,7 +38,7 @@ struct AchievementView: View {
 						.font(.title)
 						.foregroundStyle(Color.black)
 						.padding(12)
-						.background(Circle().glassEffect(.clear.tint(unlocked ? .yellow : .clear).interactive()))
+						.background(Circle().glassEffect(.clear.tint(achievement.isUnlocked(pourcentage: pourcentage) ? .yellow : .clear).interactive()))
 				}
 				.buttonStyle(.plain)
 			}

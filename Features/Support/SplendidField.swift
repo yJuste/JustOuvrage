@@ -11,6 +11,7 @@ import SwiftUI
 struct SplendidField: View {
 	
 	let title: String
+	let colorBackground: Color
 	@Binding var text: String
 	
 	@Bindable private var preferences: Preferences = .unique
@@ -28,7 +29,7 @@ struct SplendidField: View {
 				.background(isTyping ? color : Color.primary, in: rectangle.stroke(lineWidth: 2))
 			Text(title)
 				.padding(EdgeInsets(top: -3, leading: 5, bottom: -3, trailing: 5))
-				.background(rectangle.fill(Color(.systemBackground).opacity(isTyping || !text.isEmpty ? 1 : 0)))
+				.background(rectangle.fill(colorBackground).opacity(isTyping || !text.isEmpty ? 1 : 0))
 				.foregroundStyle(isTyping ? color : Color.secondary)
 				.padding(.leading)
 				.offset(y: isTyping || !text.isEmpty ? -27 : 0)
@@ -43,5 +44,5 @@ struct SplendidField: View {
 #Preview {
 	
 	@Previewable @State var name: String = ""
-	SplendidField(title: "Name", text: $name)
+	SplendidField(title: "Name", colorBackground: Color(.systemRed), text: $name)
 }

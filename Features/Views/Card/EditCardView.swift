@@ -127,10 +127,11 @@ struct EditCardView: View {
 									}
 								}
 								VStack(spacing: 50) {
-									SplendidField(title: "Front Entry", text: $frontEntry)
+									let background = Color(.systemBackground)
+									SplendidField(title: "Front Entry", colorBackground: background, text: $frontEntry)
 										.id(FocusField.front)
 										.focused($focusField, equals: .front)
-									SplendidField(title: "Back Entry", text: $backEntry)
+									SplendidField(title: "Back Entry", colorBackground: background, text: $backEntry)
 										.id(FocusField.back)
 										.focused($focusField, equals: .back)
 								}
