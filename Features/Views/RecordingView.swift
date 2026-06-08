@@ -30,20 +30,12 @@ struct RecordingView: View {
 	@State private var showGradientBackground: Bool = false
 	@State private var showNoPermission: Bool = false
 	
-	private var cleanFrontEntry: [String] {
-		cleanWords(expression: card.frontEntry)
-	}
-	
-	private var cleanBackEntry: [String] {
-		cleanWords(expression: card.backEntry)
-	}
-	
 	var body: some View {
 		NavigationStack {
 			ScrollView {
 				VStack(alignment: .leading) {
-					recordSection(title: card.frontEntry, language: card.frontLanguage, filename: card.frontRecording, side: .front)
-					recordSection(title: card.backEntry, language: card.backLanguage, filename: card.backRecording, side: .back)
+					recordSection(entry: card.frontEntry, language: card.frontLanguage, filename: card.frontRecording, side: .front)
+					recordSection(entry: card.backEntry, language: card.backLanguage, filename: card.backRecording, side: .back)
 				}
 				.padding(.horizontal, 15)
 			}
@@ -97,12 +89,12 @@ struct RecordingView: View {
 /// Record Section.
 fileprivate extension RecordingView {
 	
-	@ViewBuilder private func recordSection(title: String, language: Language, filename: String?, side: Side) -> some View {
+	@ViewBuilder private func recordSection(entry: String, language: Language, filename: String?, side: Side) -> some View {
 		HStack {
 			VStack(alignment: .leading) {
-				Text(title)
+				Text(entry)
 					.bold()
-				WordsLinkingToSite(title: "", item: cleanBackEntry) { entry in
+				WordsLinkingToSite(title: "", item: cleanWords(expression: entry)) { entry in
 					globalBrowser ? destination = site.forvo.link(for: entry, in: language) : openURL(site.forvo.link(for: entry, in: language))
 				}
 			}

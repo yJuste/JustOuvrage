@@ -49,7 +49,7 @@ struct NewCardView: View {
 			GeometryReader { geo in
 				ScrollViewReader { proxy in
 					ScrollView {
-						let color = Color.secondary.opacity(0.2)
+						let color = Color(.systemGray6)
 						VStack {
 							NavigationLink {
 								DeckSelectionView(selectedDeck: selectedDeck)

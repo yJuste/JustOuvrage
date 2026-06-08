@@ -471,6 +471,7 @@ fileprivate extension DeckView {
 				Button {
 					let newDeck = Deck(name: deck.name, image: deck.image, author: deck.author)
 					newDeck.cards = deck.cards
+					newDeck.depiction = deck.depiction
 					modelContext.insert(newDeck)
 				} label: {
 					Label("Duplicate", systemImage: "rectangle.on.rectangle.angled")
