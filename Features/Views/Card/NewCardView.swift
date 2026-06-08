@@ -49,7 +49,7 @@ struct NewCardView: View {
 			GeometryReader { geo in
 				ScrollViewReader { proxy in
 					ScrollView {
-						let color = Color(.systemGray6)
+						let color = Color(.systemBackground)
 						VStack {
 							NavigationLink {
 								DeckSelectionView(selectedDeck: selectedDeck)
@@ -61,7 +61,7 @@ struct NewCardView: View {
 										.font(.footnote)
 										.foregroundStyle(.secondary)
 								}
-								.padding()
+								.padding(25)
 							}
 							VStack(spacing: 40) {
 								HStack(spacing: 40) {
@@ -112,13 +112,10 @@ struct NewCardView: View {
 										.focused($focusField, equals: .back)
 								}
 							}
-							.padding(.horizontal, 15)
+							.padding(.horizontal, 20)
 						}
 						.buttonStyle(.plain)
 						.frame(maxWidth: .infinity, minHeight: geo.size.height * 0.95, alignment: .center)
-						.background(color)
-						.clipShape(RoundedRectangle(cornerRadius: 15))
-						.padding(.horizontal, 15)
 					}
 					.scrollDismissesKeyboard(.interactively)
 					.scrollIndicators(.hidden)

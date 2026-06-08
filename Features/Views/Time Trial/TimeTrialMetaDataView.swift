@@ -67,7 +67,7 @@ fileprivate extension TimeTrialMetaDataView {
 	
 	let res: [SwipeDirection] = [.left, .right, .right]
 	
-	let argument = Argument.make(deck: nil, cards: cards, side: .front, mode: .chill, directions: res, timeInterval: 4.0, order: .alphabeticalAscending, numberOfCards: 30)
+	let argument = Argument.make(deck: nil, cards: cards, side: .front, mode: .chill, directions: res, timeInterval: 4.0, order: .alphabeticalAscending, numberOfCards: 30, languages: Language.allCases, languageFilter: .atLeastOne)
 	
 	TimeTrialMetaDataView(timeTrial: TimeTrial(argument: argument, with: 0.348))
 }

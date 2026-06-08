@@ -114,7 +114,7 @@ enum SessionKind: String, CaseIterable, Identifiable, Transferable {
 	let deck2 = Deck(name: "Lucas", image: "deck", author: "yJuste")
 	let deck3 = Deck(name: "All", image: "deck", author: "yJuste")
 	
-	let argument = Argument.make(deck: deck1, cards: cards, side: .front, mode: .chill, directions: [.left], timeInterval: 4.0, order: .alphabeticalAscending, numberOfCards: 30)
+	let argument = Argument.make(deck: deck1, cards: cards, side: .front, mode: .chill, directions: [.left], timeInterval: 4.0, order: .alphabeticalAscending, numberOfCards: 30, languages: Language.allCases, languageFilter: .atLeastOne)
 	context.insert(deck1)
 	context.insert(deck2)
 	context.insert(deck3)

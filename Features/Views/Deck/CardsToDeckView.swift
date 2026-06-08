@@ -38,24 +38,17 @@ struct CardsToDeckView: View {
 		if selectedLanguages.isEmpty {
 			filtered = base
 		} else {
-			switch languageFilter {
-			case .atLeastOne: filtered = base.filter {
-				selectedLanguages.contains($0.frontLanguage.code) || selectedLanguages.contains($0.backLanguage.code)
-			}
-			case .justOne: filtered = base.filter {
-				let front = $0.frontLanguage.code
-				let back = $0.backLanguage.code
-				guard front != back else { return false }
-				
-				if selectedLanguages.count == 1 {
-					return selectedLanguages.contains(front) || selectedLanguages.contains(back)
+			let selected = Set(selectedLanguages)
+			filtered = cards.filter { card in
+				let front = card.frontLanguage.code
+				let back = card.backLanguage.code
+				let match = selected.contains(front) || selected.contains(back)
+				let same = front == back && selected.contains(front)
+				switch languageFilter {
+				case .atLeastOne: return match
+				case .justOne: if same { return false }; return match
+				case .needBoth: return same
 				}
-				return selectedLanguages.contains(front) && selectedLanguages.contains(back)
-			}
-			case .needBoth: filtered = base.filter {
-				let front = $0.frontLanguage.code
-				return front == $0.backLanguage.code && selectedLanguages.contains(front)
-			}
 			}
 		}
 		return filtered.sorted { lhs, rhs in

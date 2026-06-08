@@ -24,6 +24,8 @@ struct SessionTimeTrialView: View {
 	@State private var selectedTimeTrial: TimeTrial?
 	@State private var editMode: EditMode = .inactive
 	@State private var selection: Set<UUID> = []
+	@State private var selectedLanguages: Set<String> = []
+	@State private var languageFilter: LanguageFilter = .atLeastOne
 	@State private var showEditMode: Bool = false
 	@State private var showDepiction: Bool = false
 	@State private var showTimeTrial: Bool = false
@@ -33,21 +35,40 @@ struct SessionTimeTrialView: View {
 	
 	private let session: TimeTrialSession = Session.unique.timeTrial
 	
-	private var sortedTimeTrials: [TimeTrial] {
-		timeTrials.sorted { lhs, rhs in
-			if let result = sort.compare(lhs, rhs) {
-				return result == .orderedAscending
-			}
-			return false
-		}
-	}
-	
 	private var averagePercentage: Double {
 		timeTrials.isEmpty ? 0 : timeTrials.map(\.success).reduce(0, +) / Double(timeTrials.count)
 	}
 	
 	private var dismissItems: [Binding<Bool>] {
 		[$showEditMode, $showDepiction, $showTimeTrial, $showMetaData]
+	}
+	
+	private var filteredTimeTrials: [TimeTrial] {
+		let filtered: [TimeTrial]
+		if selectedLanguages.isEmpty {
+			filtered = timeTrials
+		} else {
+			let selected = Set(selectedLanguages)
+			filtered = timeTrials.filter { timeTrial in
+				timeTrial.cards.contains { card in
+					let front = card.frontLanguage.code
+					let back = card.backLanguage.code
+					let match = selected.contains(front) || selected.contains(back)
+					let same = front == back && selected.contains(front)
+					switch languageFilter {
+					case .atLeastOne: return match
+					case .justOne: if same { return false }; return match
+					case .needBoth: return same
+					}
+				}
+			}
+		}
+		return filtered.sorted { lhs, rhs in
+			if let result = sort.compare(lhs, rhs) {
+				return result == .orderedAscending
+			}
+			return false
+		}
 	}
 	
 	var body: some View {
@@ -76,7 +97,7 @@ struct SessionTimeTrialView: View {
 								.offset(y: 20)
 						}
 					LazyVStack(alignment: .leading, spacing: 15) {
-						ForEach(sortedTimeTrials) { timeTrial in
+						ForEach(filteredTimeTrials) { timeTrial in
 							let isSelected = selection.contains(timeTrial.id)
 							HStack(spacing: 12) {
 								if editMode == .active {
@@ -135,7 +156,7 @@ struct SessionTimeTrialView: View {
 									selectedTimeTrial = timeTrial
 									showDeleteTimeTrial.toggle()
 								} label: {
-									Label("Delete from Time Trial", systemImage: "trash")
+									Label("Delete Time Trial", systemImage: "trash")
 								}
 								.tint(nil)
 							}
@@ -314,6 +335,36 @@ fileprivate extension SessionTimeTrialView {
 					Label("Name", systemImage: ascending ? "text.line.first.and.arrowtriangle.forward" : "text.line.last.and.arrowtriangle.forward")
 					Text(ascending ? "Ascending" : "Descending")
 				}
+				Section {
+					Button {
+						switch languageFilter {
+						case .atLeastOne: languageFilter = .justOne
+						case .justOne: languageFilter = .needBoth
+						case .needBoth: languageFilter = .atLeastOne
+						}
+					} label: {
+						Label(languageFilter.title, systemImage: languageFilter.icon)
+					}
+					ForEach(Language.codes, id: \.self) { language in
+						let isSelected = selectedLanguages.contains(language)
+						Button {
+							if isSelected {
+								selectedLanguages.remove(language)
+							} else {
+								selectedLanguages.insert(language)
+							}
+						} label: {
+							HStack {
+								Text(language)
+								Spacer()
+								if isSelected {
+									Image(systemName: "checkmark")
+										.foregroundStyle(.accent)
+								}
+							}
+						}
+					}
+				}
 			} label: {
 				Label("Options", systemImage: "line.3.horizontal.decrease")
 			}
@@ -334,7 +385,7 @@ fileprivate extension SessionTimeTrialView {
 	let deck2 = Deck(name: "Lucas", image: "deck", author: "yJuste")
 	let deck3 = Deck(name: "All", image: "deck", author: "yJuste")
 	
-	let argument = Argument.make(deck: nil, cards: cards, side: .front, mode: .chill, directions: [.left], timeInterval: 4.0, order: .alphabeticalAscending, numberOfCards: 30)
+	let argument = Argument.make(deck: nil, cards: cards, side: .front, mode: .chill, directions: [.left], timeInterval: 4.0, order: .alphabeticalAscending, numberOfCards: 30, languages: Language.allCases, languageFilter: .atLeastOne)
 	context.insert(deck1)
 	context.insert(deck2)
 	context.insert(deck3)

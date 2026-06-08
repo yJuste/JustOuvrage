@@ -43,6 +43,13 @@ struct TimeTrialSetupView: View {
 		return deck.name
 	}
 	
+	private func languageBinding(_ language: Language) -> Binding<Bool> {
+		.init(get: { preferences.trialLanguages.contains(language) },
+			  set: {
+			preferences.trialLanguages = $0 ? preferences.trialLanguages + [language] : preferences.trialLanguages.filter { $0 != language }
+		})
+	}
+	
 	var body: some View {
 		NavigationStack {
 			Form {
@@ -94,6 +101,29 @@ struct TimeTrialSetupView: View {
 					Text("Choose which side of the cards will be shown first.")
 				}
 				Section {
+					Picker("Match", selection: $preferences.trialLanguageFilter) {
+						ForEach(LanguageFilter.allCases, id: \.self) { filter in
+							Label(filter.title, systemImage: filter.icon)
+								.tag(filter)
+						}
+					}
+					NavigationLink {
+						LanguageSelectionView(selectedLanguages: $preferences.trialLanguages)
+					} label: {
+						LeadingLabel(title: "Languages") {
+							Text("\(preferences.trialLanguages.count) selected")
+						}
+					}
+				} footer: {
+					Text("""
+Select the languages to include.
+ 
+At least one: front OR back matches.
+Just one: exactly one side matches.
+Need both: front AND back must match.
+""")
+				}
+				Section {
 					Picker(selection: $preferences.trialMode) {
 						ForEach(optionsOfMode, id: \.self) { mode in
 							switch mode {
@@ -123,12 +153,12 @@ struct TimeTrialSetupView: View {
   
   Standard:
   - definitions may be shown.
-  - 4s swipe timer.
+  - 7s swipe timer.
   - random order.
   
   Death:
   - no definitions.
-  - 1.5s swipe timer.
+  - 2.5s swipe timer.
   - random order.
   
   Custom = fully configurable settings.
@@ -192,7 +222,7 @@ struct TimeTrialSetupView: View {
 			.alert("No cards selected", isPresented: $showNoCards) {
 				Button("OK", role: .cancel) { }
 			} message: {
-				Text("You can't start the Time Trial because there are no cards in the deck.")
+				Text("No cards match your filters.")
 			}
 			.navigationTitle("Time Trial")
 			.toolbarTitleDisplayMode(.inlineLarge)
@@ -207,7 +237,7 @@ fileprivate extension TimeTrialSetupView {
 	@ToolbarContentBuilder private var toolbar: some ToolbarContent {
 		ToolbarItem(placement: .topBarTrailing) {
 			Button {
-				let arg = Argument.make(deck: selectedDeck.wrappedValue, cards: cards, side: preferences.trialSide, mode: preferences.trialMode, directions: [], timeInterval: preferences.trialTimeInterval, order: preferences.trialOrder, numberOfCards: preferences.trialNumberOfCards)
+				let arg = Argument.make(deck: selectedDeck.wrappedValue, cards: cards, side: preferences.trialSide, mode: preferences.trialMode, directions: [], timeInterval: preferences.trialTimeInterval, order: preferences.trialOrder, numberOfCards: preferences.trialNumberOfCards, languages: preferences.trialLanguages, languageFilter: preferences.trialLanguageFilter)
 				guard !arg.cards.isEmpty else { return showNoCards.toggle() }
 				argument = arg
 				showTimeTrial.toggle()

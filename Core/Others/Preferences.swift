@@ -42,6 +42,8 @@ import Observation
 		case trialRefreshTimer
 		case trialSwipeThreshold
 		case trialSide
+		case trialLanguageFilter
+		case trialLanguages
 		
 		// In Settings
 		case lastCleanup
@@ -85,6 +87,8 @@ import Observation
 	private var trialRefreshTimerRaw: Double
 	private var trialSwipeThresholdRaw: Double
 	private var trialSideRaw: Int
+	private var trialLanguageFilterRaw: Int
+	private var trialLanguagesRaw: [String]
 	private var lastCleanupRaw: Double
 	private var audioQualityRaw: String
 	private var profileImageRaw: String
@@ -106,7 +110,7 @@ import Observation
 		let defaultSort: [String] = [SortDeck.newestToOldest.rawValue]
 		
 		userDefaults.register(defaults: [
-			Key.trialTimeInterval.rawValue: 5.0,
+			Key.trialTimeInterval.rawValue: 7.0,
 			Key.trialRefreshTimer.rawValue: (2.0 / 60.0),
 			Key.trialSwipeThreshold.rawValue: 50.0,
 			Key.globalBrowser.rawValue: true,
@@ -130,6 +134,8 @@ import Observation
 		trialRefreshTimerRaw = userDefaults.double(forKey: Key.trialRefreshTimer.rawValue)
 		trialSwipeThresholdRaw = userDefaults.double(forKey: Key.trialSwipeThreshold.rawValue)
 		trialSideRaw = userDefaults.integer(forKey: Key.trialSide.rawValue)
+		trialLanguageFilterRaw = userDefaults.integer(forKey: Key.trialLanguageFilter.rawValue)
+		trialLanguagesRaw = userDefaults.stringArray(forKey: Key.trialLanguages.rawValue) ?? Language.allCases.map(\.rawValue)
 		lastCleanupRaw = userDefaults.double(forKey: Key.lastCleanup.rawValue)
 		audioQualityRaw = userDefaults.string(forKey: Key.audioQuality.rawValue) ?? AudioQuality.high.rawValue
 		profileImageRaw = userDefaults.string(forKey: Key.profileImage.rawValue) ?? Constants.defaultProfileImage
@@ -277,6 +283,22 @@ import Observation
 		}
 	}
 	
+	var trialLanguageFilter: LanguageFilter {
+		get { LanguageFilter(rawValue: trialLanguageFilterRaw) ?? .atLeastOne }
+		set {
+			trialLanguageFilterRaw = newValue.rawValue
+			userDefaults.set(trialLanguageFilterRaw, forKey: Key.trialLanguageFilter.rawValue)
+		}
+	}
+	
+	var trialLanguages: [Language] {
+		get { trialLanguagesRaw.compactMap(Language.init(rawValue:)) }
+		set {
+			trialLanguagesRaw = newValue.map(\.rawValue)
+			userDefaults.set(trialLanguagesRaw, forKey: Key.trialLanguages.rawValue)
+		}
+	}
+	
 	var lastCleanup: Date? {
 		get { lastCleanupRaw == 0 ? nil : Date(timeIntervalSince1970: lastCleanupRaw) }
 		set {
@@ -364,7 +386,7 @@ import Observation
 		}
 	}
 	
-	var languageFilter: LanguageFilter {
+	var languageFilterCards: LanguageFilter {
 		get { LanguageFilter(rawValue: languageFilterCardsRaw) ?? .atLeastOne }
 		set {
 			languageFilterCardsRaw = newValue.rawValue

@@ -46,7 +46,7 @@ struct Argument: Identifiable {
 
 extension Argument {
 	
-	static func make(deck: Deck?, cards: [Card], side: Side, mode: Mode, directions: [SwipeDirection], timeInterval: TimeInterval, order: SortTrial, numberOfCards: Int) -> Argument {
+	static func make(deck: Deck?, cards: [Card], side: Side, mode: Mode, directions: [SwipeDirection], timeInterval: TimeInterval, order: SortTrial, numberOfCards: Int, languages: [Language], languageFilter: LanguageFilter) -> Argument {
 		
 		var res = cards
 		var newInterval = timeInterval
@@ -55,10 +55,25 @@ extension Argument {
 		
 		if let deck { res = res.filter { $0.decks.contains(deck) } }
 		
+		if !languages.isEmpty {
+			let selected = Set(languages)
+			res = res.filter { card in
+				let front = card.frontLanguage
+				let back = card.backLanguage
+				let match = selected.contains(front) || selected.contains(back)
+				let same = front == back && selected.contains(front)
+				switch languageFilter {
+				case .atLeastOne: return match
+				case .justOne: if same { return false }; return match
+				case .needBoth: return same
+				}
+			}
+		}
+		
 		switch mode {
 		case .chill: res = res.sorted { $0.createdAt > $1.createdAt }; newInterval = Constants.infinityYear; newOrder = .newestToOldest
-		case .standard: res.shuffle(); newInterval = 5.0; newOrder = .random; newSide = .both
-		case .death: res.shuffle(); newInterval = 1.5; newOrder = .random; newSide = .both
+		case .standard: res.shuffle(); newInterval = 7.0; newOrder = .random; newSide = .both
+		case .death: res.shuffle(); newInterval = 2.5; newOrder = .random; newSide = .both
 		case .custom:
 			switch order {
 			case .random: res.shuffle()

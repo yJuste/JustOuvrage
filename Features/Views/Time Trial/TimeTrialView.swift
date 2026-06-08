@@ -339,7 +339,7 @@ fileprivate extension TimeTrialView {
 	
 	let deck = Deck(name: "Title deck", image: "deck", author: "yJuste")
 	
-	let argument = Argument.make(deck: deck, cards: cards, side: .front, mode: .chill, directions: [.left], timeInterval: 4.0, order: .alphabeticalAscending, numberOfCards: 30)
+	let argument = Argument.make(deck: deck, cards: cards, side: .front, mode: .chill, directions: [.left], timeInterval: 4.0, order: .alphabeticalAscending, numberOfCards: 30, languages: Language.allCases, languageFilter: .atLeastOne)
 	
 	TimeTrialView(argument: argument)
 }

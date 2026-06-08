@@ -97,6 +97,9 @@
         }
       }
     },
+    "%lld selected" : {
+
+    },
     "%lld sessions ⋅ %@" : {
       "localizations" : {
         "en" : {
@@ -377,7 +380,7 @@
     "Delete from Library" : {
 
     },
-    "Delete from Time Trial" : {
+    "Delete Time Trial" : {
 
     },
     "Descending" : {
@@ -518,6 +521,9 @@
     "Keep Editing" : {
 
     },
+    "Languages" : {
+
+    },
     "Last download: %@" : {
 
     },
@@ -537,6 +543,9 @@
 
     },
     "Manage your app preferences, maintenance tools, and data-related settings." : {
+
+    },
+    "Match" : {
 
     },
     "Max" : {
@@ -585,6 +594,9 @@
 
     },
     "No cards" : {
+
+    },
+    "No cards match your filters." : {
 
     },
     "No cards selected" : {
@@ -710,6 +722,9 @@
     "Search a deck" : {
 
     },
+    "Search a language" : {
+
+    },
     "Select" : {
 
     },
@@ -720,6 +735,9 @@
 
     },
     "Select the language you want to search in at the top of the toolbar on the left." : {
+
+    },
+    "Select the languages to include.\n \nAt least one: front OR back matches.\nJust one: exactly one side matches.\nNeed both: front AND back must match." : {
 
     },
     "Select the section where the words can be found: All, Only Cards, or Only Decks." : {
@@ -764,7 +782,7 @@
     "Take Photo" : {
 
     },
-    "The selected mode applies to the session.\n\nChill:\n- definitions may be shown.\n- ∞ swipe timer.\n- newest to oldest.\n\nStandard:\n- definitions may be shown.\n- 4s swipe timer.\n- random order.\n\nDeath:\n- no definitions.\n- 1.5s swipe timer.\n- random order.\n\nCustom = fully configurable settings." : {
+    "The selected mode applies to the session.\n\nChill:\n- definitions may be shown.\n- ∞ swipe timer.\n- newest to oldest.\n\nStandard:\n- definitions may be shown.\n- 7s swipe timer.\n- random order.\n\nDeath:\n- no definitions.\n- 2.5s swipe timer.\n- random order.\n\nCustom = fully configurable settings." : {
 
     },
     "The timer is currently paused." : {

@@ -25,7 +25,7 @@ struct CardsView: View {
 	@State private var sorts: [SortCard] = Preferences.unique.sortCards
 	@State private var filterVisible: Bool = Preferences.unique.visibleCards
 	@State private var filterInvert: Bool = Preferences.unique.invertCards
-	@State private var languageFilter: LanguageFilter = Preferences.unique.languageFilter
+	@State private var languageFilterCards: LanguageFilter = Preferences.unique.languageFilterCards
 	@State private var showCard: Bool = false
 	@State private var showEditMode: Bool = false
 	@State private var showNewCard: Bool = false
@@ -39,27 +39,20 @@ struct CardsView: View {
 	
 	private var filteredCards: [Card] {
 		let filtered: [Card]
-		
 		if selectedLanguages.isEmpty {
 			filtered = cards
 		} else {
-			switch languageFilter {
-			case .atLeastOne: filtered = cards.filter { card in
-				selectedLanguages.contains(card.frontLanguage.code) || selectedLanguages.contains(card.backLanguage.code)
-			}
-			case .justOne: filtered = cards.filter { card in
+			let selected = Set(selectedLanguages)
+			filtered = cards.filter { card in
 				let front = card.frontLanguage.code
 				let back = card.backLanguage.code
-				guard front != back else { return false }
-				if selectedLanguages.count == 1 {
-					return selectedLanguages.contains(front) || selectedLanguages.contains(back)
+				let match = selected.contains(front) || selected.contains(back)
+				let same = front == back && selected.contains(front)
+				switch languageFilterCards {
+				case .atLeastOne: return match
+				case .justOne: if same { return false }; return match
+				case .needBoth: return same
 				}
-				return selectedLanguages.contains(front) && selectedLanguages.contains(back)
-			}
-			case .needBoth: filtered = cards.filter { card in
-				let front = card.frontLanguage.code
-				return front == card.backLanguage.code && selectedLanguages.contains(front)
-			}
 			}
 		}
 		return filtered.sorted { lhs, rhs in
@@ -118,8 +111,8 @@ struct CardsView: View {
 					.listRowInsets(EdgeInsets(top: 11, leading: 15, bottom: 11, trailing: 15))
 				}
 			}
-			.onChange(of: preferences.languageFilter) { _, newValue in
-				languageFilter = newValue
+			.onChange(of: preferences.languageFilterCards) { _, newValue in
+				languageFilterCards = newValue
 			}
 			.toolbar { toolbar }
 			.tint(nil)
@@ -375,13 +368,13 @@ fileprivate extension CardsView {
 				}
 				Section {
 					Button {
-						switch languageFilter {
-						case .atLeastOne: preferences.languageFilter = .justOne
-						case .justOne: preferences.languageFilter = .needBoth
-						case .needBoth: preferences.languageFilter = .atLeastOne
+						switch languageFilterCards {
+						case .atLeastOne: preferences.languageFilterCards = .justOne
+						case .justOne: preferences.languageFilterCards = .needBoth
+						case .needBoth: preferences.languageFilterCards = .atLeastOne
 						}
 					} label: {
-						Label(languageFilter.title, systemImage: languageFilter.icon)
+						Label(languageFilterCards.title, systemImage: languageFilterCards.icon)
 					}
 					ForEach(Language.codes, id: \.self) { language in
 						let contain = selectedLanguages.contains(language)
