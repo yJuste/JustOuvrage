@@ -34,6 +34,10 @@ struct CardMetaDataView: View {
 						.font(.caption)
 					}
 					.padding(.vertical, 2)
+					LeadingLabel(title: "In Decks") {
+						Text(card.decks.isEmpty ? "Not in any deck" : card.decks.map { $0.name }.sorted().joined(separator: " ⋅ "))
+							.font(.caption)
+					}
 					LeadingLabel(title: "Recording") {
 						HStack(spacing: 2) {
 							let count = [card.frontRecording, card.backRecording].compactMap { $0 }.count

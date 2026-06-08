@@ -373,6 +373,10 @@ fileprivate extension DeckView {
 		Button {
 			let newCard = Card(frontEntry: card.frontEntry, backEntry: card.backEntry, frontLanguage: card.frontLanguage, backLanguage: card.backLanguage, author: card.author)
 			newCard.decks = card.decks
+			newCard.frontRecording = card.frontRecording
+			newCard.backRecording = card.backRecording
+			newCard.leitnerScore = card.leitnerScore
+			newCard.nextLeitnerAt = card.nextLeitnerAt
 			modelContext.insert(newCard)
 		} label: {
 			Label("Duplicate", systemImage: "rectangle.portrait.on.rectangle.portrait.angled")

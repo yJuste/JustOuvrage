@@ -13,7 +13,7 @@ struct LeadingLabel<Content: View>: View {
 	let content: () -> Content
 	
 	var body: some View {
-		HStack {
+		HStack(alignment: .top) {
 			Text(title)
 				.foregroundStyle(.secondary)
 			Spacer()
