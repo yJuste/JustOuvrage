@@ -94,7 +94,7 @@ fileprivate extension DecksToCardView {
 		}
 		ToolbarItem(placement: .principal) {
 			VStack {
-				Text("Add Decks")
+				Text("Add To Decks")
 					.font(.headline)
 				Text("for \"\(card.frontEntry)\"")
 					.font(.caption)

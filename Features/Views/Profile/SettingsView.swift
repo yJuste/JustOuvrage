@@ -68,7 +68,12 @@ Exiting the app permanently saves the changes.
 				Section {
 					Toggle("Open links internally", isOn: $preferences.globalBrowser)
 				} footer: {
-					Text("If enabled, links open inside the app. Otherwise, they open in an external browser.")
+					Text("""
+  If enabled, links open inside the app.
+  Otherwise, they open in an external browser.
+  
+  The in-app browser may increase stored data due to caching.
+  """)
 				}
 				Section {
 					VStack(alignment: .trailing) {
