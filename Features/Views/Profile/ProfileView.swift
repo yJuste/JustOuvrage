@@ -83,9 +83,15 @@ struct ProfileView: View {
 					Text("More information")
 				}
 				Section {
-					Text("Version 0.9.14 ⋅ June 8, 2026")
-						.font(.caption)
-						.foregroundStyle(.secondary)
+					HStack(alignment: .center) {
+						Image(.artAnthologyLogo)
+							.resizable()
+							.scaledToFill()
+							.frame(width: 36, height: 36)
+						Text("Version 0.9.15 ⋅ June 8, 2026")
+							.font(.caption)
+							.foregroundStyle(.secondary)
+					}
 				}
 			}
 			.onAppear {

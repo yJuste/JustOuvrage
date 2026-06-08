@@ -257,7 +257,7 @@
     "Boxes" : {
 
     },
-    "Bugs" : {
+    "Bug" : {
 
     },
     "Camera Access Required" : {
@@ -440,13 +440,10 @@
     "Filter" : {
 
     },
-    "First of all, it's a great honor that you are using this flashcard/dictionary application.\n\nThis app was originally designed for my personal needs because I felt it was important to have an app like this for language learning, allowing me to store every learned word and track progress in real time.\n\nThat's also why the application is completely free. If you enjoy it, feel free to leave your feedback." : {
-
-    },
     "for \"%@\"" : {
 
     },
-    "For more information, contact: [No mail yet]" : {
+    "For more information, contact: [jules.longin1@gmail.com]" : {
 
     },
     "From Deck" : {
@@ -755,9 +752,6 @@
     "Session" : {
 
     },
-    "Sessions" : {
-
-    },
     "Settings" : {
 
     },
@@ -788,6 +782,9 @@
     "The timer is currently paused." : {
 
     },
+    "This app was originally designed for my personal needs because I felt it was important to have an app like this, allowing me to store every learned word and track progress in real time.\n\nThat's also why the application is completely free. If you enjoy it, feel free to leave your feedback." : {
+
+    },
     "This deck has never been downloaded." : {
 
     },
@@ -809,13 +806,13 @@
     "Ultra" : {
 
     },
-    "Upcoming updates will introduce sessions for creating your own website links and custom languages.\n\nAvailable now:\n- Achievements\n- Leitner system\n- Recording\n- Time Trial" : {
+    "Upcoming updates will introduce sessions for creating your own website links and custom languages." : {
 
     },
     "Use Photo" : {
 
     },
-    "Version 0.9.13 ⋅ June 8, 2026" : {
+    "Version 0.9.15 ⋅ June 8, 2026" : {
 
     },
     "View Metadata" : {

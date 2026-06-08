@@ -50,7 +50,7 @@ struct SessionTimeTrialView: View {
 		} else {
 			let selected = Set(selectedLanguages)
 			filtered = timeTrials.filter { timeTrial in
-				timeTrial.cards.contains { card in
+				timeTrial.cards.allSatisfy { card in
 					let front = card.frontLanguage.code
 					let back = card.backLanguage.code
 					let match = selected.contains(front) || selected.contains(back)

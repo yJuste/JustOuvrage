@@ -22,16 +22,10 @@ You can export your cards and decks at any time; this will generate a .jtouvrage
 """)
 				}
 				Section {
-					Label("Sessions", systemImage: "2.circle")
+					Label("Session", systemImage: "2.circle")
 				} footer: {
 					Text("""
 Upcoming updates will introduce sessions for creating your own website links and custom languages.
-
-Available now:
-- Achievements
-- Leitner system
-- Recording
-- Time Trial
 """)
 				}
 				Section {
@@ -40,7 +34,7 @@ Available now:
 					Text("Optimizations are regularly included in patches. If you experience performance issues, lower the settings to the minimum.")
 				}
 				Section {
-					Label("Bugs", systemImage: "4.circle")
+					Label("Bug", systemImage: "4.circle")
 				} footer: {
 					Text("If you encounter any bugs in the application, feel free to report them to the provided email address.")
 				}
@@ -48,14 +42,12 @@ Available now:
 					Label("About Me", systemImage: "5.circle")
 				} footer: {
 					Text("""
-First of all, it's a great honor that you are using this flashcard/dictionary application.
-
-This app was originally designed for my personal needs because I felt it was important to have an app like this for language learning, allowing me to store every learned word and track progress in real time.
+This app was originally designed for my personal needs because I felt it was important to have an app like this, allowing me to store every learned word and track progress in real time.
 
 That's also why the application is completely free. If you enjoy it, feel free to leave your feedback.
 """)
 				}
-				Text("For more information, contact: [No mail yet]")
+				Text("For more information, contact: [jules.longin1@gmail.com]")
 			}
 			.navigationTitle("More Information")
 			.navigationBarTitleDisplayMode(.inline)
