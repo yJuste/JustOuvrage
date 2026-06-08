@@ -88,7 +88,7 @@ struct ProfileView: View {
 							.resizable()
 							.scaledToFill()
 							.frame(width: 36, height: 36)
-						Text("Version 0.9.15 ⋅ June 8, 2026")
+						Text("Version 0.9.16 ⋅ June 8, 2026")
 							.font(.caption)
 							.foregroundStyle(.secondary)
 					}

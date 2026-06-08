@@ -66,24 +66,18 @@ struct EditCardView: View {
 					ScrollView {
 						VStack {
 							if title.localizedCaseInsensitiveContains("Add") {
-								VStack {
-									NavigationLink {
-										DeckSelectionView(selectedDeck: selectedDeck)
-									} label: {
-										HStack {
-											Text("Deck")
-											Spacer()
-											Text(deckName)
-												.font(.footnote)
-												.foregroundStyle(.secondary)
-										}
-										.padding()
+								NavigationLink {
+									DeckSelectionView(selectedDeck: selectedDeck)
+								} label: {
+									HStack {
+										Text("Deck")
+										Spacer()
+										Text(deckName)
+											.font(.footnote)
+											.foregroundStyle(.secondary)
 									}
-									.buttonStyle(.plain)
+									.padding(25)
 								}
-								.background(.thinMaterial)
-								.clipShape(RoundedRectangle(cornerRadius: 16))
-								.padding(.horizontal, 25)
 							}
 							VStack(spacing: 40) {
 								HStack(spacing: 40) {
@@ -108,7 +102,6 @@ struct EditCardView: View {
 									} label: {
 										Image(systemName: "arrow.left.arrow.right")
 									}
-									.buttonStyle(.plain)
 									.padding()
 									.glassEffect(.regular.interactive())
 									Button {
@@ -149,6 +142,7 @@ struct EditCardView: View {
 							}
 							.padding(.horizontal, 30)
 						}
+						.buttonStyle(.plain)
 						.frame(maxWidth: .infinity, minHeight: geo.size.height * 0.95, alignment: .center)
 					}
 					.scrollDismissesKeyboard(.interactively)
