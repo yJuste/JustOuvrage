@@ -49,24 +49,20 @@ struct NewCardView: View {
 			GeometryReader { geo in
 				ScrollViewReader { proxy in
 					ScrollView {
-						let color = Color(.systemGray6)
+						let color = Color.secondary.opacity(0.2)
 						VStack {
-							VStack {
-								NavigationLink {
-									DeckSelectionView(selectedDeck: selectedDeck)
-								} label: {
-									HStack {
-										Text("Deck")
-										Spacer()
-										Text(deckName)
-											.font(.footnote)
-											.foregroundStyle(.secondary)
-									}
-									.padding()
+							NavigationLink {
+								DeckSelectionView(selectedDeck: selectedDeck)
+							} label: {
+								HStack {
+									Text("Deck")
+									Spacer()
+									Text(deckName)
+										.font(.footnote)
+										.foregroundStyle(.secondary)
 								}
-								.buttonStyle(.plain)
+								.padding()
 							}
-							.padding(.horizontal, 20)
 							VStack(spacing: 40) {
 								HStack(spacing: 40) {
 									Button {
@@ -90,7 +86,6 @@ struct NewCardView: View {
 									} label: {
 										Image(systemName: "arrow.left.arrow.right")
 									}
-									.buttonStyle(.plain)
 									.padding()
 									.glassEffect(.regular.interactive())
 									Button {
@@ -117,12 +112,13 @@ struct NewCardView: View {
 										.focused($focusField, equals: .back)
 								}
 							}
-							.padding(20)
+							.padding(.horizontal, 15)
 						}
+						.buttonStyle(.plain)
 						.frame(maxWidth: .infinity, minHeight: geo.size.height * 0.95, alignment: .center)
 						.background(color)
 						.clipShape(RoundedRectangle(cornerRadius: 15))
-						.padding(20)
+						.padding(.horizontal, 15)
 					}
 					.scrollDismissesKeyboard(.interactively)
 					.scrollIndicators(.hidden)

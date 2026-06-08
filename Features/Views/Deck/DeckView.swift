@@ -172,40 +172,7 @@ struct DeckView: View {
 											.font(.subheadline)
 											.frame(maxWidth: .infinity, alignment: .leading)
 											Menu {
-												Button {
-													selectedCard = card
-													dismissItems.showOnly($showEditCard)
-												} label: {
-													Label("Edit Card", systemImage: "slider.horizontal.3")
-												}
-												Button {
-													selectedCard = card
-													dismissItems.showOnly($showDecksToCard)
-												} label: {
-													Label("Add decks", systemImage: "rectangle.stack.badge.plus")
-												}
-												Button {
-													selectedCard = card
-													dismissItems.showOnly($showRecording)
-												} label: {
-													Label("Record audio", systemImage: "microphone.fill")
-												}
-												Section {
-													Button {
-														selectedCard = card
-														dismissItems.showOnly($showMetaDataCard)
-													} label: {
-														Label("View Metadata", systemImage: "info.circle")
-													}
-												}
-												Section {
-													Button(role: .destructive) {
-														selectedCard = card
-														showDeleteCard.toggle()
-													} label: {
-														Label("Remove from the Deck", systemImage: "trash")
-													}
-												}
+												options(for: card)
 											} label: {
 												Image(systemName: "ellipsis")
 													.font(.system(size: 20, weight: .bold))
@@ -213,22 +180,15 @@ struct DeckView: View {
 													.background (Circle().fill(.clear))
 											}
 											.padding(.trailing, 10)
-											.buttonStyle(.plain)
-											.tint(nil)
 										}
 										.padding(EdgeInsets(top: 3, leading: 15, bottom: 3, trailing: 15))
 										.contentShape(Rectangle())
 									}
 									.contextMenu {
-										Button(role: .destructive) {
-											selectedCard = card
-											showDeleteCard.toggle()
-										} label: {
-											Label("Remove from Deck", systemImage: "trash")
-										}
-										.tint(nil)
+										options(for: card)
 									}
 									.buttonStyle(.plain)
+									.tint(nil)
 									separator
 								}
 								.sheet(isPresented: $showCard) {
@@ -380,6 +340,61 @@ struct DeckView: View {
 /// Methods of DeckView.
 fileprivate extension DeckView {
 	
+	@ViewBuilder private func options(for card: Card) -> some View {
+		Section {
+			Button {
+				selectedCard = card
+				dismissItems.showOnly($showCard)
+			} label: {
+				Label(card.frontEntry, systemImage: "filemenu.and.selection")
+				Text(card.backEntry)
+					.font(.caption)
+					.foregroundStyle(.secondary)
+			}
+		}
+		Button {
+			selectedCard = card
+			dismissItems.showOnly($showEditCard)
+		} label: {
+			Label("Edit", systemImage: "slider.horizontal.3")
+		}
+		Button {
+			selectedCard = card
+			dismissItems.showOnly($showDecksToCard)
+		} label: {
+			Label("Add to decks", systemImage: "rectangle.stack")
+		}
+		Button {
+			selectedCard = card
+			dismissItems.showOnly($showRecording)
+		} label: {
+			Label("Record audio", systemImage: "microphone")
+		}
+		Button {
+			let newCard = Card(frontEntry: card.frontEntry, backEntry: card.backEntry, frontLanguage: card.frontLanguage, backLanguage: card.backLanguage, author: card.author)
+			newCard.decks = card.decks
+			modelContext.insert(newCard)
+		} label: {
+			Label("Duplicate", systemImage: "rectangle.portrait.on.rectangle.portrait.angled")
+		}
+		Section {
+			Button {
+				selectedCard = card
+				dismissItems.showOnly($showMetaData)
+			} label: {
+				Label("View Metadata", systemImage: "info.circle")
+			}
+		}
+		Section {
+			Button(role: .destructive) {
+				selectedCard = card
+				showDeleteCard.toggle()
+			} label: {
+				Label("Remove from Deck", systemImage: "trash")
+			}
+		}
+	}
+	
 	@MainActor private func showAdded() async {
 		withAnimation(.snappy) {
 			showAddedBanner.toggle()
@@ -446,12 +461,19 @@ fileprivate extension DeckView {
 				Button {
 					dismissItems.showOnly($showEditDeck)
 				} label: {
-					Label("Edit Deck", systemImage: "slider.horizontal.3")
+					Label("Edit", systemImage: "slider.horizontal.3")
 				}
 				Button {
 					dismissItems.showOnly($showCardsToDeck)
 				} label: {
-					Label("Add cards", systemImage: "plus.square.fill.on.square.fill")
+					Label("Add cards", systemImage: "rectangle.portrait.on.rectangle.portrait")
+				}
+				Button {
+					let newDeck = Deck(name: deck.name, image: deck.image, author: deck.author)
+					newDeck.cards = deck.cards
+					modelContext.insert(newDeck)
+				} label: {
+					Label("Duplicate", systemImage: "rectangle.on.rectangle.angled")
 				}
 				Section {
 					Button {

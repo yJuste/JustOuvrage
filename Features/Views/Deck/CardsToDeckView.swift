@@ -182,13 +182,14 @@ fileprivate extension CardsToDeckView {
 							Label {
 								Text(language)
 							} icon: {
-								Image(systemName: contain ? "checkmark" : "")
+								Image(systemName: "checkmark")
+									.hidden(!contain)
 							}
 						}
 					}
 				}
 			} label: {
-				Label("Filter", systemImage: "line.3.horizontal.decrease.circle")
+				Label("Filter", systemImage: "line.3.horizontal.decrease")
 			}
 		}
 		ToolbarItem(placement: .topBarTrailing) {

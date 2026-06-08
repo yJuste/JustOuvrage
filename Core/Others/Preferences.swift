@@ -69,47 +69,49 @@ import Observation
 	static let unique: Preferences = Preferences()
 	
 	private let userDefaults: UserDefaults = UserDefaults.standard
-	private var globalColorRaw: String = ""
-	private var tabBarRaw: String = ""
-	private var sessionOrderRaw: [String] = []
-	private var recentLanguagesRaw: [String] = []
-	private var frontLanguageRaw: String = ""
-	private var backLanguageRaw: String = ""
-	private var exactMatchRaw: String = ""
-	private var selectDeckRaw: String = ""
-	private var trialTimeIntervalRaw: TimeInterval = 0
-	private var trialDeckRaw: String = ""
-	private var trialNumberOfCardsRaw: Int = 0
-	private var trialOrderRaw: Int = 0
-	private var trialModeRaw: Int = 0
-	private var trialRefreshTimerRaw: Double = 0
-	private var trialSwipeThresholdRaw: Double = 0
-	private var trialSideRaw: Int = 0
-	private var lastCleanupRaw: Double = 0
-	private var audioQualityRaw: String = ""
-	private var profileImageRaw: String = ""
-	private var profileNameRaw: String = ""
-	private var profileUUIDRaw: String = ""
-	private var globalBrowserRaw: Bool = false
-	private var visibleDecksRaw: Bool = false
-	private var sortDecksRaw: [String] = []
-	private var invertCardsRaw: Bool = false
-	private var visibleCardsRaw: Bool = false
-	private var sortCardsRaw: [String] = []
-	private var languageFilterCardsRaw: Int = 0
-	private var gradientBackgroundRaw: Bool = false
-	private var animationBackgroundRaw: Bool = false
+	private var globalColorRaw: String
+	private var tabBarRaw: String
+	private var sessionOrderRaw: [String]
+	private var recentLanguagesRaw: [String]
+	private var frontLanguageRaw: String
+	private var backLanguageRaw: String
+	private var exactMatchRaw: String
+	private var selectDeckRaw: String
+	private var trialTimeIntervalRaw: TimeInterval
+	private var trialDeckRaw: String
+	private var trialNumberOfCardsRaw: Int
+	private var trialOrderRaw: Int
+	private var trialModeRaw: Int
+	private var trialRefreshTimerRaw: Double
+	private var trialSwipeThresholdRaw: Double
+	private var trialSideRaw: Int
+	private var lastCleanupRaw: Double
+	private var audioQualityRaw: String
+	private var profileImageRaw: String
+	private var profileNameRaw: String
+	private var profileUUIDRaw: String
+	private var globalBrowserRaw: Bool
+	private var visibleDecksRaw: Bool
+	private var sortDecksRaw: [String]
+	private var invertCardsRaw: Bool
+	private var visibleCardsRaw: Bool
+	private var sortCardsRaw: [String]
+	private var languageFilterCardsRaw: Int
+	private var gradientBackgroundRaw: Bool
+	private var animationBackgroundRaw: Bool
 	
 	private init() {
 		
 		let defaultLanguage: String = Language.en_US.rawValue
+		let defaultSort: [String] = [SortDeck.newestToOldest.rawValue]
 		
 		userDefaults.register(defaults: [
 			Key.trialTimeInterval.rawValue: 5.0,
 			Key.trialRefreshTimer.rawValue: (2.0 / 60.0),
 			Key.trialSwipeThreshold.rawValue: 50.0,
+			Key.globalBrowser.rawValue: true,
 			Key.gradientBackground.rawValue: true,
-			Key.animationBackground.rawValue: false
+			Key.animationBackground.rawValue: false,
 		])
 		
 		globalColorRaw = userDefaults.string(forKey: Key.globalColor.rawValue) ?? AccentColor.firGreen.rawValue
@@ -133,16 +135,18 @@ import Observation
 		profileImageRaw = userDefaults.string(forKey: Key.profileImage.rawValue) ?? Constants.defaultProfileImage
 		profileNameRaw = userDefaults.string(forKey: Key.profileName.rawValue) ?? Constants.noAuthor
 		profileUUIDRaw = (UUID(uuidString: userDefaults.string(forKey: Key.profileUUID.rawValue) ?? "") ?? UUID()).uuidString
-		userDefaults.set(profileUUIDRaw, forKey: Key.profileUUID.rawValue)
 		globalBrowserRaw = userDefaults.bool(forKey: Key.globalBrowser.rawValue)
 		visibleDecksRaw = userDefaults.bool(forKey: Key.visibleDecks.rawValue)
-		sortDecksRaw = userDefaults.stringArray(forKey: Key.sortDecks.rawValue) ?? [SortDeck.newestToOldest.rawValue]
+		sortDecksRaw = userDefaults.stringArray(forKey: Key.sortDecks.rawValue) ?? defaultSort
 		invertCardsRaw = userDefaults.bool(forKey: Key.invertCards.rawValue)
 		visibleCardsRaw = userDefaults.bool(forKey: Key.visibleCards.rawValue)
-		sortCardsRaw = userDefaults.stringArray(forKey: Key.sortCards.rawValue) ?? [SortCard.newestToOldest.rawValue]
+		sortCardsRaw = userDefaults.stringArray(forKey: Key.sortCards.rawValue) ?? defaultSort
 		languageFilterCardsRaw = userDefaults.integer(forKey: Key.languageFilterCards.rawValue)
 		gradientBackgroundRaw = userDefaults.bool(forKey: Key.gradientBackground.rawValue)
 		animationBackgroundRaw = userDefaults.bool(forKey: Key.animationBackground.rawValue)
+		
+		// init directly with userDefaults
+		userDefaults.set(profileUUIDRaw, forKey: Key.profileUUID.rawValue)
 	}
 	
 	var globalColor: AccentColor {

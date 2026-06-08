@@ -19,6 +19,7 @@ struct DecksToCardView: View {
 	
 	@State private var search: String = ""
 	@State private var selectedDecks: Set<Deck.ID> = []
+	@State private var sorts: [SortDeck] = [.newestToOldest]
 	
 	private var filteredDecks: [Deck] {
 		guard !search.isEmpty else { return decks }
@@ -55,9 +56,27 @@ struct DecksToCardView: View {
 			.task {
 				selectedDecks = Set(card.decks.map(\.id))
 			}
-			.listStyle(.plain)
 			.toolbar { toolbar }
+			.tint(nil)
+			.listStyle(.plain)
 			.searchable(text: $search)
+		}
+	}
+}
+
+fileprivate extension DecksToCardView {
+	
+	private func toggleSort(first: SortDeck, second: SortDeck) {
+		if sorts.contains(first) {
+			sorts.removeAll { $0 == first }
+			if !sorts.contains(second) {
+				sorts.insert(second, at: 0)
+			}
+		} else {
+			sorts.removeAll { $0 == second }
+			if !sorts.contains(first) {
+				sorts.insert(first, at: 0)
+			}
 		}
 	}
 }
@@ -72,7 +91,6 @@ fileprivate extension DecksToCardView {
 			} label: {
 				Text("Cancel")
 			}
-			.tint(nil)
 		}
 		ToolbarItem(placement: .principal) {
 			VStack {
@@ -81,6 +99,29 @@ fileprivate extension DecksToCardView {
 				Text("for \"\(card.frontEntry)\"")
 					.font(.caption)
 					.foregroundStyle(.secondary)
+			}
+		}
+		ToolbarItem(placement: .topBarTrailing) {
+			Menu {
+				Section {
+					Button {
+						toggleSort(first: .newestToOldest, second: .oldestToNewest)
+					} label: {
+						let contain = sorts.contains(.newestToOldest)
+						Label("Date", systemImage: contain ? "text.line.first.and.arrowtriangle.forward" : "text.line.last.and.arrowtriangle.forward")
+						Text(contain ? "Newest to Oldest" : "Oldest to Newest")
+					}
+					
+					Button {
+						toggleSort(first: .alphabeticalAscending, second: .alphabeticalDescending)
+					} label: {
+						let contain = sorts.contains(.alphabeticalAscending)
+						Label("Name", systemImage: contain ? "text.line.first.and.arrowtriangle.forward" : "text.line.last.and.arrowtriangle.forward")
+						Text(contain ? "Ascending" : "Descending")
+					}
+				}
+			} label: {
+				Label("Filter", systemImage: "line.3.horizontal.decrease")
 			}
 		}
 		ToolbarItem(placement: .topBarTrailing) {

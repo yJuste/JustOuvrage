@@ -50,7 +50,7 @@ enum Constants {
 	static let heightOfADraft: [CGFloat] = [0.315, 0.4]
 	
 	// Height of the sheet of the recording view.
-	static let heightOfARecording: [CGFloat] = [0.25, 0.4]
+	static let heightOfARecording: [CGFloat] = [0.3, 0.4]
 	
 	// Height of the sheet of the time trial result view.
 	static let heightOfATimeTrial: [CGFloat] = [0.375, 1.0]

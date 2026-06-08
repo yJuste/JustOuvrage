@@ -147,7 +147,7 @@ struct EditCardView: View {
 									}
 								}
 							}
-							.padding(30)
+							.padding(.horizontal, 30)
 						}
 						.frame(maxWidth: .infinity, minHeight: geo.size.height * 0.95, alignment: .center)
 					}

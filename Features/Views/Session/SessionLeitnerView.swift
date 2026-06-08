@@ -344,7 +344,7 @@ fileprivate extension SessionLeitnerView {
 					}
 				}
 			} label: {
-				Label("Boxes", systemImage: "line.3.horizontal.decrease.circle")
+				Label("Boxes", systemImage: "line.3.horizontal.decrease")
 			}
 			.tint(nil)
 		}

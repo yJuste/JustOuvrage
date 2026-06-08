@@ -315,7 +315,7 @@ fileprivate extension SessionTimeTrialView {
 					Text(ascending ? "Ascending" : "Descending")
 				}
 			} label: {
-				Label("Options", systemImage: "line.3.horizontal.decrease.circle")
+				Label("Options", systemImage: "line.3.horizontal.decrease")
 			}
 			.tint(nil)
 		}

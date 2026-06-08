@@ -81,34 +81,7 @@ struct DecksView: View {
 								}
 								Spacer()
 								Menu {
-									Button {
-										selectedDeck = deck
-										dismissItems.showOnly($showEditDeck)
-									} label: {
-										Label("Edit Deck", systemImage: "slider.horizontal.3")
-									}
-									Button {
-										selectedDeck = deck
-										dismissItems.showOnly($showCardsToDeck)
-									} label: {
-										Label("Add cards", systemImage: "plus.square.fill.on.square.fill")
-									}
-									Section {
-										Button {
-											selectedDeck = deck
-											dismissItems.showOnly($showMetaData)
-										} label: {
-											Label("View Metadata", systemImage: "info.circle")
-										}
-									}
-									Section {
-										Button(role: .destructive) {
-											selectedDeck = deck
-											showDeleteDeck.toggle()
-										} label: {
-											Label("Delete Deck from Library", systemImage: "trash")
-										}
-									}
+									options(for: deck)
 								} label: {
 									Image(systemName: "ellipsis")
 										.font(.system(size: 20, weight: .bold))
@@ -117,16 +90,10 @@ struct DecksView: View {
 								}
 								.padding(.trailing, 10)
 								.buttonStyle(.plain)
-								.tint(nil)
 							}
 						}
 						.contextMenu {
-							Button(role: .destructive) {
-								selectedDeck = deck
-								showDeleteDeck.toggle()
-							} label: {
-								Label("Delete from Library", systemImage: "trash")
-							}
+							options(for: deck)
 						} preview: {
 							VStack(alignment: .leading, spacing: 10) {
 								Image(image: image, storage: storage)
@@ -153,6 +120,7 @@ struct DecksView: View {
 			}
 			.listStyle(.plain)
 			.toolbar { toolbar }
+			.tint(nil)
 			.animation(.easeInOut(duration: 0.15), value: selection.isEmpty)
 			.animation(.easeInOut(duration: 0.15), value: editMode)
 			.sheet(isPresented: $showDeck) {
@@ -215,6 +183,53 @@ struct DecksView: View {
 
 /// Methods of DecksView.
 fileprivate extension DecksView {
+	
+	@ViewBuilder private func options(for deck: Deck) -> some View {
+		Section {
+			Button {
+				selectedDeck = deck
+				dismissItems.showOnly($showDeck)
+			} label: {
+				Image(image: deck.image, storage: storage)
+				Text(deck.name)
+			}
+		}
+		Button {
+			selectedDeck = deck
+			dismissItems.showOnly($showEditDeck)
+		} label: {
+			Label("Edit", systemImage: "slider.horizontal.3")
+		}
+		Button {
+			selectedDeck = deck
+			dismissItems.showOnly($showCardsToDeck)
+		} label: {
+			Label("Add cards", systemImage: "rectangle.portrait.on.rectangle.portrait")
+		}
+		Button {
+			let newDeck = Deck(name: deck.name, image: deck.image, author: deck.author)
+			newDeck.cards = deck.cards
+			modelContext.insert(newDeck)
+		} label: {
+			Label("Duplicate", systemImage: "rectangle.on.rectangle.angled")
+		}
+		Section {
+			Button {
+				selectedDeck = deck
+				dismissItems.showOnly($showMetaData)
+			} label: {
+				Label("View Metadata", systemImage: "info.circle")
+			}
+		}
+		Section {
+			Button(role: .destructive) {
+				selectedDeck = deck
+				showDeleteDeck.toggle()
+			} label: {
+				Label("Delete from Library", systemImage: "trash")
+			}
+		}
+	}
 	
 	private func deleteSelection() {
 		for deck in selection {
@@ -290,12 +305,12 @@ fileprivate extension DecksView {
 				Button {
 					dismissItems.showOnly($showNewCard)
 				} label: {
-					Label("New Card", systemImage: "plus.square.fill.on.square.fill")
+					Label("New Card", systemImage: "plus.rectangle.portrait")
 				}
 				Button {
 					dismissItems.showOnly($showNewDeck)
 				} label: {
-					Label("New Deck", systemImage: "rectangle.stack.badge.play")
+					Label("New Deck", systemImage: "plus.rectangle.on.rectangle")
 				}
 				Section {
 					Button {
@@ -324,7 +339,6 @@ fileprivate extension DecksView {
 			} label: {
 				Label("Options", systemImage: "ellipsis")
 			}
-			.tint(nil)
 		}
 	}
 }

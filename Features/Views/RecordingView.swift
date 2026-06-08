@@ -11,11 +11,15 @@ import AVFoundation
 struct RecordingView: View {
 	
 	let card: Card
+	let site: Site.Sites = Site.unique
 	
 	@Environment(Recording.self) private var storage
 	@Environment(\.dismiss) private var dismiss
+	@Environment(\.openURL) var openURL
 	
 	@Bindable private var preferences: Preferences = .unique
+	@State private var destination: Destination?
+	@State private var globalBrowser = Preferences.unique.globalBrowser
 	@State private var globalColor: Color =  Preferences.unique.globalColor.color
 	@State private var activeRecording: Side?
 	@State private var activePlaying: Side?
@@ -26,24 +30,42 @@ struct RecordingView: View {
 	@State private var showGradientBackground: Bool = false
 	@State private var showNoPermission: Bool = false
 	
+	private var cleanFrontEntry: [String] {
+		cleanWords(expression: card.frontEntry)
+	}
+	
+	private var cleanBackEntry: [String] {
+		cleanWords(expression: card.backEntry)
+	}
+	
 	var body: some View {
 		NavigationStack {
 			ScrollView {
-				VStack(spacing: 20) {
-					recordSection(title: card.frontEntry, filename: card.frontRecording, side: .front)
-					recordSection(title: card.backEntry, filename: card.backRecording, side: .back)
+				VStack(alignment: .leading) {
+					recordSection(title: card.frontEntry, language: card.frontLanguage, filename: card.frontRecording, side: .front)
+					recordSection(title: card.backEntry, language: card.backLanguage, filename: card.backRecording, side: .back)
 				}
-				.padding(.horizontal, 20)
+				.padding(.horizontal, 15)
 			}
-			.onAppear {
+			.task(id: card.id) {
+				stopRecording()
+			}
+			.task(id: card.frontRecording) {
 				duration(for: card.frontRecording, side: .front)
+			}
+			.task(id: card.backRecording) {
 				duration(for: card.backRecording, side: .back)
 			}
 			.onDisappear {
 				stopRecording()
 				stopPlaying()
 			}
+			.fullScreenCover(item: $destination) { destination in
+				SFSafariViewWrapper(url: destination.url)
+					.ignoresSafeArea()
+			}
 			.toolbar { toolbar }
+			.tint(nil)
 			.navigationTitle("Recording")
 			.navigationBarTitleDisplayMode(.inline)
 			.alert("Clear Audio", isPresented: Binding(get: { deleteSide != nil }, set: { if !$0 { deleteSide = nil } })
@@ -75,45 +97,62 @@ struct RecordingView: View {
 /// Record Section.
 fileprivate extension RecordingView {
 	
-	@ViewBuilder private func recordSection(title: String, filename: String?, side: Side) -> some View {
-		VStack(alignment: .trailing) {
-			HStack(spacing: 20) {
+	@ViewBuilder private func recordSection(title: String, language: Language, filename: String?, side: Side) -> some View {
+		HStack {
+			VStack(alignment: .leading) {
 				Text(title)
 					.bold()
-				Spacer()
-				Button {
-					toggleRecording(side)
-				} label: {
-					Image(systemName: activeRecording == side ? "stop.circle.fill" : "mic.circle.fill")
-						.font(.system(size: 40))
-						.foregroundStyle(activeRecording == side ? .red : .primary)
-						.padding(3)
-						.background(Circle().glassEffect(.clear.interactive()))
-				}
-				Button {
-					play(filename, side: side)
-				} label: {
-					VStack(spacing: 4) {
-						Label(activePlaying == side ? "Stop" : "Play", systemImage: activePlaying == side ? "stop.fill" : "play.fill")
-							.bold()
-						Label(durations[side] ?? "time", systemImage: "timer")
-							.font(.caption2)
-							.foregroundStyle(.secondary)
-					}
-					.lineLimit(1)
-					.minimumScaleFactor(0.01)
-					.frame(minWidth: 70)
-					.padding(EdgeInsets(top: 7, leading: 20, bottom: 7, trailing: 20))
-					.background(Capsule().glassEffect(.clear.tint(filename != nil ? globalColor.opacity(0.5) : .clear).interactive()))
+				WordsLinkingToSite(title: "", item: cleanBackEntry) { entry in
+					globalBrowser ? destination = site.forvo.link(for: entry, in: language) : openURL(site.forvo.link(for: entry, in: language))
 				}
 			}
-			.buttonStyle(.plain)
+			Spacer()
+			Button {
+				toggleRecording(side)
+			} label: {
+				Image(systemName: activeRecording == side ? "stop.circle.fill" : "mic.circle.fill")
+					.font(.system(size: 40))
+					.foregroundStyle(activeRecording == side ? .red : .primary)
+					.padding(3)
+					.background(Circle().glassEffect(.clear.interactive()))
+			}
+			Button {
+				play(filename, side: side)
+			} label: {
+				VStack(spacing: 4) {
+					Label(activePlaying == side ? "Stop" : "Play", systemImage: activePlaying == side ? "stop.fill" : "play.fill")
+						.bold()
+					Label(durations[side] ?? "time", systemImage: "timer")
+						.font(.caption2)
+						.foregroundStyle(.secondary)
+				}
+				.lineLimit(1)
+				.minimumScaleFactor(0.01)
+				.frame(minWidth: 70)
+				.padding(EdgeInsets(top: 7, leading: 20, bottom: 7, trailing: 20))
+				.background(Capsule().glassEffect(.clear.tint(filename != nil ? globalColor.opacity(0.5) : .clear).interactive()))
+			}
 		}
+		.buttonStyle(.plain)
 	}
 }
 
 /// Methods of RecordingView.
 fileprivate extension RecordingView {
+	
+	private func cleanWords(expression: String) -> [String] {
+		return expression
+			.components(separatedBy: ",")
+			.map {
+				return removeDelimiters(from: $0, delimiters: [.parentheses, .brackets])
+					.unicodeScalars
+					.filter { !($0.properties.isEmoji && $0.properties.isEmojiPresentation) }
+					.map { String($0) }
+					.joined()
+					.trimmingCharacters(in: .whitespacesAndNewlines)
+			}
+			.filter { !$0.isEmpty }
+	}
 	
 	private enum Side {
 		
@@ -251,7 +290,6 @@ fileprivate extension RecordingView {
 			} label: {
 				Label("Close", systemImage: "xmark")
 			}
-			.tint(nil)
 		}
 		ToolbarItem(placement: .topBarTrailing) {
 			Menu {
@@ -273,7 +311,6 @@ fileprivate extension RecordingView {
 			} label: {
 				Image(systemName: "ellipsis")
 			}
-			.tint(nil)
 		}
 	}
 }
@@ -288,4 +325,3 @@ fileprivate extension RecordingView {
 	))
 	.environment(Recording())
 }
-

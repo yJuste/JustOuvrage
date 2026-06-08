@@ -109,12 +109,12 @@ fileprivate extension LibraryView {
 				Button {
 					showNewCard.toggle()
 				} label: {
-					Label("New Card", systemImage: "plus.square.fill.on.square.fill")
+					Label("New Card", systemImage: "plus.rectangle.portrait")
 				}
 				Button {
 					showNewDeck.toggle()
 				} label: {
-					Label("New Deck", systemImage: "rectangle.stack.badge.play")
+					Label("New Deck", systemImage: "plus.rectangle.on.rectangle")
 				}
 			} label: {
 				Label("Add", systemImage: "square.fill.text.grid.1x2")

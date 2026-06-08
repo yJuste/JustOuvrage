@@ -138,7 +138,7 @@ struct SessionRecordingView: View {
 									selectedCard = card
 									showClearRecording.toggle()
 								} label: {
-									Label("Clear recordings in the card", systemImage: "trash")
+									Label("Clear recordings", systemImage: "trash")
 								}
 								.tint(nil)
 							}

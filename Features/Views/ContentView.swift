@@ -34,7 +34,7 @@ fileprivate extension ContentView {
 			Tab("New", systemImage: "plus.rectangle.portrait", value: .new) {
 				NewCardView()
 			}
-			Tab("Trial", systemImage: "flag.pattern.checkered.2.crossed", value: .trial) {
+			Tab("Time Trial", systemImage: "flag.pattern.checkered.2.crossed", value: .trial) {
 				TimeTrialSetupView()
 			}
 			Tab("Session", systemImage: "rectangle.dashed.badge.record", value: .session) {

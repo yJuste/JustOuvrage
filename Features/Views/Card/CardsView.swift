@@ -73,7 +73,7 @@ struct CardsView: View {
 	}
 	
 	private var dismissItems: [Binding<Bool>] {
-		[$showCard, $showEditMode, $showNewCard, $showNewDeck, $showDeleteCard, $showSelectedCards, $showMetaData, $showRecording, $showDecksToCard, $showEditCard]
+		[$showCard, $showEditMode, $showNewCard, $showNewDeck, $showSelectedCards, $showMetaData, $showRecording, $showDecksToCard, $showEditCard]
 	}
 	
 	var body: some View {
@@ -99,40 +99,7 @@ struct CardsView: View {
 								}
 								Spacer()
 								Menu {
-									Button {
-										selectedCard = card
-										dismissItems.showOnly($showEditCard)
-									} label: {
-										Label("Edit Card", systemImage: "slider.horizontal.3")
-									}
-									Button {
-										selectedCard = card
-										dismissItems.showOnly($showDecksToCard)
-									} label: {
-										Label("Add decks", systemImage: "rectangle.stack.badge.plus")
-									}
-									Button {
-										selectedCard = card
-										dismissItems.showOnly($showRecording)
-									} label: {
-										Label("Record audio", systemImage: "microphone.fill")
-									}
-									Section {
-										Button {
-											selectedCard = card
-											dismissItems.showOnly($showMetaData)
-										} label: {
-											Label("View Metadata", systemImage: "info.circle")
-										}
-									}
-									Section {
-										Button(role: .destructive) {
-											selectedCard = card
-											showDeleteCard.toggle()
-										} label: {
-											Label("Delete Card from Library", systemImage: "trash")
-										}
-									}
+									options(for: card)
 								} label: {
 									Image(systemName: "ellipsis")
 										.font(.system(size: 20, weight: .bold))
@@ -144,12 +111,7 @@ struct CardsView: View {
 							}
 						}
 						.contextMenu {
-							Button(role: .destructive) {
-								selectedCard = card
-								dismissItems.showOnly($showDeleteCard)
-							} label: {
-								Label("Delete from Library", systemImage: "trash")
-							}
+							options(for: card)
 						}
 					}
 					.tag(card)
@@ -238,6 +200,61 @@ struct CardsView: View {
 /// Methods of CardsView.
 fileprivate extension CardsView {
 	
+	@ViewBuilder private func options(for card: Card) -> some View {
+		Section {
+			Button {
+				selectedCard = card
+				dismissItems.showOnly($showCard)
+			} label: {
+				Label(card.frontEntry, systemImage: "filemenu.and.selection")
+				Text(card.backEntry)
+					.font(.caption)
+					.foregroundStyle(.secondary)
+			}
+		}
+		Button {
+			selectedCard = card
+			dismissItems.showOnly($showEditCard)
+		} label: {
+			Label("Edit", systemImage: "slider.horizontal.3")
+		}
+		Button {
+			selectedCard = card
+			dismissItems.showOnly($showDecksToCard)
+		} label: {
+			Label("Add to decks", systemImage: "rectangle.stack")
+		}
+		Button {
+			selectedCard = card
+			dismissItems.showOnly($showRecording)
+		} label: {
+			Label("Record audio", systemImage: "microphone")
+		}
+		Button {
+			let newCard = Card(frontEntry: card.frontEntry, backEntry: card.backEntry, frontLanguage: card.frontLanguage, backLanguage: card.backLanguage, author: card.author)
+			newCard.decks = card.decks
+			modelContext.insert(newCard)
+		} label: {
+			Label("Duplicate", systemImage: "rectangle.portrait.on.rectangle.portrait.angled")
+		}
+		Section {
+			Button {
+				selectedCard = card
+				dismissItems.showOnly($showMetaData)
+			} label: {
+				Label("View Metadata", systemImage: "info.circle")
+			}
+		}
+		Section {
+			Button(role: .destructive) {
+				selectedCard = card
+				showDeleteCard.toggle()
+			} label: {
+				Label("Delete from Library", systemImage: "trash")
+			}
+		}
+	}
+	
 	private func deleteSelection() {
 		for card in selection {
 			modelContext.delete(card)
@@ -311,12 +328,12 @@ fileprivate extension CardsView {
 				Button {
 					dismissItems.showOnly($showNewCard)
 				} label: {
-					Label("New Card", systemImage: "plus.square.fill.on.square.fill")
+					Label("New Card", systemImage: "plus.rectangle.portrait")
 				}
 				Button {
 					dismissItems.showOnly($showNewCard)
 				} label: {
-					Label("New Deck", systemImage: "rectangle.stack.badge.play")
+					Label("New Deck", systemImage: "plus.rectangle.on.rectangle")
 				}
 				Section {
 					Button {

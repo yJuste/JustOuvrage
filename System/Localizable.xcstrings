@@ -170,10 +170,10 @@
     "Add Cards" : {
 
     },
-    "Add decks" : {
+    "Add Decks" : {
 
     },
-    "Add Decks" : {
+    "Add to decks" : {
 
     },
     "Add to Library" : {
@@ -308,10 +308,10 @@
     "Clear leitner score" : {
 
     },
-    "Clear Recordings" : {
+    "Clear recordings" : {
 
     },
-    "Clear recordings in the card" : {
+    "Clear Recordings" : {
 
     },
     "Clear recordings to the selection?" : {
@@ -368,13 +368,7 @@
     "Delete Card" : {
 
     },
-    "Delete Card from Library" : {
-
-    },
     "Delete Deck" : {
-
-    },
-    "Delete Deck from Library" : {
 
     },
     "Delete from Library" : {
@@ -405,6 +399,12 @@
 
     },
     "Downloaded" : {
+
+    },
+    "Duplicate" : {
+
+    },
+    "Edit" : {
 
     },
     "Edit Card" : {
@@ -674,9 +674,6 @@
     "Remove from Deck" : {
 
     },
-    "Remove from the Deck" : {
-
-    },
     "Reset" : {
 
     },
@@ -777,9 +774,6 @@
 
     },
     "Transfer" : {
-
-    },
-    "Trial" : {
 
     },
     "Ultra" : {

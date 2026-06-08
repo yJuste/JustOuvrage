@@ -239,19 +239,26 @@ fileprivate extension CardView {
 					}
 				}
 				Button {
+					let newCard = Card(frontEntry: card.frontEntry, backEntry: card.backEntry, frontLanguage: card.frontLanguage, backLanguage: card.backLanguage, author: card.author)
+					newCard.decks = card.decks
+					modelContext.insert(newCard)
+				} label: {
+					Label("Duplicate", systemImage: "rectangle.portrait.on.rectangle.portrait.angled")
+				}
+				Button {
 					dismissItems.showOnly($showRecording)
 				} label: {
-					Label("Record audio", systemImage: "microphone.fill")
+					Label("Record audio", systemImage: "microphone")
 				}
 				Button {
 					dismissItems.showOnly($showDecksToCard)
 				} label: {
-					Label("Add decks", systemImage: "rectangle.stack.badge.plus")
+					Label("Add to decks", systemImage: "rectangle.stack")
 				}
 				Button {
 					dismissItems.showOnly($showEditCard)
 				} label: {
-					Label("Edit Card", systemImage: "slider.horizontal.3")
+					Label("Edit", systemImage: "slider.horizontal.3")
 				}
 			} label: {
 				Image(systemName: "ellipsis")
