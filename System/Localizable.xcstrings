@@ -257,6 +257,9 @@
     "Bugs" : {
 
     },
+    "Camera Access Required" : {
+
+    },
     "Cancel" : {
 
     },
@@ -413,6 +416,12 @@
     "Edit Deck" : {
 
     },
+    "Enable camera access in Settings to use the camera." : {
+
+    },
+    "Enable microphone access in Settings to record audio." : {
+
+    },
     "Every Card" : {
 
     },
@@ -542,7 +551,7 @@
     "Metadata" : {
 
     },
-    "Microphone Permission Required" : {
+    "Microphone Access Required" : {
 
     },
     "Missing Information" : {
@@ -606,6 +615,9 @@
 
     },
     "Open links internally" : {
+
+    },
+    "Open Settings" : {
 
     },
     "Optimization" : {
@@ -807,9 +819,6 @@
 
     },
     "You have finished the session for today." : {
-
-    },
-    "You have to enable the microphone in the settings." : {
 
     },
     "your ID:" : {

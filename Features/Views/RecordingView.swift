@@ -28,7 +28,7 @@ struct RecordingView: View {
 	@State private var playerDelegate = PlayerDelegate()
 	@State private var durations: [Side: String] = [:]
 	@State private var showGradientBackground: Bool = false
-	@State private var showNoPermission: Bool = false
+	@State private var showMicrophoneAccess: Bool = false
 	
 	var body: some View {
 		NavigationStack {
@@ -77,10 +77,15 @@ struct RecordingView: View {
 			} message: {
 				Text("Are you sure you want to clear this audio?")
 			}
-			.alert("Microphone Permission Required", isPresented: $showNoPermission) {
-				Button("OK", role: .cancel) {}
+			.alert("Microphone Access Required", isPresented: $showMicrophoneAccess) {
+				Button("Open Settings") {
+					if let url = URL(string: UIApplication.openSettingsURLString) {
+						UIApplication.shared.open(url)
+					}
+				}
+				Button("Cancel", role: .cancel) { }
 			} message: {
-				Text("You have to enable the microphone in the settings.")
+				Text("Enable microphone access in Settings to record audio.")
 			}
 		}
 	}
@@ -183,7 +188,7 @@ fileprivate extension RecordingView {
 				}
 				activeRecording = side
 			} catch {
-				showNoPermission.toggle()
+				showMicrophoneAccess.toggle()
 				stopRecording()
 			}
 		}

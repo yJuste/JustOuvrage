@@ -21,6 +21,7 @@ struct NewDeckView: View {
 	@State private var selectedUIImage: UIImage?
 	@State private var deckName: String = ""
 	@State private var showCancel: Bool = false
+	@State private var showCameraAccess: Bool = false
 	@State private var showCameraPicker: Bool = false
 	@State private var showPhotoPicker: Bool = false
 	@State private var showFilePicker: Bool = false
@@ -45,7 +46,19 @@ struct NewDeckView: View {
 							.clipShape(rectangle)
 						Menu {
 							Button {
-								showCameraPicker.toggle()
+								Task {
+									switch AVCaptureDevice.authorizationStatus(for: .video) {
+									case .authorized: showCameraPicker = true
+									case .notDetermined:
+										if await AVCaptureDevice.requestAccess(for: .video) {
+											showCameraPicker.toggle()
+										} else {
+											showCameraAccess.toggle()
+										}
+									default:
+										showCameraAccess.toggle()
+									}
+								}
 							} label: {
 								Label("Take Photo", systemImage: "camera")
 							}
@@ -120,6 +133,16 @@ struct NewDeckView: View {
 				Button("Keep Editing", role: .cancel) { }
 			} message: {
 				Text("Are you sure you want to discard this new deck?")
+			}
+			.alert("Camera Access Required", isPresented: $showCameraAccess) {
+				Button("Open Settings") {
+					if let url = URL(string: UIApplication.openSettingsURLString) {
+						UIApplication.shared.open(url)
+					}
+				}
+				Button("Cancel", role: .cancel) { }
+			} message: {
+				Text("Enable camera access in Settings to use the camera.")
 			}
 			.scrollDismissesKeyboard(.interactively)
 			.scrollIndicators(.hidden)

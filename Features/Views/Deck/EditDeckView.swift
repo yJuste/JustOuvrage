@@ -9,8 +9,6 @@ import SwiftUI
 import SwiftData
 import PhotosUI
 
-// MARK: Add take photos and search from files.
-
 struct EditDeckView: View {
 	
 	let title: String
@@ -27,6 +25,7 @@ struct EditDeckView: View {
 	@State private var selectedPhotoItem: PhotosPickerItem?
 	@State private var selectedUIImage: UIImage?
 	@State private var showCancel: Bool = false
+	@State private var showCameraAccess: Bool = false
 	@State private var showClearImage: Bool = false
 	@State private var isChangedImage: Bool = false
 	@State private var isInitialImage: Bool = false
@@ -62,7 +61,19 @@ struct EditDeckView: View {
 							.clipShape(rectangle)
 						Menu {
 							Button {
-								showCameraPicker.toggle()
+								Task {
+									switch AVCaptureDevice.authorizationStatus(for: .video) {
+									case .authorized: showCameraPicker = true
+									case .notDetermined:
+										if await AVCaptureDevice.requestAccess(for: .video) {
+											showCameraPicker.toggle()
+										} else {
+											showCameraAccess.toggle()
+										}
+									default:
+										showCameraAccess.toggle()
+									}
+								}
 							} label: {
 								Label("Take Photo", systemImage: "camera")
 							}
@@ -195,6 +206,16 @@ struct EditDeckView: View {
 				Button("Keep Editing", role: .cancel) { }
 			} message: {
 				Text("Are you sure you want to discard modification for this deck?")
+			}
+			.alert("Camera Access Required", isPresented: $showCameraAccess) {
+				Button("Open Settings") {
+					if let url = URL(string: UIApplication.openSettingsURLString) {
+						UIApplication.shared.open(url)
+					}
+				}
+				Button("Cancel", role: .cancel) { }
+			} message: {
+				Text("Enable camera access in Settings to use the camera.")
 			}
 			.scrollDismissesKeyboard(.interactively)
 			.scrollIndicators(.hidden)
