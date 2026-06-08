@@ -83,7 +83,7 @@ struct ProfileView: View {
 					Text("More information")
 				}
 				Section {
-					Text("Version 0.9.2 ⋅ June 7, 2026")
+					Text("Version 0.9.9 ⋅ June 8, 2026")
 						.font(.caption)
 						.foregroundStyle(.secondary)
 				}
