@@ -7,6 +7,7 @@
 
 import SwiftUI
 import SwiftData
+import SafariServices
 
 struct SettingsView: View {
 	
@@ -279,6 +280,8 @@ fileprivate extension SettingsView {
 				try Cleanup.recordings(in: modelContext)
 				try Cleanup.images(in: modelContext)
 				try Cleanup.jtouvrages()
+				
+				await SFSafariViewController.DataStore.default.clearWebsiteData()
 				
 				state = .success
 				preferences.lastCleanup = Date()

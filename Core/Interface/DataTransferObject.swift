@@ -133,7 +133,6 @@ enum DataTransferObject {
 		}
 		
 		try context.save()
-		try? FileManager.default.removeItem(at: packageURL)
 	}
 	
 	static func copyAssets(from source: URL, to destination: URL) throws {
