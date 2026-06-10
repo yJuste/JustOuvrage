@@ -12,14 +12,14 @@ struct DeckSelectionView: View {
 	
 	@Binding var selectedDeck: Deck?
 	
-	@Query(sort: [SortDescriptor(\Deck.lastOpenedAt, order: .reverse), SortDescriptor(\Deck.createdAt, order: .reverse)]) private var decks: [Deck]
-	
 	@Environment(\.dismiss) private var dismiss
 	
-	@State private var searchText = ""
+	@Query(sort: [SortDescriptor(\Deck.lastOpenedAt, order: .reverse), SortDescriptor(\Deck.createdAt, order: .reverse)]) private var decks: [Deck]
 	
-	var filteredDecks: [Deck] {
-		decks.filter { searchText.isEmpty || $0.name.localizedCaseInsensitiveContains(searchText) }
+	@State private var search = ""
+	
+	private var filteredDecks: [Deck] {
+		decks.filter { search.isEmpty || $0.name.localizedCaseInsensitiveContains(search) }
 	}
 	
 	var body: some View {
@@ -55,7 +55,7 @@ struct DeckSelectionView: View {
 				}
 			}
 			.navigationTitle("Select Deck")
-			.searchable(text: $searchText, prompt: "Search a deck")
+			.searchable(text: $search, prompt: "Search a deck")
 		}
 	}
 }

@@ -41,8 +41,11 @@ struct SettingsView: View {
   • Remove duplicate cards (keeping the newest version)
   • Delete unused audio recordings
   • Remove unused images
-  • Delete exported .jtouvrage packages
-  
+  • Delete unreferenced exported .jtouvrage packages
+  • Clear in-browser cache
+
+  We recommend running this cleanup periodically to maintain optimal performance.
+
   This operation cannot be undone.
 """)
 				}
@@ -230,15 +233,17 @@ fileprivate extension SettingsView {
 	}
 	
 	private var title: String {
+		
 		switch state {
 		case .idle: return "Cleanup"
-		case .running: return "Cleaning..."
+		case .running: return "Cleaning ..."
 		case .success: return "Cleanup completed"
 		case .failure: return "Cleanup failed"
 		}
 	}
 	
 	private var icon: String {
+		
 		switch state {
 		case .idle: return "trash"
 		case .running: return "hourglass"
@@ -248,6 +253,7 @@ fileprivate extension SettingsView {
 	}
 	
 	private var color: Color {
+		
 		switch state {
 		case .idle: return .primary
 		case .running: return .blue

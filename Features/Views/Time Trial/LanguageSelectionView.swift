@@ -13,10 +13,10 @@ struct LanguageSelectionView: View {
 	
 	@Environment(\.dismiss) private var dismiss
 	
-	@State private var searchText = ""
+	@State private var search = ""
 	
 	private var filteredLanguages: [Language] {
-		Language.allCases.sorted().filter { searchText.isEmpty || $0.language.localizedCaseInsensitiveContains(searchText) }
+		Language.allCases.sorted().filter { search.isEmpty || $0.language.localizedCaseInsensitiveContains(search) }
 	}
 	
 	var body: some View {
@@ -38,7 +38,7 @@ struct LanguageSelectionView: View {
 				}
 			}
 			.navigationTitle("Languages")
-			.searchable(text: $searchText, prompt: "Search a language")
+			.searchable(text: $search, prompt: "Search a language")
 		}
 	}
 }

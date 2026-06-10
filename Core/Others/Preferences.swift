@@ -137,7 +137,7 @@ import Observation
 		trialLanguageFilterRaw = userDefaults.integer(forKey: Key.trialLanguageFilter.rawValue)
 		trialLanguagesRaw = userDefaults.stringArray(forKey: Key.trialLanguages.rawValue) ?? Language.allCases.map(\.rawValue)
 		lastCleanupRaw = userDefaults.double(forKey: Key.lastCleanup.rawValue)
-		audioQualityRaw = userDefaults.string(forKey: Key.audioQuality.rawValue) ?? AudioQuality.high.rawValue
+		audioQualityRaw = userDefaults.string(forKey: Key.audioQuality.rawValue) ?? AudioQuality.medium.rawValue
 		profileImageRaw = userDefaults.string(forKey: Key.profileImage.rawValue) ?? Constants.defaultProfileImage
 		profileNameRaw = userDefaults.string(forKey: Key.profileName.rawValue) ?? Constants.noAuthor
 		profileUUIDRaw = (UUID(uuidString: userDefaults.string(forKey: Key.profileUUID.rawValue) ?? "") ?? UUID()).uuidString
@@ -307,7 +307,7 @@ import Observation
 	}
 	
 	var audioQuality: AudioQuality {
-		get { AudioQuality(rawValue: audioQualityRaw) ?? .high }
+		get { AudioQuality(rawValue: audioQualityRaw) ?? .medium }
 		set {
 			audioQualityRaw = newValue.rawValue
 			userDefaults.set(audioQualityRaw, forKey: Key.audioQuality.rawValue)

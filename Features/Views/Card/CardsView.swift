@@ -35,10 +35,12 @@ struct CardsView: View {
 	@State private var showMetaData: Bool = false
 	@State private var showRecording: Bool = false
 	@State private var showDecksToCard: Bool = false
+	@State private var showDecksToCards: Bool = false
 	@State private var showEditCard: Bool = false
 	
 	private var filteredCards: [Card] {
 		let filtered: [Card]
+		
 		if selectedLanguages.isEmpty {
 			filtered = cards
 		} else {
@@ -57,16 +59,17 @@ struct CardsView: View {
 		}
 		return filtered.sorted { lhs, rhs in
 			for sort in sorts {
-				if let result = sort.compare(lhs, rhs) {
+				let result = sort.compare(lhs, rhs)
+				if result != .orderedSame {
 					return result == .orderedAscending
 				}
 			}
-			return false
+			return lhs.id < rhs.id
 		}
 	}
 	
 	private var dismissItems: [Binding<Bool>] {
-		[$showCard, $showEditMode, $showNewCard, $showNewDeck, $showSelectedCards, $showMetaData, $showRecording, $showDecksToCard, $showEditCard]
+		[$showCard, $showEditMode, $showNewCard, $showNewDeck, $showSelectedCards, $showMetaData, $showRecording, $showDecksToCard, $showDecksToCards, $showEditCard]
 	}
 	
 	var body: some View {
@@ -138,6 +141,9 @@ struct CardsView: View {
 				if let card = selectedCard {
 					DecksToCardView(card: card)
 				}
+			}
+			.sheet(isPresented: $showDecksToCards) {
+				DecksToCardsView(cards: selection)
 			}
 			.sheet(isPresented: $showRecording) {
 				if let card = selectedCard {
@@ -300,11 +306,20 @@ fileprivate extension CardsView {
 	@ToolbarContentBuilder private var toolbar: some ToolbarContent {
 		ToolbarItem(placement: .topBarLeading) {
 			if !selection.isEmpty {
-				Button(role: .destructive) {
-					dismissItems.showOnly($showSelectedCards)
+				Menu {
+					Button {
+						dismissItems.showOnly($showDecksToCards)
+					} label: {
+						Text("Decks To Cards")
+					}
+					Button(role: .destructive) {
+						dismissItems.showOnly($showSelectedCards)
+					} label: {
+						Text("Delete (\(selection.count))")
+							.foregroundStyle(.red)
+					}
 				} label: {
-					Text("Delete (\(selection.count))")
-						.foregroundStyle(.red)
+					Text("Tools")
 				}
 			}
 		}

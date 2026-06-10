@@ -67,7 +67,7 @@ struct SessionTimeTrialView: View {
 			if let result = sort.compare(lhs, rhs) {
 				return result == .orderedAscending
 			}
-			return false
+			return lhs.id < rhs.id
 		}
 	}
 	

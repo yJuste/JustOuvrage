@@ -4,7 +4,7 @@
     "" : {
 
     },
-    "  %@\n  \n  This action performs a full cleanup of the local database and stored files.\n  \n  It will:\n  • Remove duplicate cards (keeping the newest version)\n  • Delete unused audio recordings\n  • Remove unused images\n  • Delete exported .jtouvrage packages\n  \n  This operation cannot be undone." : {
+    "  %@\n  \n  This action performs a full cleanup of the local database and stored files.\n  \n  It will:\n  • Remove duplicate cards (keeping the newest version)\n  • Delete unused audio recordings\n  • Remove unused images\n  • Delete unreferenced exported .jtouvrage packages\n  • Clear in-browser cache\n\n  We recommend running this cleanup periodically to maintain optimal performance.\n\n  This operation cannot be undone." : {
 
     },
     "  Controls refresh speed of the trial system.\n\n  60 FPS = fastest updates, smoother behavior\n  10 FPS = slower but lighter on CPU" : {
@@ -363,6 +363,9 @@
 
     },
     "Decks" : {
+
+    },
+    "Decks To Cards" : {
 
     },
     "Delete" : {
@@ -798,6 +801,9 @@
 
     },
     "Timer" : {
+
+    },
+    "Tools" : {
 
     },
     "Transfer" : {

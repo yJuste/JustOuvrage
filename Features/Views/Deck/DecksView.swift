@@ -42,7 +42,7 @@ struct DecksView: View {
 					return result == .orderedAscending
 				}
 			}
-			return false
+			return lhs.id < rhs.id
 		}
 	}
 	

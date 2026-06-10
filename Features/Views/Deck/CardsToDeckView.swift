@@ -30,7 +30,8 @@ struct CardsToDeckView: View {
 		if search.isEmpty {
 			base = cards
 		} else {
-			base = cards.filter { $0.frontEntry.localizedCaseInsensitiveContains(search) || $0.backEntry.localizedCaseInsensitiveContains(search)
+			base = cards.filter {
+				$0.frontEntry.localizedCaseInsensitiveContains(search) || $0.backEntry.localizedCaseInsensitiveContains(search)
 			}
 		}
 		let filtered: [Card]
@@ -53,11 +54,12 @@ struct CardsToDeckView: View {
 		}
 		return filtered.sorted { lhs, rhs in
 			for sort in sorts {
-				if let result = sort.compare(lhs, rhs) {
+				let result = sort.compare(lhs, rhs)
+				if result != .orderedSame {
 					return result == .orderedAscending
 				}
 			}
-			return false
+			return lhs.id < rhs.id
 		}
 	}
 	

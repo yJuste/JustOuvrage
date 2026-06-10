@@ -1,24 +1,23 @@
 //
-//  DecksToCardView.swift
+//  DecksToCardsView.swift
 //  JustOuvrage
 //
-//  Created by Jules Longin on 5/31/26.
+//  Created by Jules Longin on 6/10/26.
 //
 
 import SwiftUI
 import SwiftData
 
-/// A view that adds Decks to a Card.
-struct DecksToCardView: View {
+struct DecksToCardsView: View {
 	
-	let card: Card
+	let cards: Set<Card>
 	
 	@Environment(\.dismiss) private var dismiss
 	
 	@Query(sort: \Deck.createdAt, order: .reverse) private var decks: [Deck]
 	
-	@State private var search: String = ""
-	@State private var selectedDecks: Set<Deck.ID> = []
+	@State private var search = ""
+	@State private var selectedDeckIDs: Set<Deck.ID> = []
 	@State private var sorts: [SortDeck] = [.newestToOldest]
 	
 	private var filteredDecks: [Deck] {
@@ -45,13 +44,9 @@ struct DecksToCardView: View {
 	var body: some View {
 		NavigationStack {
 			List(filteredDecks) { deck in
-				let id = deck.id
+				let isSelected = selectedDeckIDs.contains(deck.id)
 				Button {
-					if selectedDecks.contains(id) {
-						selectedDecks.remove(id)
-					} else {
-						selectedDecks.insert(id)
-					}
+					isSelected ? remove(deck) : add(deck)
 				} label: {
 					HStack {
 						VStack(alignment: .leading) {
@@ -60,26 +55,40 @@ struct DecksToCardView: View {
 								.foregroundStyle(.secondary)
 						}
 						Spacer()
-						if selectedDecks.contains(id) {
+						if isSelected {
 							Image(systemName: "checkmark")
 						}
 					}
 				}
 			}
-			.task {
-				selectedDecks = Set(card.decks.map(\.id))
-			}
 			.toolbar { toolbar }
 			.tint(nil)
 			.listStyle(.plain)
 			.searchable(text: $search)
+			.task {
+				selectedDeckIDs = cards.map { Set($0.decks.map(\.id)) }.reduce(decks.map(\.id).reduce(into: Set()) { $0.insert($1) }) { $0.intersection($1) }
+			}
+		}
+	}
+	
+	private func add(_ deck: Deck) {
+		selectedDeckIDs.insert(deck.id)
+		for card in cards where !card.decks.contains(where: { $0.id == deck.id }) {
+			card.decks.append(deck)
+		}
+	}
+	
+	private func remove(_ deck: Deck) {
+		selectedDeckIDs.remove(deck.id)
+		for card in cards {
+			card.decks.removeAll { $0.id == deck.id }
 		}
 	}
 }
 
-fileprivate extension DecksToCardView {
-	
-	private func toggleSort(first: SortDeck, second: SortDeck) {
+private extension DecksToCardsView {
+
+	func toggleSort(first: SortDeck, second: SortDeck) {
 		if sorts.contains(first) {
 			sorts.removeAll { $0 == first }
 			if !sorts.contains(second) {
@@ -94,22 +103,18 @@ fileprivate extension DecksToCardView {
 	}
 }
 
-/// Toolbar.
-fileprivate extension DecksToCardView {
+private extension DecksToCardsView {
 	
-	@ToolbarContentBuilder private var toolbar: some ToolbarContent {
+	@ToolbarContentBuilder var toolbar: some ToolbarContent {
 		ToolbarItem(placement: .topBarLeading) {
-			Button {
+			Button("Cancel") {
 				dismiss()
-			} label: {
-				Text("Cancel")
 			}
 		}
 		ToolbarItem(placement: .principal) {
 			VStack {
-				Text("Add To Decks")
-					.font(.headline)
-				Text("for \"\(card.frontEntry)\"")
+				Text("Add To Decks").font(.headline)
+				Text("\(cards.count) cards")
 					.font(.caption)
 					.foregroundStyle(.secondary)
 			}
@@ -139,7 +144,9 @@ fileprivate extension DecksToCardView {
 		}
 		ToolbarItem(placement: .topBarTrailing) {
 			Button {
-				card.decks = decks.filter { selectedDecks.contains($0.id) }
+				for card in cards {
+					card.decks = decks.filter { selectedDeckIDs.contains($0.id) }
+				}
 				dismiss()
 			} label: {
 				Label("Done", systemImage: "checkmark")
@@ -147,8 +154,4 @@ fileprivate extension DecksToCardView {
 			.buttonStyle(.borderedProminent)
 		}
 	}
-}
-
-#Preview {
-	DecksToCardView(card: Card(frontEntry: "Hello", backEntry: "No", frontLanguage: .fr_CA, backLanguage: .en_US, author: "yJuste"))
 }
