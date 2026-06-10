@@ -69,7 +69,7 @@ struct DeckView: View {
 	}
 	
 	private var dismissItems: [Binding<Bool>] {
-		[$showCard, $showCardsToDeck, $showEditDeck, $showDepiction, $showMetaDataCard, $showMetaData, $showTimeTrial, $showRecording, $showDecksToCard, $showEditCard, $showExporting, $showEditMode]
+		[$showCard, $showCardsToDeck, $showEditDeck, $showDepiction, $showMetaDataCard, $showMetaData, $showTimeTrial, $showRecording, $showDecksToCard, $showEditCard, $showExporting, $showEditMode, $showRemoveCards]
 	}
 	
 	var body: some View {
@@ -217,7 +217,6 @@ struct DeckView: View {
 									separator
 								}
 								.animation(.easeInOut(duration: 0.15), value: editMode)
-								.environment(\.editMode, $editMode)
 								.sheet(isPresented: $showCard) {
 									if let card = selectedCard {
 										CardView(card: card)
@@ -275,6 +274,7 @@ struct DeckView: View {
 									Text("Are you sure you want to remove the selection from this deck?")
 								}
 							}
+							.environment(\.editMode, $editMode)
 							Section { /// ``metadata``
 								VStack(alignment: .leading) {
 									Text(deck.createdAt, format: .dateTime.year().month().day())
@@ -512,16 +512,14 @@ fileprivate extension DeckView {
 			}
 			.tint(nil)
 		}
-		ToolbarSpacer(placement: .topBarLeading)
 		ToolbarItem(placement: .topBarLeading) {
 			if !selection.isEmpty {
 				Button(role: .destructive) {
-					showRemoveCards.toggle()
+					dismissItems.showOnly($showRemoveCards)
 				} label: {
 					Text("Remove (\(selection.count))")
 						.foregroundStyle(.red)
 				}
-				.tint(nil)
 			}
 		}
 		ToolbarItem(placement: .topBarTrailing) {
