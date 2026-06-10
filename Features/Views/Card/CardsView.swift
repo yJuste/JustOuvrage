@@ -69,7 +69,7 @@ struct CardsView: View {
 	}
 	
 	private var dismissItems: [Binding<Bool>] {
-		[$showCard, $showEditMode, $showNewCard, $showNewDeck, $showSelectedCards, $showMetaData, $showRecording, $showDecksToCard, $showDecksToCards, $showEditCard]
+		[$showCard, $showEditMode, $showNewCard, $showNewDeck, $showMetaData, $showRecording, $showDecksToCard, $showDecksToCards, $showEditCard]
 	}
 	
 	var body: some View {
@@ -310,16 +310,32 @@ fileprivate extension CardsView {
 					Button {
 						dismissItems.showOnly($showDecksToCards)
 					} label: {
-						Text("Decks To Cards")
+						Text("Add to Decks")
 					}
-					Button(role: .destructive) {
-						dismissItems.showOnly($showSelectedCards)
+					Button {
+						for card in selection {
+							let newCard = Card(frontEntry: card.frontEntry, backEntry: card.backEntry, frontLanguage: card.frontLanguage, backLanguage: card.backLanguage, author: card.author)
+							newCard.decks = card.decks
+							newCard.frontRecording = card.frontRecording
+							newCard.backRecording = card.backRecording
+							newCard.leitnerScore = card.leitnerScore
+							newCard.nextLeitnerAt = card.nextLeitnerAt
+							modelContext.insert(newCard)
+						}
+						editMode = .inactive
 					} label: {
-						Text("Delete (\(selection.count))")
-							.foregroundStyle(.red)
+						Text("Duplicate")
+					}
+					Section {
+						Button(role: .destructive) {
+							showSelectedCards.toggle()
+						} label: {
+							Text("Delete from Library")
+								.foregroundStyle(.red)
+						}
 					}
 				} label: {
-					Text("Tools")
+					Text("Tools (\(selection.count))")
 				}
 			}
 		}

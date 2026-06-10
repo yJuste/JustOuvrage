@@ -27,9 +27,12 @@ struct DeckView: View {
 	@Bindable private var preferences: Preferences = .unique
 	@State private var globalColor: Color = Preferences.unique.globalColor.color
 	@State private var selectedCard: Card?
+	@State private var selection: Set<UUID> = []
+	@State private var editMode: EditMode = .inactive
 	@State private var argument: Argument?
 	@State private var colors: [Color]?
 	@State private var exportURL: URL?
+	@State private var showEditMode: Bool = false
 	@State private var isDownloaded = false
 	@State private var showCard: Bool = false
 	@State private var showDepiction: Bool = false
@@ -47,6 +50,7 @@ struct DeckView: View {
 	@State private var showEditCard: Bool = false
 	@State private var showAddedBanner: Bool = false
 	@State private var showExporting: Bool = false
+	@State private var showRemoveCards: Bool = false
 	@State private var showGradientBackground: Bool = Preferences.unique.gradientBackground
 	@State private var showAnimationBackground: Bool = Preferences.unique.animationBackground
 	
@@ -60,8 +64,12 @@ struct DeckView: View {
 		return trials.reduce(0) { $0 + $1.success } / Double(trials.count)
 	}
 	
+	private var languages: String {
+		Set(deck.cards.flatMap { [$0.frontLanguage, $0.backLanguage] }).sorted { $0.language < $1.language }.map(\.language).joined(separator: " ⋅ ")
+	}
+	
 	private var dismissItems: [Binding<Bool>] {
-		[$showCard, $showCardsToDeck, $showEditDeck, $showDepiction, $showMetaDataCard, $showMetaData, $showTimeTrial, $showRecording, $showDecksToCard, $showEditCard, $showExporting]
+		[$showCard, $showCardsToDeck, $showEditDeck, $showDepiction, $showMetaDataCard, $showMetaData, $showTimeTrial, $showRecording, $showDecksToCard, $showEditCard, $showExporting, $showEditMode]
 	}
 	
 	var body: some View {
@@ -155,11 +163,28 @@ struct DeckView: View {
 							separator
 							LazyVStack(alignment: .leading) {
 								ForEach(Array(cardsFromDeck.enumerated()), id: \.element.id) { index, card in
+									let id = card.id
+									let isSelected = selection.contains(id)
 									Button {
-										selectedCard = card
-										dismissItems.showOnly($showCard)
+										if editMode == .active {
+											withAnimation(.easeInOut(duration: 0.2)) {
+												if isSelected {
+													selection.remove(id)
+												} else {
+													selection.insert(id)
+												}
+											}
+										} else {
+											selectedCard = card
+											dismissItems.showOnly($showCard)
+										}
 									} label: {
 										HStack(spacing: 10) {
+											if editMode == .active {
+												Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
+													.font(.title3)
+													.foregroundStyle(isSelected ? Color.accentColor : .secondary)
+											}
 											Text(index + 1, format: .number)
 												.font(.callout)
 												.foregroundStyle(.secondary)
@@ -191,6 +216,8 @@ struct DeckView: View {
 									.tint(nil)
 									separator
 								}
+								.animation(.easeInOut(duration: 0.15), value: editMode)
+								.environment(\.editMode, $editMode)
 								.sheet(isPresented: $showCard) {
 									if let card = selectedCard {
 										CardView(card: card)
@@ -237,6 +264,16 @@ struct DeckView: View {
 									}
 									Button("Cancel", role: .cancel) { }
 								}
+								.alert("Remove cards?", isPresented: $showRemoveCards) {
+									Button("Remove from Deck") {
+										deck.cards.removeAll { selection.contains($0.id) }
+										selection.removeAll()
+										toggleEditMode()
+									}
+									Button("Cancel", role: .cancel) { }
+								} message: {
+									Text("Are you sure you want to remove the selection from this deck?")
+								}
 							}
 							Section { /// ``metadata``
 								VStack(alignment: .leading) {
@@ -244,7 +281,7 @@ struct DeckView: View {
 									Text("\(deck.cards.count) cards")
 									Text(deck.author)
 									Text("Success \(averageSuccess.formatted(.percent.precision(.fractionLength(1))))")
-									Text(Set(deck.cards.flatMap {[$0.frontLanguage, $0.backLanguage]}).sorted { $0.language < $1.language }.map { $0.language }.joined(separator: " ⋅ "))
+									Text(languages)
 										.font(.caption)
 								}
 								.foregroundStyle(.secondary)
@@ -409,6 +446,21 @@ fileprivate extension DeckView {
 		}
 	}
 	
+	private func toggleEditMode() {
+		guard !showEditMode else { return }
+		dismissItems.toggleOnly($showEditMode)
+		if editMode == .active {
+			editMode = .inactive
+			selection.removeAll()
+		} else {
+			editMode = .active
+		}
+		Task {
+			try? await Task.sleep(for: .milliseconds(250))
+			dismissItems.toggleOnly($showEditMode)
+		}
+	}
+	
 	private func download(_ deck: Deck) {
 		do {
 			Task { await showAdded() }
@@ -460,6 +512,31 @@ fileprivate extension DeckView {
 			}
 			.tint(nil)
 		}
+		ToolbarSpacer(placement: .topBarLeading)
+		ToolbarItem(placement: .topBarLeading) {
+			if !selection.isEmpty {
+				Button(role: .destructive) {
+					showRemoveCards.toggle()
+				} label: {
+					Text("Remove (\(selection.count))")
+						.foregroundStyle(.red)
+				}
+				.tint(nil)
+			}
+		}
+		ToolbarItem(placement: .topBarTrailing) {
+			Button {
+				toggleEditMode()
+			} label: {
+				if editMode.isEditing {
+					Text("Cancel")
+				} else {
+					Text("Select")
+				}
+			}
+			.tint(nil)
+		}
+		ToolbarSpacer(placement: .topBarTrailing)
 		ToolbarItem(placement: .topBarTrailing) {
 			Menu {
 				Button {

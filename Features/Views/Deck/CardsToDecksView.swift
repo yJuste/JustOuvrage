@@ -1,18 +1,16 @@
 //
-//  CardsToDeckView.swift
+//  CardsToDecksView.swift
 //  JustOuvrage
 //
-//  Created by Jules Longin on 5/31/26.
+//  Created by Jules Longin on 6/10/26.
 //
 
 import SwiftUI
 import SwiftData
 
-/// A view that adds Cards to a Deck.
-/// External Dependencies: Card, Deck
-struct CardsToDeckView: View {
+struct CardsToDecksView: View {
 	
-	let deck: Deck
+	let decks: Set<Deck>
 	
 	@Environment(\.dismiss) private var dismiss
 	
@@ -67,8 +65,9 @@ struct CardsToDeckView: View {
 		NavigationStack {
 			List(filteredCards) { card in
 				let id = card.id
+				let isSelected = selectedCards.contains(id)
 				Button {
-					if selectedCards.contains(id) {
+					if isSelected {
 						selectedCards.remove(id)
 					} else {
 						selectedCards.insert(id)
@@ -81,14 +80,14 @@ struct CardsToDeckView: View {
 								.foregroundStyle(.secondary)
 						}
 						Spacer()
-						if selectedCards.contains(id) {
+						if isSelected {
 							Image(systemName: "checkmark")
 						}
 					}
 				}
 			}
 			.task {
-				selectedCards = Set(deck.cards.map(\.id))
+				selectedCards = Set(cards.filter { card in Set(decks.map(\.id)).isSubset(of: Set(card.decks.map(\.id))) }.map(\.id))
 			}
 			.toolbar { toolbar }
 			.tint(nil)
@@ -98,8 +97,7 @@ struct CardsToDeckView: View {
 	}
 }
 
-/// Methods of CardsToDeckView.
-fileprivate extension CardsToDeckView {
+fileprivate extension CardsToDecksView {
 	
 	private func toggleSort(first: SortCard, second: SortCard) {
 		if sorts.contains(first) {
@@ -116,10 +114,9 @@ fileprivate extension CardsToDeckView {
 	}
 }
 
-/// Toolbar.
-fileprivate extension CardsToDeckView {
+fileprivate extension CardsToDecksView {
 	
-	@ToolbarContentBuilder private var toolbar: some ToolbarContent {
+	@ToolbarContentBuilder var toolbar: some ToolbarContent {
 		ToolbarItem(placement: .topBarLeading) {
 			Button {
 				dismiss()
@@ -131,7 +128,7 @@ fileprivate extension CardsToDeckView {
 			VStack {
 				Text("Add Cards")
 					.font(.headline)
-				Text("for \"\(deck.name)\"")
+				Text("for \"\(decks.first?.name ?? "")\"")
 					.font(.caption)
 					.foregroundStyle(.secondary)
 			}
@@ -146,7 +143,6 @@ fileprivate extension CardsToDeckView {
 						Label("Date", systemImage: contain ? "text.line.first.and.arrowtriangle.forward" : "text.line.last.and.arrowtriangle.forward")
 						Text(contain ? "Newest to Oldest" : "Oldest to Newest")
 					}
-					
 					Button {
 						toggleSort(first: .alphabeticalAscending, second: .alphabeticalDescending)
 					} label: {
@@ -189,7 +185,9 @@ fileprivate extension CardsToDeckView {
 		}
 		ToolbarItem(placement: .topBarTrailing) {
 			Button {
-				deck.cards = cards.filter { selectedCards.contains($0.id) }
+				for deck in decks {
+					deck.cards = cards.filter { selectedCards.contains($0.id) }
+				}
 				dismiss()
 			} label: {
 				Label("Done", systemImage: "checkmark")
@@ -197,8 +195,4 @@ fileprivate extension CardsToDeckView {
 			.buttonStyle(.borderedProminent)
 		}
 	}
-}
-
-#Preview {
-	CardsToDeckView(deck: Deck(name: "LOL Taylor", image: "deck", author: "yJuste"))
 }

@@ -176,6 +176,9 @@
     "Add to decks" : {
 
     },
+    "Add to Decks" : {
+
+    },
     "Add To Decks" : {
 
     },
@@ -228,6 +231,9 @@
 
     },
     "Are you sure you want to discard this new deck?" : {
+
+    },
+    "Are you sure you want to remove the selection from this deck?" : {
 
     },
     "Are you sure you want to remove this card from this deck?" : {
@@ -363,9 +369,6 @@
 
     },
     "Decks" : {
-
-    },
-    "Decks To Cards" : {
 
     },
     "Delete" : {
@@ -695,6 +698,12 @@
     "Remove" : {
 
     },
+    "Remove (%lld)" : {
+
+    },
+    "Remove cards?" : {
+
+    },
     "Remove from Deck" : {
 
     },
@@ -803,7 +812,7 @@
     "Timer" : {
 
     },
-    "Tools" : {
+    "Tools (%lld)" : {
 
     },
     "Transfer" : {
@@ -818,7 +827,7 @@
     "Use Photo" : {
 
     },
-    "Version 0.9.16 ⋅ June 8, 2026" : {
+    "Version 0.9.17 ⋅ June 8, 2026" : {
 
     },
     "View Metadata" : {

@@ -34,6 +34,7 @@ struct DecksView: View {
 	@State private var showMetaData: Bool = false
 	@State private var showEditDeck: Bool = false
 	@State private var showCardsToDeck: Bool = false
+	@State private var showCardsToDecks: Bool = false
 	
 	private var filteredDecks: [Deck] {
 		decks.sorted { lhs, rhs in
@@ -47,7 +48,7 @@ struct DecksView: View {
 	}
 	
 	private var dismissItems: [Binding<Bool>] {
-		[$showDeck, $showEditMode, $showNewCard, $showNewDeck, $showMetaData, $showEditDeck, $showCardsToDeck]
+		[$showDeck, $showEditMode, $showNewCard, $showNewDeck, $showMetaData, $showEditDeck, $showCardsToDeck, $showCardsToDecks]
 	}
 	
 	var body: some View {
@@ -150,6 +151,9 @@ struct DecksView: View {
 				if let deck = selectedDeck {
 					CardsToDeckView(deck: deck)
 				}
+			}
+			.sheet(isPresented: $showCardsToDecks) {
+				CardsToDecksView(decks: selection)
 			}
 			.sheet(isPresented: $showNewCard) {
 				NewCardView()
@@ -280,11 +284,33 @@ fileprivate extension DecksView {
 	@ToolbarContentBuilder private var toolbar: some ToolbarContent {
 		ToolbarItem(placement: .topBarLeading) {
 			if !selection.isEmpty {
-				Button(role: .destructive) {
-					showSelectedDecks.toggle()
+				Menu {
+					Button {
+						dismissItems.showOnly($showCardsToDecks)
+					} label: {
+						Text("Add Cards")
+					}
+					Button {
+						for deck in selection {
+							let newDeck = Deck(name: deck.name, image: deck.image, author: deck.author)
+							newDeck.cards = deck.cards
+							newDeck.depiction = deck.depiction
+							modelContext.insert(newDeck)
+						}
+						editMode = .inactive
+					} label: {
+						Text("Duplicate")
+					}
+					Section {
+						Button(role: .destructive) {
+							dismissItems.showOnly($showSelectedDecks)
+						} label: {
+							Text("Delete from Library")
+								.foregroundStyle(.red)
+						}
+					}
 				} label: {
-					Text("Delete (\(selection.count))")
-						.foregroundStyle(.red)
+					Text("Tools (\(selection.count))")
 				}
 			}
 		}
