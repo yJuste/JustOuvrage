@@ -240,6 +240,13 @@ fileprivate extension CardsView {
 		} label: {
 			Label("Duplicate", systemImage: "rectangle.portrait.on.rectangle.portrait.angled")
 		}
+		Button {
+			(card.frontEntry, card.backEntry) = (card.backEntry, card.frontEntry)
+			(card.frontLanguage, card.backLanguage) = (card.backLanguage, card.frontLanguage)
+			(card.frontRecording, card.backRecording) = (card.backRecording, card.frontRecording)
+		} label: {
+			Label("Invert", systemImage: "circle.righthalf.filled.inverse")
+		}
 		Section {
 			Button {
 				selectedCard = card
@@ -325,6 +332,16 @@ fileprivate extension CardsView {
 						editMode = .inactive
 					} label: {
 						Text("Duplicate")
+					}
+					Button {
+						for card in selection {
+							(card.frontEntry, card.backEntry) = (card.backEntry, card.frontEntry)
+							(card.frontLanguage, card.backLanguage) = (card.backLanguage, card.frontLanguage)
+							(card.frontRecording, card.backRecording) = (card.backRecording, card.frontRecording)
+						}
+						editMode = .inactive
+					} label: {
+						Text("Invert")
 					}
 					Section {
 						Button(role: .destructive) {

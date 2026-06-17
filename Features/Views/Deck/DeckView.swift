@@ -179,7 +179,7 @@ struct DeckView: View {
 											dismissItems.showOnly($showCard)
 										}
 									} label: {
-										HStack(spacing: 10) {
+										HStack {
 											if editMode == .active {
 												Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
 													.font(.title3)
@@ -259,7 +259,9 @@ struct DeckView: View {
 								}
 								.alert("Are you sure you want to remove this card from this deck?", isPresented: $showDeleteCard) {
 									Button("Remove", role: .destructive) {
-										removeTheCard()
+										if let card = selectedCard {
+											deck.cards.removeAll { $0.id == card.id }
+										}
 									}
 									Button("Cancel", role: .cancel) { }
 								}
@@ -418,6 +420,13 @@ fileprivate extension DeckView {
 		} label: {
 			Label("Duplicate", systemImage: "rectangle.portrait.on.rectangle.portrait.angled")
 		}
+		Button {
+			(card.frontEntry, card.backEntry) = (card.backEntry, card.frontEntry)
+			(card.frontLanguage, card.backLanguage) = (card.backLanguage, card.frontLanguage)
+			(card.frontRecording, card.backRecording) = (card.backRecording, card.frontRecording)
+		} label: {
+			Label("Invert", systemImage: "circle.righthalf.filled.inverse")
+		}
 		Section {
 			Button {
 				selectedCard = card
@@ -472,12 +481,6 @@ fileprivate extension DeckView {
 		}
 	}
 	
-	private func removeTheCard() {
-		if let card = selectedCard {
-			deck.cards.removeAll { $0.id == card.id }
-		}
-	}
-	
 	private func loadImageForBackground() {
 		if let uiImage = try? storage.load(image: deck.image, size: 512) {
 			if showGradientBackground {
@@ -512,17 +515,51 @@ fileprivate extension DeckView {
 			}
 			.tint(nil)
 		}
+		ToolbarSpacer(placement: .topBarLeading)
 		ToolbarItem(placement: .topBarLeading) {
 			if !selection.isEmpty {
-				Button(role: .destructive) {
-					dismissItems.showOnly($showRemoveCards)
+				Menu {
+					Button {
+						for card in deck.cards.filter({ card in selection.contains(card.id) }) {
+							let newCard = Card(frontEntry: card.frontEntry, backEntry: card.backEntry, frontLanguage: card.frontLanguage, backLanguage: card.backLanguage, author: card.author)
+							newCard.decks = card.decks
+							newCard.frontRecording = card.frontRecording
+							newCard.backRecording = card.backRecording
+							newCard.leitnerScore = card.leitnerScore
+							newCard.nextLeitnerAt = card.nextLeitnerAt
+							modelContext.insert(newCard)
+						}
+						selection.removeAll()
+						toggleEditMode()
+					} label: {
+						Text("Duplicate")
+					}
+					Button {
+						for card in deck.cards.filter({ card in selection.contains(card.id) }) {
+							(card.frontEntry, card.backEntry) = (card.backEntry, card.frontEntry)
+							(card.frontLanguage, card.backLanguage) = (card.backLanguage, card.frontLanguage)
+							(card.frontRecording, card.backRecording) = (card.backRecording, card.frontRecording)
+						}
+						selection.removeAll()
+						toggleEditMode()
+					} label: {
+						Text("Invert")
+					}
+					Section {
+						Button(role: .destructive) {
+							dismissItems.showOnly($showRemoveCards)
+						} label: {
+							Text("Remove from Deck")
+								.foregroundStyle(.red)
+						}
+					}
 				} label: {
-					Text("Remove (\(selection.count))")
-						.foregroundStyle(.red)
+					Text("Tools (\(selection.count))")
 				}
+				.tint(nil)
 			}
 		}
-		ToolbarItem(placement: .topBarTrailing) {
+		ToolbarItemGroup(placement: .topBarTrailing) {
 			Button {
 				toggleEditMode()
 			} label: {
@@ -533,9 +570,6 @@ fileprivate extension DeckView {
 				}
 			}
 			.tint(nil)
-		}
-		ToolbarSpacer(placement: .topBarTrailing)
-		ToolbarItem(placement: .topBarTrailing) {
 			Menu {
 				Button {
 					dismissItems.showOnly($showEditDeck)

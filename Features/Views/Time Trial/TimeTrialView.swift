@@ -136,18 +136,18 @@ struct TimeTrialView: View {
 			.onChange(of: currentIndex) {
 				playCurrentCardAudio()
 			}
-			.onAppear {
-				loadImageForBackground()
+			.onChange(of: isCardTapped) {
+				playCurrentCardAudio()
 			}
 			.onAppear {
 				loadImageForBackground()
 				playCurrentCardAudio()
 			}
+			.toolbar { toolbar }
+			.toolbar(.hidden, for: .tabBar)
 			.navigationDestination(item: $timeTrial) { trial in
 				TimeTrialResultView(timeTrial: trial)
 			}
-			.toolbar { toolbar }
-			.toolbar(.hidden, for: .tabBar)
 			.alert("Quit Time Trial ?", isPresented: $showPause) {
 				Button("Continue", role: .cancel) { }
 				Button("Quit", role: .destructive) {
@@ -162,7 +162,7 @@ struct TimeTrialView: View {
 	private func flashcard(card: Card, height: CGFloat, width: CGFloat, isPortrait: Bool) -> some View {
 		let dragheight = dragOffset.height
 		let dragwidth = dragOffset.width
-		let entry = sideEntries(for: card)
+		let entry = (argument.reversedCards[card.id] ?? false) ? (front: card.backEntry, back: card.frontEntry) : (front: card.frontEntry, back: card.backEntry)
 		return ZStack {
 			rectangle
 				.fill(.clear)
@@ -230,9 +230,18 @@ fileprivate extension TimeTrialView {
 	
 	private func swipe(_ direction: SwipeDirection) {
 		
+		guard let card = currentCard else { return }
+		
 		withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
 			dragOffset.width = direction == .right ? 900 : -900
 			rotation = direction == .right ? 14 : -14
+		}
+		
+		if showLeitner {
+			switch direction {
+			case .right: Leitner.update(for: card, score: card.leitnerScore + 1)
+			case .left: Leitner.update(for: card, score: 1)
+			}
 		}
 		
 		directions.append(direction)
@@ -243,17 +252,7 @@ fileprivate extension TimeTrialView {
 		hasTimerReachedZero = false
 		remainingTime = argument.timeInterval
 		
-		let cards = argument.cards
-		if currentIndex >= cards.count {
-			if showLeitner {
-				for (index, card) in cards.enumerated() {
-					if directions[index] == .right {
-						Leitner.update(for: card, score: card.leitnerScore + 1)
-					} else {
-						Leitner.update(for: card, score: 1)
-					}
-				}
-			}
+		if currentIndex >= argument.cards.count {
 			argument.directions = directions
 			let result = TimeTrial(argument: argument, with: calculateSuccesRate(directions))
 			modelContext.insert(result)
@@ -278,29 +277,9 @@ fileprivate extension TimeTrialView {
 		return Double(directions.filter { $0 == .right }.count) / Double(directions.count)
 	}
 	
-	private func sideReversed(for card: Card) -> Bool {
-		argument.reversedCards[card.id] ?? false
-	}
-	
-	private func sideEntries(for card: Card) -> (front: String, back: String) {
-		
-		if sideReversed(for: card) {
-			return (front: card.backEntry, back: card.frontEntry)
-		}
-		return (front: card.frontEntry, back: card.backEntry)
-	}
-	
 	private func playCurrentCardAudio() {
-		
 		guard let card = currentCard else { return }
-		let filename: String?
-		
-		if sideReversed(for: card) {
-			filename = card.backRecording
-		} else {
-			filename = card.frontRecording
-		}
-		recording.play(filename)
+		recording.play((argument.reversedCards[card.id] ?? false) != isCardTapped ? card.backRecording : card.frontRecording)
 	}
 }
 

@@ -112,7 +112,7 @@ enum Achievements: Identifiable, CaseIterable {
 			
 		case .flagger: return "Quantity over quality"
 		case .cleanup: return "I did my job"
-		case .smileysEverywhere: return "They are everywhere -> 😳"
+		case .smileysEverywhere: return "The smileys took over. I've lost the words."
 		}
 	}
 	
@@ -191,7 +191,12 @@ enum Achievements: Identifiable, CaseIterable {
 			
 		case .flagger: return Language.allCases.allSatisfy { Set(context.cards.flatMap { [$0.frontLanguage, $0.backLanguage] }).contains($0) } ? 1.0 : 0.0
 		case .cleanup: return context.cleanupDate != nil ? 1.0 : 0.0
-		case .smileysEverywhere: return isEmojiOnly(context.profileName) && context.decks.allSatisfy { isEmojiOnly($0.name) } && context.cards.allSatisfy { isEmojiOnly($0.frontEntry) && isEmojiOnly($0.backEntry) } ? 1.0 : 0.0
+		case .smileysEverywhere:
+			return context.decks.filter { deck in
+				guard deck.name.contains(where: \.isEmoji) else { return false }
+				guard deck.depiction.contains(where: \.isEmoji) else { return false }
+				return deck.cards.filter { $0.frontEntry.contains(where: \.isEmoji) || $0.backEntry.contains(where: \.isEmoji) }.count >= 10
+			}.isEmpty ? 0.0 : 1.0
 		}
 	}
 	

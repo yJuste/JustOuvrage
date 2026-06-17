@@ -87,7 +87,6 @@ extension Argument {
 		if numberOfCards > 0 { res = Array(res.prefix(numberOfCards)) }
 		
 		let reversedCards: [UUID: Bool] = Dictionary(uniqueKeysWithValues: res.map { card in
-			
 			let reversed: Bool
 			switch newSide {
 			case .front: reversed = false

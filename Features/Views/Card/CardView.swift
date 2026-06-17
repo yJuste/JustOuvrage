@@ -239,6 +239,15 @@ fileprivate extension CardView {
 					}
 				}
 				Button {
+					withAnimation(.spring(response: 0.3)) {
+						(card.frontEntry, card.backEntry) = (card.backEntry, card.frontEntry)
+						(card.frontLanguage, card.backLanguage) = (card.backLanguage, card.frontLanguage)
+						(card.frontRecording, card.backRecording) = (card.backRecording, card.frontRecording)
+					}
+				} label: {
+					Label("Invert", systemImage: "circle.righthalf.filled.inverse")
+				}
+				Button {
 					let newCard = Card(frontEntry: card.frontEntry, backEntry: card.backEntry, frontLanguage: card.frontLanguage, backLanguage: card.backLanguage, author: card.author)
 					newCard.decks = card.decks
 					newCard.frontRecording = card.frontRecording

@@ -25,6 +25,7 @@ struct SessionAchievementsView: View {
 	@State private var selectedAchievement: Achievements?
 	@State private var showDepiction: Bool = false
 	@State private var showAchievement: Bool = false
+	@State private var showAchievementAllDone: Bool = false
 	
 	private let session: AchievementsSession = Session.unique.achievements
 	
@@ -78,6 +79,9 @@ struct SessionAchievementsView: View {
 				.onScrollGeometryChange(for: CGFloat.self, of: { $0.contentOffset.y + $0.contentInsets.top }, action: { _, newValue in verticalOffset = -newValue })
 			}
 			.toolbar { toolbar }
+			.alert("🏆 100% Finished", isPresented: $showAchievementAllDone) {
+				Button("Nice", role: .cancel) { }
+			}
 		}
 	}
 }
