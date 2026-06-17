@@ -112,7 +112,7 @@ enum Achievements: Identifiable, CaseIterable {
 			
 		case .flagger: return "Quantity over quality"
 		case .cleanup: return "I did my job"
-		case .smileysEverywhere: return "The smileys took over. I've lost the words."
+		case .smileysEverywhere: return "😂🐞📖🏁🥳"
 		}
 	}
 	
@@ -149,7 +149,7 @@ enum Achievements: Identifiable, CaseIterable {
 			
 		case .flagger: return "One thing at a time. Don't you think ?"
 		case .cleanup: return "Keep up maintaining your system."
-		case .smileysEverywhere: return "😂🐞📖🏁🥳"
+		case .smileysEverywhere: return "The smileys took over. I've lost the words."
 		}
 	}
 	

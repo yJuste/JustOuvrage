@@ -31,7 +31,7 @@ struct SessionAchievementsView: View {
 	
 	var body: some View {
 		NavigationStack {
-			let context = AchievementContext(cards: cards, decks: decks, timeTrials: timeTrials, cleanupDate: preferences.lastCleanup, profileName: preferences.profileName)
+			let context = AchievementContext(cards: cards, decks: decks, timeTrials: timeTrials, cleanupDate: preferences.lastCleanup)
 			GeometryReader { geo in
 				
 				let width = geo.size.width

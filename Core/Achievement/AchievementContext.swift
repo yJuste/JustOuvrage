@@ -13,5 +13,4 @@ struct AchievementContext {
 	let decks: [Deck]
 	let timeTrials: [TimeTrial]
 	let cleanupDate: Date?
-	let profileName: String
 }
