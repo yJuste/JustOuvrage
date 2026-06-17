@@ -103,10 +103,7 @@ fileprivate extension DraftView {
 	private func cleanWords(expression: String) -> [String] {
 		return expression
 			.components(separatedBy: ",")
-			.map {
-				$0.unicodeScalars.filter { !($0.properties.isEmoji && $0.properties.isEmojiPresentation) }.map { String($0) }.joined()
-					.trimmingCharacters(in: .whitespacesAndNewlines)
-			}
+			.map { $0.unicodeScalars.filter { !($0.properties.isEmoji && $0.properties.isEmojiPresentation) }.map { String($0) }.joined().trimmingCharacters(in: .whitespacesAndNewlines) }
 			.filter { !$0.isEmpty }
 	}
 	

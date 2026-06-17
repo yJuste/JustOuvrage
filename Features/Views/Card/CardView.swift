@@ -37,11 +37,11 @@ struct CardView: View {
 	@State private var showGradientBackground: Bool = Preferences.unique.gradientBackground
 	
 	private var cleanFrontEntry: [String] {
-		cleanWords(expression: card.frontEntry)
+		cleanExpression(expression: card.frontEntry)
 	}
 	
 	private var cleanBackEntry: [String] {
-		cleanWords(expression: card.backEntry)
+		cleanExpression(expression: card.backEntry)
 	}
 	
 	private var dismissItems: [Binding<Bool>] {
@@ -203,19 +203,19 @@ fileprivate extension CardView {
 /// Methods of CardView.
 fileprivate extension CardView {
 	
-	private func cleanWords(expression: String) -> [String] {
-		return expression
-			.components(separatedBy: ",")
-			.map {
-				return removeDelimiters(from: $0, delimiters: [.parentheses, .brackets])
-					.unicodeScalars
-					.filter { !($0.properties.isEmoji && $0.properties.isEmojiPresentation) }
-					.map { String($0) }
-					.joined()
-					.trimmingCharacters(in: .whitespacesAndNewlines)
-			}
-			.filter { !$0.isEmpty }
-	}
+//	private func cleanWords(expression: String) -> [String] {
+//		return expression
+//			.components(separatedBy: ",")
+//			.map {
+//				return removeDelimiters(from: $0, delimiters: [.parentheses, .brackets])
+//					.unicodeScalars
+//					.filter { !($0.properties.isEmoji && $0.properties.isEmojiPresentation) }
+//					.map { String($0) }
+//					.joined()
+//					.trimmingCharacters(in: .whitespacesAndNewlines)
+//			}
+//			.filter { !$0.isEmpty }
+//	}
 }
 
 /// Toolbar.
