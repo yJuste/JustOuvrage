@@ -31,16 +31,23 @@ struct AchievementView: View {
 				Text(pourcentage, format: .percent.precision(.fractionLength(0...2)))
 					.font(.caption)
 					.foregroundStyle(.secondary)
-				Button {
-					action()
-				} label: {
-					Image(systemName: "trophy")
-						.font(.title)
-						.foregroundStyle(Color.black)
-						.padding(12)
-						.background(Circle().glassEffect(.clear.tint(achievement.isUnlocked(pourcentage: pourcentage) ? .yellow : .clear).interactive()))
+				ZStack(alignment: .bottom) {
+					Button {
+						action()
+					} label: {
+						Image(systemName: "trophy")
+							.font(.title)
+							.foregroundStyle(Color.black)
+							.padding(12)
+							.background(Circle().glassEffect(.clear.tint(achievement.isUnlocked(pourcentage: pourcentage) ? .yellow : .clear).interactive()))
+					}
+					.buttonStyle(.plain)
+					if achievement.isUnlocked(pourcentage: pourcentage) {
+						Image(systemName: "circle.fill")
+							.font(.caption2)
+							.offset(y: 5)
+					}
 				}
-				.buttonStyle(.plain)
 			}
 		}
 		.padding()

@@ -48,11 +48,11 @@ struct DraftView: View {
 						WordsLinkingToSite(title: "Google", item: cleanEntry) { entry in
 							globalBrowser ? destination = site.google.link(for: entry, in: selectedLanguage) : openURL(site.google.link(for: entry, in: selectedLanguage))
 						}
-						WordsLinkingToSite(title: "Forvo", item: cleanEntry) { entry in
-							globalBrowser ? destination = site.forvo.link(for: entry, in: (selectedLanguage, preferences.backLanguage)) : openURL(site.forvo.link(for: entry, in: selectedLanguage))
-						}
 						WordsLinkingToSite(title: "WordReference", item: cleanEntry) { entry in
 							globalBrowser ? destination = site.wordReference.link(for: entry, in: selectedLanguage) : openURL(site.wordReference.link(for: entry, in: (selectedLanguage, preferences.backLanguage)))
+						}
+						WordsLinkingToSite(title: "Forvo", item: cleanEntry) { entry in
+							globalBrowser ? destination = site.forvo.link(for: entry, in: (selectedLanguage, preferences.backLanguage)) : openURL(site.forvo.link(for: entry, in: selectedLanguage))
 						}
 					} /// ``Entry``
 					Section {

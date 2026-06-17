@@ -21,6 +21,12 @@ enum Leitner {
 		}
 	}
 	
+	static func due(card: Card) -> Bool {
+		guard card.leitnerScore < maximumScore else { return false }
+		guard let nextLeitnerAt = card.nextLeitnerAt else { return true }
+		return Date.now >= nextLeitnerAt
+	}
+	
 	static func next(from cards: [Card]) -> String {
 		
 		let activeCards = cards.filter { $0.leitnerScore < maximumScore }

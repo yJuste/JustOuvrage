@@ -34,22 +34,8 @@ struct SessionLeitnerView: View {
 	
 	private let session: LeitnerSession = Session.unique.leitner
 	
-	private var pendingCards: [Card] {
-		
-		let due = Leitner.due(from: cards)
-		if selectedBoxes.isEmpty { return due }
-		return due.filter { selectedBoxes.contains($0.leitnerScore) }
-	}
-	
 	private var filteredCards: [Card] {
-		
-		let filtered: [Card]
-		if selectedBoxes.isEmpty {
-			filtered = cards
-		} else {
-			filtered = cards.filter { selectedBoxes.contains($0.leitnerScore) }
-		}
-		return filtered.filter { card in !pendingCards.contains(where: { $0.id == card.id }) }
+		return selectedBoxes.isEmpty ? cards : cards.filter { selectedBoxes.contains($0.leitnerScore) }.map { card in SortedCard(card: card, id: card.id, isDue: Leitner.due(card: card), leitnerScore: card.leitnerScore, createdAt: card.createdAt) }.sorted { if $0.isDue != $1.isDue { return $0.isDue && !$1.isDue }; if $0.leitnerScore != $1.leitnerScore { return $0.leitnerScore < $1.leitnerScore }; return $0.createdAt < $1.createdAt }.map(\.card)
 	}
 	
 	private var dismissItems: [Binding<Bool>] {
@@ -82,19 +68,8 @@ struct SessionLeitnerView: View {
 								.offset(y: 20)
 						}
 					LazyVStack(alignment: .leading, spacing: 15) {
-						if !pendingCards.isEmpty {
-							Text("Pending")
-								.font(.headline)
-							ForEach(pendingCards) { card in
-								section(card: card)
-							}
-						}
-						if !filteredCards.isEmpty {
-							Text("All")
-								.font(.headline)
-							ForEach(filteredCards) { card in
-								section(card: card)
-							}
+						ForEach(filteredCards) { card in
+							section(card: card)
 						}
 					}
 					.id(editMode == .active || showClearLeitner)
@@ -171,18 +146,25 @@ fileprivate extension SessionLeitnerView {
 			}
 			.font(.subheadline)
 			Spacer()
-			Button {
-				// Nothing
-			} label: {
-				Text(card.leitnerScore, format: .number)
-					.font(.system(size: 20, weight: .semibold))
-					.foregroundStyle(.background)
-					.frame(width: 50, height: 50)
-					.background(
-						Circle().glassEffect(.clear.tint(card.leitnerScore == 1 ? nil : Color(hue: Double(card.leitnerScore - 2) / 5 * 0.75, saturation: 0.9, brightness: 1)).interactive())
-					)
+			ZStack(alignment: .bottom) {
+				Button {
+					// Nothing
+				} label: {
+					Text(card.leitnerScore, format: .number)
+						.font(.system(size: 20, weight: .semibold))
+						.foregroundStyle(.background)
+						.frame(width: 50, height: 50)
+						.background(
+							Circle().glassEffect(.clear.tint(card.leitnerScore == 1 ? nil : Color(hue: Double(card.leitnerScore - 2) / 5 * 0.75, saturation: 0.9, brightness: 1)).interactive())
+						)
+				}
+				.buttonStyle(.plain)
+				if Leitner.due(card: card) {
+					Image(systemName: "circle.fill")
+						.font(.caption2)
+						.offset(y: 5)
+				}
 			}
-			.buttonStyle(.plain)
 		}
 		.padding()
 		.background(
@@ -215,20 +197,19 @@ fileprivate extension SessionLeitnerView {
 	}
 	
 	@ViewBuilder private func mainInformation(paddingText: CGFloat) -> some View {
-		
+		let due = Leitner.due(from: cards)
 		VStack(alignment: .center, spacing: 6) {
 			Text(session.title)
 				.font(.system(size: 50, weight: .black))
 			Text(session.subtitle)
 				.font(.system(size: 20, weight: .semibold))
-			let dueCount = Leitner.due(from: cards).count
+			let dueCount = due.count
 			let nextTime = Leitner.next(from: cards)
 			Text(dueCount == 0 ? "No more ⋅ \(nextTime)" : "\(dueCount) waiting ⋅ \(nextTime)")
 				.font(.system(size: 16, weight: .semibold))
 				.padding(.top, 10)
 			Button {
 				guard !cards.isEmpty else { return showNoCards.toggle() }
-				let due = Leitner.due(from: cards)
 				guard !due.isEmpty else { return showFinishedSession.toggle() }
 				selectedCardsForSession = due
 				dismissItems.showOnly($showLearn)
@@ -348,6 +329,18 @@ fileprivate extension SessionLeitnerView {
 			}
 			.tint(nil)
 		}
+	}
+}
+
+fileprivate extension SessionLeitnerView {
+	
+	// Optimization
+	private struct SortedCard: Identifiable {
+		let card: Card
+		let id: UUID
+		let isDue: Bool
+		let leitnerScore: Int
+		let createdAt: Date
 	}
 }
 
