@@ -8,13 +8,15 @@
 import Foundation
 import SwiftData
 
+// MARK: Add Export/Import SESSION, with Recent Searches history, creation Date, Leitner Box Score, Time Trials.
+
 enum DataTransferObject {
 	
 	static var documentsURL: URL { FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first! }
 	static var imagesURL: URL { documentsURL.appendingPathComponent("Images", isDirectory: true) }
 	static var audioURL: URL { documentsURL.appendingPathComponent("Audio", isDirectory: true) }
 	
-	@MainActor static func export(deck: Deck?, cards: [Card], recording: Recording) throws -> URL {
+	@MainActor static func export(cards: [Card], drafts: [Draft], recording: Recording) throws -> URL {
 		
 		let fm = FileManager.default
 		
@@ -34,7 +36,11 @@ enum DataTransferObject {
 		try fm.createDirectory(at: audioFolder, withIntermediateDirectories: true)
 		
 		let decksToExport = Array(Set(cards.flatMap { $0.decks }))
-		let payload = Payload(decks: decksToExport.map(Payload.Deck.init), cards: cards.map(Payload.Card.init))
+		let payload = Payload(
+			decks: decksToExport.map(Payload.Deck.init),
+			cards: cards.map(Payload.Card.init),
+			drafts: drafts.map(Payload.Draft.init)
+		)
 		
 		let encoder = JSONEncoder()
 		encoder.outputFormatting = [.prettyPrinted]
@@ -84,9 +90,11 @@ enum DataTransferObject {
 		
 		var existingDecks: [UUID: Deck] = [:]
 		var existingCards: [UUID: Card] = [:]
+		var existingDrafts: [UUID: Draft] = [:]
 		
 		for deck in try context.fetch(FetchDescriptor<Deck>()) { existingDecks[deck.id] = deck }
 		for card in try context.fetch(FetchDescriptor<Card>()) { existingCards[card.id] = card }
+		for draft in try context.fetch(FetchDescriptor<Draft>()) { existingDrafts[draft.id] = draft }
 		
 		try copyAssets(from: packageURL.appendingPathComponent("Images"), to: imagesURL)
 		try copyAssets(from: packageURL.appendingPathComponent("Audio"), to: audioURL)
@@ -96,6 +104,18 @@ enum DataTransferObject {
 		for dto in payload.decks {
 			
 			if let existing = existingDecks[dto.id] {
+				
+				existing.name = dto.name
+				existing.image = dto.image
+				existing.depiction = dto.depiction
+				existing.author = dto.author
+				
+				existing.createdAt = dto.createdAt
+				
+				existing.lastViewedAt = dto.lastViewedAt
+				existing.lastOpenedAt = dto.lastOpenedAt
+				existing.lastDownloadAt = dto.lastDownloadAt
+				
 				deckMap[dto.id] = existing
 				continue
 			}
@@ -104,6 +124,10 @@ enum DataTransferObject {
 			deck.id = dto.id
 			deck.depiction = dto.depiction
 			deck.author = dto.author
+			deck.createdAt = dto.createdAt
+			deck.lastViewedAt = dto.lastViewedAt
+			deck.lastOpenedAt = dto.lastOpenedAt
+			deck.lastDownloadAt = dto.lastDownloadAt
 			
 			context.insert(deck)
 			deckMap[dto.id] = deck
@@ -111,7 +135,20 @@ enum DataTransferObject {
 		
 		let importedCards: [(Card, Payload.Card)] = payload.cards.map { dto in
 			
-			if let existing = existingCards[dto.id] { return (existing, dto) }
+			if let existing = existingCards[dto.id] {
+				existing.frontEntry = dto.frontEntry
+				existing.backEntry = dto.backEntry
+				existing.frontLanguage = dto.frontLanguage
+				existing.backLanguage = dto.backLanguage
+				existing.frontRecording = dto.frontRecording
+				existing.backRecording = dto.backRecording
+				existing.leitnerScore = dto.leitnerScore
+				existing.nextLeitnerAt = dto.nextLeitnerAt
+				existing.author = dto.author
+				existing.createdAt = dto.createdAt
+				existing.lastViewedAt = dto.lastViewedAt
+				return (existing, dto)
+			}
 			
 			let card = makeCard(dto)
 			card.id = dto.id
@@ -130,6 +167,27 @@ enum DataTransferObject {
 					}
 				}
 			}
+		}
+		
+		for dto in payload.drafts {
+			
+			if let existing = existingDrafts[dto.id] {
+				
+				existing.entry = dto.entry
+				existing.language = dto.language
+				existing.lastViewedAt = dto.lastViewedAt
+				existing.createdAt = dto.createdAt
+				
+				continue
+			}
+			
+			let draft = Draft(entry: dto.entry, language: dto.language)
+			
+			draft.id = dto.id
+			draft.lastViewedAt = dto.lastViewedAt
+			draft.createdAt = dto.createdAt
+			
+			context.insert(draft)
 		}
 		
 		try context.save()
@@ -155,19 +213,15 @@ enum DataTransferObject {
 	
 	static func makeCard(_ dto: Payload.Card) -> Card {
 		
-		let card = Card(
-			frontEntry: dto.frontEntry,
-			backEntry: dto.backEntry,
-			frontLanguage: dto.frontLanguage,
-			backLanguage: dto.backLanguage,
-			author: dto.author
-		)
+		let card = Card(frontEntry: dto.frontEntry, backEntry: dto.backEntry, frontLanguage: dto.frontLanguage, backLanguage: dto.backLanguage, author: dto.author)
 		
 		card.frontRecording = dto.frontRecording
 		card.backRecording = dto.backRecording
 		card.leitnerScore = dto.leitnerScore
 		card.nextLeitnerAt = dto.nextLeitnerAt
 		card.author = dto.author
+		card.lastViewedAt = dto.lastViewedAt
+		card.createdAt = dto.createdAt
 		
 		return card
 	}
@@ -179,16 +233,23 @@ extension DataTransferObject {
 		
 		let decks: [Deck]
 		let cards: [Card]
+		let drafts: [Draft]
 		
 		struct Deck: Codable {
+			
 			let id: UUID
 			let name: String
 			let image: String
 			let depiction: String
 			let author: String
+			let createdAt: Date
+			let lastViewedAt: Date?
+			let lastOpenedAt: Date?
+			let lastDownloadAt: Date?
 		}
 		
 		struct Card: Codable {
+			
 			let id: UUID
 			let frontEntry: String
 			let backEntry: String
@@ -199,7 +260,18 @@ extension DataTransferObject {
 			let leitnerScore: Int
 			let nextLeitnerAt: Date?
 			let author: String
+			let createdAt: Date
+			let lastViewedAt: Date?
 			let decks: [UUID]
+		}
+		
+		struct Draft: Codable {
+			
+			let id: UUID
+			let entry: String
+			let language: Language
+			let lastViewedAt: Date?
+			let createdAt: Date
 		}
 	}
 }
@@ -212,6 +284,10 @@ extension DataTransferObject.Payload.Deck {
 		self.image = deck.image
 		self.depiction = deck.depiction
 		self.author = deck.author
+		self.createdAt = deck.createdAt
+		self.lastViewedAt = deck.lastViewedAt
+		self.lastOpenedAt = deck.lastOpenedAt
+		self.lastDownloadAt = deck.lastDownloadAt
 	}
 }
 
@@ -219,6 +295,7 @@ extension DataTransferObject.Payload.Card {
 	
 	init(model card: Card) {
 		self.id = card.id
+		
 		self.frontEntry = card.frontEntry
 		self.backEntry = card.backEntry
 		self.frontLanguage = card.frontLanguage
@@ -228,6 +305,19 @@ extension DataTransferObject.Payload.Card {
 		self.leitnerScore = card.leitnerScore
 		self.nextLeitnerAt = card.nextLeitnerAt
 		self.author = card.author
-		self.decks = card.decks.map { $0.id }
+		self.decks = card.decks.map(\.id)
+		self.createdAt = card.createdAt
+		self.lastViewedAt = card.lastViewedAt
+	}
+}
+
+extension DataTransferObject.Payload.Draft {
+	
+	init(model draft: Draft) {
+		self.id = draft.id
+		self.entry = draft.entry
+		self.language = draft.language
+		self.lastViewedAt = draft.lastViewedAt
+		self.createdAt = draft.createdAt
 	}
 }

@@ -15,6 +15,7 @@ struct TransferView: View {
 	@Environment(\.dismiss) private var dismiss
 	
 	@Query private var cards: [Card]
+	@Query private var drafts: [Draft]
 	
 	@State private var exportURL: URL?
 	@State private var selectedDeck: Deck?
@@ -47,9 +48,8 @@ struct TransferView: View {
 							exportedCards = cards
 						}
 						do {
-							exportURL = try DataTransferObject.export(deck: selectedDeck, cards: exportedCards, recording: recording)
+							exportURL = try DataTransferObject.export(cards: exportedCards, drafts: drafts, recording: recording)
 							showExporting = true
-							//print("Export URL:", exportURL!)
 						} catch {
 							print(Errors.DataTransfer)
 						}

@@ -20,7 +20,7 @@ import Foundation
 	var success: Double
 	var directions: [SwipeDirection]
 	
-	private(set) var createdAt: Date
+	var createdAt: Date
 	
 	init(argument: Argument, with success: Double) {
 		self.id = UUID()

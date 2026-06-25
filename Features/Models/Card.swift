@@ -27,7 +27,7 @@ import Foundation
 	
 	@Relationship var decks: [Deck]
 	
-	private(set) var createdAt: Date
+	var createdAt: Date
 	
 	init(frontEntry: String, backEntry: String, frontLanguage: Language, backLanguage: Language, author: String) {
 		self.id = UUID()

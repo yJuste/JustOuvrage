@@ -23,7 +23,7 @@ import Foundation
 	
 	@Relationship(inverse: \Card.decks) var cards: [Card]
 	
-	private(set) var createdAt: Date
+	var createdAt: Date
 	
 	init(name: String, image: String, author: String) {
 		self.id = UUID()

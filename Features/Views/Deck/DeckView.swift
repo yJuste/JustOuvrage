@@ -22,6 +22,7 @@ struct DeckView: View {
 	@Environment(\.dismiss) private var dismiss
 	
 	@Query(sort: \Card.createdAt, order: .reverse) private var cards: [Card]
+	@Query private var drafts: [Draft]
 	@Query private var timeTrials: [TimeTrial]
 	
 	@Bindable private var preferences: Preferences = .unique
@@ -473,7 +474,7 @@ fileprivate extension DeckView {
 	private func download(_ deck: Deck) {
 		do {
 			Task { await showAdded() }
-			exportURL = try DataTransferObject.export(deck: deck, cards: deck.cards, recording: recording)
+			exportURL = try DataTransferObject.export(cards: deck.cards, drafts: drafts, recording: recording)
 			deck.lastDownloadAt = .now
 			dismissItems.showOnly($showExporting)
 		} catch {

@@ -17,7 +17,7 @@ import Foundation
 	var language: Language
 	var lastViewedAt: Date?
 	
-	private(set) var createdAt: Date
+	var createdAt: Date
 	
 	init(entry: String, language: Language) {
 		self.id = UUID()
