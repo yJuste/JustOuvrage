@@ -24,8 +24,6 @@ struct NewCardView: View {
 	@State private var backEntry: String = ""
 	@State private var frontLanguage: Language = Preferences.unique.frontLanguage
 	@State private var backLanguage: Language = Preferences.unique.backLanguage
-	@State private var showFrontLanguage: Bool = false
-	@State private var showBackLanguage: Bool = false
 	@State private var showAddedCard: Bool = false
 	@State private var showAddedBanner: Bool = false
 	@State private var showCancel: Bool = false
@@ -65,19 +63,12 @@ struct NewCardView: View {
 							}
 							VStack(spacing: 40) {
 								HStack(spacing: 40) {
-									Button {
-										showFrontLanguage.toggle()
-									} label: {
+									FlagPicker(selected: $frontLanguage) {
 										Image(frontLanguage.flagAsset)
 											.resizable()
 											.scaledToFill()
 											.frame(width: 60, height: 60)
 											.clipShape(Circle())
-									}
-									.popover(isPresented: $showFrontLanguage) {
-										FlagPicker(selected: $frontLanguage)
-											.padding(25)
-											.presentationCompactAdaptation(.none)
 									}
 									Button {
 										withAnimation(.spring(response: 0.3)) {
@@ -88,19 +79,12 @@ struct NewCardView: View {
 									}
 									.padding()
 									.glassEffect(.regular.interactive())
-									Button {
-										showBackLanguage.toggle()
-									} label: {
+									FlagPicker(selected: $backLanguage) {
 										Image(backLanguage.flagAsset)
 											.resizable()
 											.scaledToFill()
 											.frame(width: 60, height: 60)
 											.clipShape(Circle())
-									}
-									.popover(isPresented: $showBackLanguage) {
-										FlagPicker(selected: $backLanguage)
-											.padding(20)
-											.presentationCompactAdaptation(.none)
 									}
 								}
 								VStack(spacing: 50) {
@@ -135,10 +119,7 @@ struct NewCardView: View {
 				if focusField == .front {
 					focusField = .back
 				} else {
-					addCard(
-						front: frontEntry.trimmingCharacters(in: .whitespacesAndNewlines),
-						back: backEntry.trimmingCharacters(in: .whitespacesAndNewlines)
-					)
+					addCard(front: frontEntry.trimmingCharacters(in: .whitespacesAndNewlines), back: backEntry.trimmingCharacters(in: .whitespacesAndNewlines))
 				}
 			}
 			.onTapGesture {

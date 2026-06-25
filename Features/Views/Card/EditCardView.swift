@@ -26,8 +26,6 @@ struct EditCardView: View {
 	@State private var frontLanguage: Language = Language.en_US
 	@State private var backLanguage: Language = Language.en_US
 	@State private var leitnerScore: Int = 1
-	@State private var showFrontLanguage: Bool = false
-	@State private var showBackLanguage: Bool = false
 	@State private var showCancelAlert: Bool = false
 	
 	init(title: String, card: Card, onSave: @escaping (Card) -> Void = { _ in }) {
@@ -81,19 +79,12 @@ struct EditCardView: View {
 							}
 							VStack(spacing: 40) {
 								HStack(spacing: 40) {
-									Button {
-										showFrontLanguage.toggle()
-									} label: {
+									FlagPicker(selected: $frontLanguage) {
 										Image(frontLanguage.flagAsset)
 											.resizable()
 											.scaledToFill()
 											.frame(width: 60, height: 60)
 											.clipShape(Circle())
-									}
-									.popover(isPresented: $showFrontLanguage) {
-										FlagPicker(selected: $frontLanguage)
-											.padding(25)
-											.presentationCompactAdaptation(.none)
 									}
 									Button {
 										withAnimation(.spring(response: 0.3)) {
@@ -104,19 +95,12 @@ struct EditCardView: View {
 									}
 									.padding()
 									.glassEffect(.regular.interactive())
-									Button {
-										showBackLanguage.toggle()
-									} label: {
+									FlagPicker(selected: $backLanguage) {
 										Image(backLanguage.flagAsset)
 											.resizable()
 											.scaledToFill()
 											.frame(width: 60, height: 60)
 											.clipShape(Circle())
-									}
-									.popover(isPresented: $showBackLanguage) {
-										FlagPicker(selected: $backLanguage)
-											.padding(20)
-											.presentationCompactAdaptation(.none)
 									}
 								}
 								VStack(spacing: 50) {

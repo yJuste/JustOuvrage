@@ -23,18 +23,15 @@ struct DraftView: View {
 	@Bindable private var preferences: Preferences = .unique
 	@State private var card: Card?
 	@State private var destination: Destination?
-	@State private var globalBrowser = Preferences.unique.globalBrowser
 	@State private var showLanguage: Bool = false
 	@State private var showNewCard: Bool = false
 	@State private var showAddedBanner: Bool = false
 	
 	var cleanEntry: [String] {
-		cleanWords(expression: draft.entry)
-	}
-	
-	var selectedLanguage: Language {
-		get { preferences.exactMatch }
-		set { preferences.exactMatch = newValue }
+		draft.entry
+			.components(separatedBy: ",")
+			.map { $0.unicodeScalars.filter { !($0.properties.isEmoji && $0.properties.isEmojiPresentation) }.map { String($0) }.joined().trimmingCharacters(in: .whitespacesAndNewlines) }
+			.filter { !$0.isEmpty }
 	}
 	
 	var body: some View {
@@ -42,17 +39,26 @@ struct DraftView: View {
 			ScrollView {
 				VStack(alignment: .leading) {
 					Section {
-						LabelTrailing(title: "\(selectedLanguage.language)") {
+						LabelTrailing(title: "\(preferences.exactMatch.language)") {
 							Text("\(draft.entry)")
 						}
 						WordsLinkingToSite(title: "Google", item: cleanEntry) { entry in
-							globalBrowser ? destination = site.google.link(for: entry, in: selectedLanguage) : openURL(site.google.link(for: entry, in: selectedLanguage))
+							preferences.globalBrowser ? destination = site.google.link(for: entry, in: preferences.exactMatch) : openURL(site.google.link(for: entry, in: preferences.exactMatch))
 						}
-						WordsLinkingToSite(title: "WordReference", item: cleanEntry) { entry in
-							globalBrowser ? destination = site.wordReference.link(for: entry, in: selectedLanguage) : openURL(site.wordReference.link(for: entry, in: (selectedLanguage, preferences.backLanguage)))
+						HStack {
+							FlagPicker(selected: $preferences.exactMatchWR) {
+								Image(preferences.exactMatchWR.flagAsset)
+									.resizable()
+									.scaledToFill()
+									.frame(width: 36, height: 36)
+									.clipShape(Circle())
+							}
+							WordsLinkingToSite(title: "WordReference", item: cleanEntry) { entry in
+								preferences.globalBrowser ? destination = site.wordReference.link(for: entry, in: (.en_US, preferences.exactMatch)) : openURL(site.wordReference.link(for: entry, in: (.en_US, preferences.exactMatch)))
+							}
 						}
 						WordsLinkingToSite(title: "Forvo", item: cleanEntry) { entry in
-							globalBrowser ? destination = site.forvo.link(for: entry, in: (selectedLanguage, preferences.backLanguage)) : openURL(site.forvo.link(for: entry, in: selectedLanguage))
+							preferences.globalBrowser ? destination = site.forvo.link(for: entry, in: preferences.exactMatch) : openURL(site.forvo.link(for: entry, in: preferences.exactMatch))
 						}
 					} /// ``Entry``
 					Section {
@@ -85,11 +91,8 @@ struct DraftView: View {
 			.navigationTitle("Recent Searches")
 			.navigationBarTitleDisplayMode(.inline)
 			.sheet(item: $card) { card in
-				EditCardView(title: "Add Card To Library", card: card, onSave: { card in Task { await showAdded() }; modelContext.insert(card)})
-					.presentationDetents([
-						.fraction(Constants.heightOfANewCard),
-						.large
-					])
+				EditCardView(title: "Add Card To Library", card: card, onSave: { card in Task { await showAdded() }; modelContext.insert(card) })
+					.presentationDetents([.fraction(Constants.heightOfANewCard), .large])
 					.presentationDragIndicator(.visible)
 			}
 			.scrollIndicators(.hidden)
@@ -99,13 +102,6 @@ struct DraftView: View {
 
 /// Methods of CardView.
 fileprivate extension DraftView {
-	
-	private func cleanWords(expression: String) -> [String] {
-		return expression
-			.components(separatedBy: ",")
-			.map { $0.unicodeScalars.filter { !($0.properties.isEmoji && $0.properties.isEmojiPresentation) }.map { String($0) }.joined().trimmingCharacters(in: .whitespacesAndNewlines) }
-			.filter { !$0.isEmpty }
-	}
 	
 	@MainActor private func showAdded() async {
 		withAnimation(.snappy) {
@@ -127,12 +123,12 @@ fileprivate extension DraftView {
 		ToolbarItem(placement: .topBarTrailing) {
 			Menu {
 				Button {
-					card = Card(frontEntry: entry, backEntry: "", frontLanguage: selectedLanguage, backLanguage: selectedLanguage, author: profileName)
+					card = Card(frontEntry: entry, backEntry: "", frontLanguage: preferences.exactMatch, backLanguage: preferences.exactMatch, author: profileName)
 				} label: {
 					Label("Add to Library", systemImage: "slider.horizontal.3")
 				}
 				Button {
-					modelContext.insert(Card(frontEntry: entry, backEntry: entry, frontLanguage: selectedLanguage, backLanguage: selectedLanguage, author: profileName))
+					modelContext.insert(Card(frontEntry: entry, backEntry: entry, frontLanguage: preferences.exactMatch, backLanguage: preferences.exactMatch, author: profileName))
 					Task { await showAdded() }
 				} label: {
 					Label("Quick Add", systemImage: "plus.square.fill")
@@ -143,19 +139,12 @@ fileprivate extension DraftView {
 			.tint(nil)
 		}
 		ToolbarItem(placement: .topBarLeading) {
-			Button {
-				showLanguage.toggle()
-			} label: {
-				Image(selectedLanguage.flagAsset)
+			FlagPicker(selected: $preferences.exactMatch) {
+				Image(preferences.exactMatch.flagAsset)
 					.resizable()
 					.scaledToFill()
 					.frame(width: 36, height: 36)
 					.clipShape(Circle())
-			}
-			.popover(isPresented: $showLanguage) {
-				FlagPicker(selected: $preferences.exactMatch)
-					.padding(25)
-					.presentationCompactAdaptation(.none)
 			}
 		}
 	}

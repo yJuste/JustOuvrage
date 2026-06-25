@@ -99,7 +99,7 @@ fileprivate extension RecordingView {
 			VStack(alignment: .leading) {
 				Text(entry)
 					.bold()
-				WordsLinkingToSite(title: "", item: cleanWords(expression: entry)) { entry in
+				WordsLinkingToSite(title: "", item: cleanExpression(expression: entry)) { entry in
 					globalBrowser ? destination = site.forvo.link(for: entry, in: language) : openURL(site.forvo.link(for: entry, in: language))
 				}
 			}
@@ -136,20 +136,6 @@ fileprivate extension RecordingView {
 
 /// Methods of RecordingView.
 fileprivate extension RecordingView {
-	
-	private func cleanWords(expression: String) -> [String] {
-		return expression
-			.components(separatedBy: ",")
-			.map {
-				return removeDelimiters(from: $0, delimiters: [.parentheses, .brackets])
-					.unicodeScalars
-					.filter { !($0.properties.isEmoji && $0.properties.isEmojiPresentation) }
-					.map { String($0) }
-					.joined()
-					.trimmingCharacters(in: .whitespacesAndNewlines)
-			}
-			.filter { !$0.isEmpty }
-	}
 	
 	private enum Side {
 		

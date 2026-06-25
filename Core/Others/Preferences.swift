@@ -30,8 +30,12 @@ import Observation
 		// In New Card
 		case frontLanguage
 		case backLanguage
-		case exactMatch
 		case selectDeck
+		
+		// In Draft
+		
+		case exactMatch
+		case exactMatchWR
 		
 		// In Trial
 		case trialTimeInterval
@@ -77,8 +81,9 @@ import Observation
 	private var recentLanguagesRaw: [String]
 	private var frontLanguageRaw: String
 	private var backLanguageRaw: String
-	private var exactMatchRaw: String
 	private var selectDeckRaw: String
+	private var exactMatchRaw: String
+	private var exactMatchWRRaw: String
 	private var trialTimeIntervalRaw: TimeInterval
 	private var trialDeckRaw: String
 	private var trialNumberOfCardsRaw: Int
@@ -124,8 +129,9 @@ import Observation
 		recentLanguagesRaw = userDefaults.stringArray(forKey: Key.recentLanguages.rawValue) ?? []
 		frontLanguageRaw = userDefaults.string(forKey: Key.frontLanguage.rawValue) ?? defaultLanguage
 		backLanguageRaw = userDefaults.string(forKey: Key.backLanguage.rawValue) ?? defaultLanguage
-		exactMatchRaw = userDefaults.string(forKey: Key.exactMatch.rawValue) ?? defaultLanguage
 		selectDeckRaw = userDefaults.string(forKey: Key.selectDeck.rawValue) ?? ""
+		exactMatchRaw = userDefaults.string(forKey: Key.exactMatch.rawValue) ?? defaultLanguage
+		exactMatchWRRaw = userDefaults.string(forKey: Key.exactMatch.rawValue) ?? defaultLanguage
 		trialTimeIntervalRaw = userDefaults.double(forKey: Key.trialTimeInterval.rawValue)
 		trialDeckRaw = userDefaults.string(forKey: Key.trialDeck.rawValue) ?? ""
 		trialNumberOfCardsRaw = userDefaults.integer(forKey: Key.trialNumberOfCards.rawValue)
@@ -203,6 +209,14 @@ import Observation
 		}
 	}
 	
+	var selectDeck: UUID? {
+		get { UUID(uuidString: selectDeckRaw) }
+		set {
+			selectDeckRaw = newValue?.uuidString ?? ""
+			userDefaults.set(selectDeckRaw, forKey: Key.selectDeck.rawValue)
+		}
+	}
+	
 	var exactMatch: Language {
 		get { Language(rawValue: exactMatchRaw) ?? .en_US }
 		set {
@@ -211,11 +225,11 @@ import Observation
 		}
 	}
 	
-	var selectDeck: UUID? {
-		get { UUID(uuidString: selectDeckRaw) }
+	var exactMatchWR: Language {
+		get { Language(rawValue: exactMatchWRRaw) ?? .en_US }
 		set {
-			selectDeckRaw = newValue?.uuidString ?? ""
-			userDefaults.set(selectDeckRaw, forKey: Key.selectDeck.rawValue)
+			exactMatchWRRaw = newValue.rawValue
+			userDefaults.set(exactMatchWRRaw, forKey: Key.exactMatchWR.rawValue)
 		}
 	}
 	

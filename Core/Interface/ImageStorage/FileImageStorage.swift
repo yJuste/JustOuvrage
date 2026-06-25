@@ -7,8 +7,7 @@
 
 import UIKit
 
-// MARK: When VIewModel will be added, Use Data over UIImage
-// MARK: (load) This is not an error, I should change this later on.
+// MARK: LOAD is cached but for only 1 size. Havec to change this.
 
 /// An Interface that handles `local file image storage` within the App Sandbox ( -> Documents/Image ).
 /// Handles `file storage cache` as well.

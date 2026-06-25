@@ -7,8 +7,6 @@
 
 import UIKit
 
-// MARK: When VIewModel will be added, Use Data over UIImage
-
 /// A Service that contains `Save, Load and Delete` functions for handling Image Storage.
 protocol ImageStorageService {
 	
