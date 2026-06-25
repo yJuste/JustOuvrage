@@ -131,7 +131,7 @@ import Observation
 		backLanguageRaw = userDefaults.string(forKey: Key.backLanguage.rawValue) ?? defaultLanguage
 		selectDeckRaw = userDefaults.string(forKey: Key.selectDeck.rawValue) ?? ""
 		exactMatchRaw = userDefaults.string(forKey: Key.exactMatch.rawValue) ?? defaultLanguage
-		exactMatchWRRaw = userDefaults.string(forKey: Key.exactMatch.rawValue) ?? defaultLanguage
+		exactMatchWRRaw = userDefaults.string(forKey: Key.exactMatchWR.rawValue) ?? defaultLanguage
 		trialTimeIntervalRaw = userDefaults.double(forKey: Key.trialTimeInterval.rawValue)
 		trialDeckRaw = userDefaults.string(forKey: Key.trialDeck.rawValue) ?? ""
 		trialNumberOfCardsRaw = userDefaults.integer(forKey: Key.trialNumberOfCards.rawValue)

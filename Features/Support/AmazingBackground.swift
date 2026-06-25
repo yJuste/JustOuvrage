@@ -45,9 +45,7 @@ struct AmazingBackground: View {
 					.animation(active ? .easeInOut(duration: 22).repeatForever(autoreverses: true) : nil, value: animate)
 					.blendMode(.screen)
 				FlameShape.shared
-					.fill(
-						LinearGradient(colors: [colors.last?.opacity(0.26) ?? .black, .clear], startPoint: .bottom, endPoint: .top)
-					)
+					.fill(LinearGradient(colors: [colors.last?.opacity(0.26) ?? .black, .clear], startPoint: .bottom, endPoint: .top))
 					.frame(width: 110, height: 500)
 					.blur(radius: 20)
 					.rotationEffect(.degrees(angle2))
@@ -56,9 +54,7 @@ struct AmazingBackground: View {
 					.animation(active ? .easeInOut(duration: 28).repeatForever(autoreverses: true) : nil, value: animate)
 					.blendMode(.screen)
 				FlameShape.shared
-					.fill(
-						LinearGradient(colors: [colors.first?.opacity(0.45) ?? .black, colors.last?.opacity(0.20) ?? .black, .clear], startPoint: .bottom, endPoint: .top)
-					)
+					.fill(LinearGradient(colors: [colors.first?.opacity(0.45) ?? .black, colors.last?.opacity(0.20) ?? .black, .clear], startPoint: .bottom, endPoint: .top))
 					.frame(width: 45, height: 650)
 					.blur(radius: 20)
 					.rotationEffect(.degrees(angle3))
