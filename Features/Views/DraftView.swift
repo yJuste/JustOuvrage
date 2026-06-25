@@ -54,7 +54,7 @@ struct DraftView: View {
 									.clipShape(Circle())
 							}
 							WordsLinkingToSite(title: "WordReference", item: cleanEntry) { entry in
-								preferences.globalBrowser ? destination = site.wordReference.link(for: entry, in: (.en_US, preferences.exactMatch)) : openURL(site.wordReference.link(for: entry, in: (.en_US, preferences.exactMatch)))
+								preferences.globalBrowser ? destination = site.wordReference.link(for: entry, in: (preferences.exactMatch, preferences.exactMatchWR)) : openURL(site.wordReference.link(for: entry, in: (preferences.exactMatch, preferences.exactMatchWR)))
 							}
 						}
 						WordsLinkingToSite(title: "Forvo", item: cleanEntry) { entry in

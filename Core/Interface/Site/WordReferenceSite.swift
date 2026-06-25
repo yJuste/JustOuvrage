@@ -26,8 +26,21 @@ struct WordReferenceSite: SiteService {
 		return Destination(url: url)
 	}
 	
-	func link(for expression: String, in language: (Language, Language)) -> Destination? {
-		guard let url = URL(string: "https://www.wordreference.com/\(specificLanguage(language: language.0))\(specificLanguage(language: language.1))/\(expression.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? expression)") else { return nil }
+	func link(for expression: String, in languages: (Language, Language)) -> Destination? {
+		
+		let (first, second) = languages
+		let orderedLanguages: (Language, Language)
+		
+		switch (Self.isSourceLanguage(first), Self.isSourceLanguage(second)) {
+		case (false, true):
+			orderedLanguages = (second, first)
+		case (false, false):
+			orderedLanguages = (.en_US, second)
+		default:
+			orderedLanguages = (first, second)
+		}
+		
+		guard let url = URL(string: "https://www.wordreference.com/\(specificLanguage(language: orderedLanguages.0))\(specificLanguage(language: orderedLanguages.1))/\(expression.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? expression)") else { return nil }
 		
 		return Destination(url: url)
 	}
@@ -38,5 +51,12 @@ struct WordReferenceSite: SiteService {
 	
 	func link(for expression: String, in language: (Language, Language)) -> URL {
 		link(for: expression, in: language)?.url ?? URL(string: "https://www.wordreference.com")!
+	}
+}
+
+extension WordReferenceSite {
+	
+	static func isSourceLanguage(_ language: Language) -> Bool {
+		["en", "es", "it"].contains(String(language.rawValue.prefix(2)))
 	}
 }
